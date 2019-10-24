@@ -1,8 +1,8 @@
 Package: EcoDiet
 Type: Package
 Title: Creating a diet matrix from different data
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: TO DO
+    TO DO
 Version: 0.0.0.900
 Authors@R: c(
     person("Pierre-Yves", "Hernvann", role = "aut"),
