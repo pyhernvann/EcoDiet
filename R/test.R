@@ -3,5 +3,5 @@
 #' @examples plot_test_ggplot2_figure()
 #' @export
 plot_test_ggplot2_figure <- function() {
-  qplot(mpg, wt, data = mtcars)
+  ggplot2::qplot(mpg, wt, data = mtcars)
 }
