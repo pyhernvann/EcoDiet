@@ -1,8 +1,7 @@
-Package: EcoDiet
+Package: TestEcoDiet
 Type: Package
 Title: Creating a diet matrix from different data
-Description: TO DO
-    TO DO
+Description: This is a test version of the EcoDiet package.
 Version: 0.0.0.900
 Authors@R: c(
     person("Pierre-Yves", "Hernvann", role = "aut"),
