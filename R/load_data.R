@@ -6,10 +6,8 @@
 #' 
 #' @examples
 #' data <- load_data("data/example_stomach_data.csv", "data/example_isotope_data.csv")
-#' 
+#'
 #' @export
-#' 
-#' library(gsubfn)
 
 load_data <- function(stomach_data_path, isotope_data_path){
   

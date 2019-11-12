@@ -3,7 +3,7 @@
 \docType{data}
 \name{Toy_example_data}
 \alias{Toy_example_data}
-\title{Toy example}
+\title{Toy example to test the EcoDiet package}
 \format{A list of 8 elements}
 \usage{
 Toy_example_data
