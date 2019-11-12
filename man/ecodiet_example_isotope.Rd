@@ -13,4 +13,7 @@ ecodiet_example_isotope
 This is the isotopic data of a simulated toy dataset, 
 made to illustrate the EcoDiet package functions.
 }
+\examples{
+data("ecodiet_example_isotope")
+}
 \keyword{datasets}

@@ -11,4 +11,7 @@ Toy_example_data
 \description{
 This is a simulated toy dataset, made to illustrate the EcoDiet package functions.
 }
+\examples{
+data("Toy_example_data")
+}
 \keyword{datasets}

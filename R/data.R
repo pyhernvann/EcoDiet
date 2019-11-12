@@ -5,6 +5,9 @@ NULL
 #' This is a simulated toy dataset, made to illustrate the EcoDiet package functions.
 #'
 #'@format A list of 8 elements
+#'
+#'@examples data("Toy_example_data")
+
 "Toy_example_data"
 
 
@@ -15,6 +18,9 @@ NULL
 #'
 #'@format A data frame with 3 variables: \code{Group}, 
 #'   \code{d13C} and \code{d15N}
+#'
+#'@examples data("ecodiet_example_isotope")
+
 "ecodiet_example_isotope"
 
 
@@ -28,4 +34,7 @@ NULL
 #'    \code{Cod}, \code{Pout}, \code{Sardine}, \code{Shrimps},
 #'    \code{Crabs}, \code{Bivalves}, \code{Worms}, \code{Zooplankton},
 #'    \code{Phytoplankton} and \code{Detritus}
+#'
+#'@examples data("ecodiet_example_stomach")
+
 "ecodiet_example_stomach"

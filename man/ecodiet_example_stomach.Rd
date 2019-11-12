@@ -16,4 +16,7 @@ ecodiet_example_stomach
 This is the stomachal data of a simulated toy dataset, 
 made to illustrate the EcoDiet package functions.
 }
+\examples{
+data("ecodiet_example_stomach")
+}
 \keyword{datasets}
