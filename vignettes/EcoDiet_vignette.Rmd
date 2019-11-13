@@ -1,10 +1,10 @@
 ---
-title: "How to run the Ecodiet package with csv files"
+title: "How to run the Ecodiet package"
 author: "Heloise Thero"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{EcoDiet_with_csv_files}
+  %\VignetteIndexEntry{EcoDiet_vignette}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -16,9 +16,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-Here we will explain how to use the EcoDiet package when your data is stored in csv files, for example if you have exported it from Excel.
+The goal of EcoDiet is to combine two sources of data: isotopic and stomachal data with priors based on the litterature to model the trophic links and diet matrix.
 
-## Load the package
+We will use an artificial dataset stored in two csv files, with data from 10 trophic groups. The data was created to show how the EcoDiet package works. 
+
+## Install the package
 
 The first thing to do is to load the EcoDiet package. As it is only stored on GitHub for now, we need to use the `install_github` function from the `devtools` package to load it.
 
@@ -33,10 +35,58 @@ library(devtools)
 And now we can load the EcoDiet package:
 
 ```{r, eval = FALSE}
-install_github("heloisethero/TestEcoDiet")
-library(EcoDiet)
+devtools::install_github("heloisethero/EcoDiet")
+```
+
+```{r}
+library(TestEcoDiet)
 
 ```
 
 ## Load the data
 
+This package uses both stomachal and isotopic data, and we will need two different files for each data source.
+
+First we will explain how to do that if your data is stored in two csv files, for example if you have exported it from Excel. You need to first know the location of these two csv files in your computer and then use the `load_data` function. This is how it works with the example csv files:
+
+```{r}
+example_stomach_path <- system.file("extdata", "ecodiet_example_stomach.csv",
+                                    package = "TestEcoDiet")
+example_isotope_path <- system.file("extdata", "ecodiet_example_isotope.csv",
+                                    package = "TestEcoDiet")
+data <- load_data(example_stomach_path, example_isotope_path)
+```
+
+So for example, if you have put your two csv files in a folder named `my_EcoDiet_analysis`, you need to run:
+
+```{r, eval = FALSE}
+data <- load_data("my_EcoDiet_analysis/my_stomach_daya.csv", 
+                  "my_EcoDiet_analysis/my_isotope_daya.csv")
+```
+
+Now, if your data is already loaded as two data frames in your R environment, you just need to gather them together to form a list with two elements. I will illustrate this with the two example data frames already loaded with the package:
+
+```{r}
+data <- list(stomach_data = ecodiet_example_stomach, isotope_data = ecodiet_example_isotope)
+
+```
+
+## Check the data format
+
+Your data needs to be in a specific format to be run in the EcoDiet package.
+
+For the stomachal data, each column is a predator and each row is a prey. Each number reprensents the number of stomachs in which the prey was found for this specific predator. The last row is the total number of full stomachs analyzed for this predator :
+
+```{r}
+print(ecodiet_example_stomach)
+
+```
+
+For the isotopic data, each row represents a sample from one individual. The `Group` column indicates the trophic group (it should be the same as for the isotopic data!), and the remaining columns indicates the values for the chemical elements analyzed:
+
+```{r}
+head(ecodiet_example_isotope)
+
+```
+
+## Write the model
