@@ -10,17 +10,17 @@ knitr::opts_chunk$set(
 #  
 
 ## ---- eval = FALSE-------------------------------------------------------
-#  devtools::install_github("heloisethero/EcoDiet")
+#  devtools::install_github("heloisethero/EcoDiet", build_vignettes = TRUE)
 
 ## ------------------------------------------------------------------------
-library(TestEcoDiet)
+library(EcoDiet)
 
 
 ## ------------------------------------------------------------------------
 example_stomach_path <- system.file("extdata", "ecodiet_example_stomach.csv",
-                                    package = "TestEcoDiet")
+                                    package = "EcoDiet")
 example_isotope_path <- system.file("extdata", "ecodiet_example_isotope.csv",
-                                    package = "TestEcoDiet")
+                                    package = "EcoDiet")
 data <- load_data(example_stomach_path, example_isotope_path)
 
 ## ---- eval = FALSE-------------------------------------------------------

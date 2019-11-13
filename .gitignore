@@ -2,5 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
-TestEcoDiet.Rproj
+EcoDiet.Rproj
+inst/doc
+doc
 Meta

@@ -1,7 +1,9 @@
-Package: TestEcoDiet
+Package: EcoDiet
 Type: Package
-Title: Creating a diet matrix from different data
-Description: This is a test version of the EcoDiet package.
+Title: Estimating a diet matrix from isotopic and stomachal data sources
+Description: The goal of the package is to estimate trophic links and a diet matrix 
+    from isotopic and stomachal data using a Bayesian Hierarchical Model. The package 
+    relies on rjags to run a MCMC approximation of the different variables.
 Version: 0.0.0.900
 Authors@R: c(
     person("Pierre-Yves", "Hernvann", role = "aut"),

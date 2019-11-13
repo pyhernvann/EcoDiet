@@ -109,17 +109,17 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;devtools&quot;</span>)
 <span class="kw">library</span>(devtools)</code></pre></div>
 <p>And now we can load the EcoDiet package:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;heloisethero/EcoDiet&quot;</span>)</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(TestEcoDiet)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;heloisethero/EcoDiet&quot;</span>, <span class="dt">build_vignettes =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(EcoDiet)</code></pre></div>
 </div>
 <div id="load-the-data" class="section level2">
 <h2>Load the data</h2>
 <p>This package uses both stomachal and isotopic data, and we will need two different files for each data source.</p>
 <p>First we will explain how to do that if your data is stored in two csv files, for example if you have exported it from Excel. You need to first know the location of these two csv files in your computer and then use the <code>load_data</code> function. This is how it works with the example csv files:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">example_stomach_path &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;ecodiet_example_stomach.csv&quot;</span>,
-                                    <span class="dt">package =</span> <span class="st">&quot;TestEcoDiet&quot;</span>)
+                                    <span class="dt">package =</span> <span class="st">&quot;EcoDiet&quot;</span>)
 example_isotope_path &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;ecodiet_example_isotope.csv&quot;</span>,
-                                    <span class="dt">package =</span> <span class="st">&quot;TestEcoDiet&quot;</span>)
+                                    <span class="dt">package =</span> <span class="st">&quot;EcoDiet&quot;</span>)
 data &lt;-<span class="st"> </span><span class="kw">load_data</span>(example_stomach_path, example_isotope_path)</code></pre></div>
 <p>So for example, if you have put your two csv files in a folder named <code>my_EcoDiet_analysis</code>, you need to run:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data &lt;-<span class="st"> </span><span class="kw">load_data</span>(<span class="st">&quot;my_EcoDiet_analysis/my_stomach_daya.csv&quot;</span>, 
