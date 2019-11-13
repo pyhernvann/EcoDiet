@@ -18,6 +18,10 @@ a list containing the stomachal and isotopic data
 Load the stomachal and the isotopic data to feed the EcoDiet model.
 }
 \examples{
-data <- load_data("data/example_stomach_data.csv", "data/example_isotope_data.csv")
+example_stomach_path <- system.file("extdata", "ecodiet_example_stomach.csv", 
+                                    package = "TestEcoDiet")
+example_isotope_path <- system.file("extdata", "ecodiet_example_isotope.csv", 
+                                    package = "TestEcoDiet")
+data <- load_data(example_stomach_path, example_isotope_path)
 
 }
