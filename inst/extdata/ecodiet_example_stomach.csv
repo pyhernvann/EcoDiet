@@ -1,0 +1,12 @@
+"","Cod","Pout","Sardine","Shrimps","Crabs","Bivalves","Worms","Zooplankton","Phytoplankton","Detritus"
+"Cod",0,0,0,0,0,0,0,0,0,0
+"Pout",1,0,0,0,0,0,0,0,0,0
+"Sardine",9,0,0,0,0,0,0,0,0,0
+"Shrimps",4,4,29,0,24,0,0,0,0,0
+"Crabs",1,24,0,0,0,0,0,0,0,0
+"Bivalves",0,3,0,0,11,0,0,0,0,0
+"Worms",16,30,0,1,24,0,0,0,0,0
+"Zooplankton",0,27,6,3,0,0,0,0,0,0
+"Phytoplankton",0,0,14,10,0,16,0,20,0,0
+"Detritus",0,0,0,12,19,18,18,0,0,0
+"Total",21,30,29,19,29,27,18,20,0,0
