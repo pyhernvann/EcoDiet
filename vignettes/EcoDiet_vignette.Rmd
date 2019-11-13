@@ -1,8 +1,10 @@
 ---
-title: "EcoDiet_vignette"
+title: "How to run the Ecodiet package with csv files"
+author: "Heloise Thero"
+date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{EcoDiet_vignette}
+  %\VignetteIndexEntry{EcoDiet_with_csv_files}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -14,6 +16,27 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-library(TestEcoDiet)
+Here we will explain how to use the EcoDiet package when your data is stored in csv files, for example if you have exported it from Excel.
+
+## Load the package
+
+The first thing to do is to load the EcoDiet package. As it is only stored on GitHub for now, we need to use the `install_github` function from the `devtools` package to load it.
+
+So we will first install and load the `devtools` package:
+
+```{r, eval = FALSE}
+install.packages("devtools")
+library(devtools)
+
 ```
+
+And now we can load the EcoDiet package:
+
+```{r, eval = FALSE}
+install_github("heloisethero/TestEcoDiet")
+library(EcoDiet)
+
+```
+
+## Load the data
+
