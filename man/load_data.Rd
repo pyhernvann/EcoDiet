@@ -2,26 +2,20 @@
 % Please edit documentation in R/load_data.R
 \name{load_data}
 \alias{load_data}
-\title{Load the stomachal and the isotopic data to feed the EcoDiet model.}
+\title{Load the raw data and process it to feed the EcoDiet model}
 \usage{
-load_data(stomach_data_path, isotope_data_path)
+load_data(raw_data_list)
 }
 \arguments{
-\item{stomach_data_path}{the path to access the stomachal data}
-
-\item{isotope_data_path}{the path to access the isotopic data}
+\item{raw_data_list}{the list containing the different raw data objects}
 }
 \value{
-a list containing the stomachal and isotopic data
+a list of processed data, ready to be run by the EcoDiet model
 }
 \description{
-Load the stomachal and the isotopic data to feed the EcoDiet model.
+Load the raw data and process it to feed the EcoDiet model
 }
 \examples{
-example_stomach_path <- system.file("extdata", "ecodiet_example_stomach.csv", 
-                                    package = "TestEcoDiet")
-example_isotope_path <- system.file("extdata", "ecodiet_example_isotope.csv", 
-                                    package = "TestEcoDiet")
-data <- load_data(example_stomach_path, example_isotope_path)
+data <- load_data(ecodiet_example)
 
 }
