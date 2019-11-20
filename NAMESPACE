@@ -2,4 +2,5 @@
 
 export(load_data)
 export(plot_test_ggplot2_figure)
+export(rescale_stomach_data)
 import(ggplot2)
