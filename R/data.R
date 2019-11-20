@@ -4,37 +4,24 @@ NULL
 #'
 #' This is a simulated toy dataset, made to illustrate the EcoDiet package functions.
 #'
-#'@format A list of 8 elements
+#'@format A list of 8 elements:
+#'\describe{
+#'   \item{isotope_data}{a data frame with 3 variables: \code{Group}, 
+#'   \code{d13C} and \code{d15N}.}
 #'
-#'@examples data("Toy_example_data")
-
-"Toy_example_data"
-
-
-#' Artificial isotope data to test the EcoDiet package
-#'
-#' This is the isotopic data of a simulated toy dataset, 
-#' made to illustrate the EcoDiet package functions.
-#'
-#'@format A data frame with 3 variables: \code{Group}, 
-#'   \code{d13C} and \code{d15N}
-#'
-#'@examples data("ecodiet_example_isotope")
-
-"ecodiet_example_isotope"
-
-
-#' Artificial stomachal data to test the EcoDiet package
-#'
-#' This is the stomachal data of a simulated toy dataset, 
-#' made to illustrate the EcoDiet package functions.
-#'
-#'@format A data frame with 10 variables, 
+#'   \item{SCA_data}{A data frame with 10 variables, 
 #'    each corresponding to the name of a trophic group:
 #'    \code{Cod}, \code{Pout}, \code{Sardine}, \code{Shrimps},
 #'    \code{Crabs}, \code{Bivalves}, \code{Worms}, \code{Zooplankton},
-#'    \code{Phytoplankton} and \code{Detritus}
+#'    \code{Phytoplankton} and \code{Detritus}.
+#'    The number are the number of stomachs in which a specific prey 
+#'    (the group on the row) was found inside a predator (the group on the column).}
+#'    
+#'   \item{nb_stom_SCA_data}{A data frame with 10 variables, 
+#'    each corresponding to the name of a trophic group, 
+#'    containing the number of full stomachs analyzed for each predator.}
+#'}
 #'
-#'@examples data("ecodiet_example_stomach")
+#'@examples data("ecodiet_example")
 
-"ecodiet_example_stomach"
+"ecodiet_example"
