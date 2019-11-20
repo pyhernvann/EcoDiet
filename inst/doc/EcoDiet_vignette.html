@@ -13,7 +13,7 @@
 
 <meta name="author" content="Heloise Thero" />
 
-<meta name="date" content="2019-11-13" />
+<meta name="date" content="2019-11-20" />
 
 <title>How to run the Ecodiet package</title>
 
@@ -96,12 +96,12 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">How to run the Ecodiet package</h1>
 <h4 class="author">Heloise Thero</h4>
-<h4 class="date">2019-11-13</h4>
+<h4 class="date">2019-11-20</h4>
 
 
 
 <p>The goal of EcoDiet is to combine two sources of data: isotopic and stomachal data with priors based on the litterature to model the trophic links and diet matrix.</p>
-<p>We will use an artificial dataset stored in two csv files, with data from 10 trophic groups. The data was created to show how the EcoDiet package works.</p>
+<p>We will use an artificial dataset stored as a list of 8 elements, with isotopic and stomachal data from 10 trophic groups. The data was created to show how the EcoDiet package works.</p>
 <div id="install-the-package" class="section level2">
 <h2>Install the package</h2>
 <p>The first thing to do is to load the EcoDiet package. As it is only stored on GitHub for now, we need to use the <code>install_github</code> function from the <code>devtools</code> package to load it.</p>
@@ -109,62 +109,71 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;devtools&quot;</span>)
 <span class="kw">library</span>(devtools)</code></pre></div>
 <p>And now we can load the EcoDiet package:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;heloisethero/EcoDiet&quot;</span>, <span class="dt">build_vignettes =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;heloisethero/EcoDiet&quot;</span>, <span class="dt">auth_token=</span><span class="st">'c570f1b55d68a8ae0fb38428155e19a426814d15'</span>, <span class="dt">build_vignettes =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(EcoDiet)</code></pre></div>
 </div>
 <div id="load-the-data" class="section level2">
 <h2>Load the data</h2>
-<p>This package uses both stomachal and isotopic data, and we will need two different files for each data source.</p>
-<p>First we will explain how to do that if your data is stored in two csv files, for example if you have exported it from Excel. You need to first know the location of these two csv files in your computer and then use the <code>load_data</code> function. This is how it works with the example csv files:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">example_stomach_path &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;ecodiet_example_stomach.csv&quot;</span>,
-                                    <span class="dt">package =</span> <span class="st">&quot;EcoDiet&quot;</span>)
-example_isotope_path &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;ecodiet_example_isotope.csv&quot;</span>,
-                                    <span class="dt">package =</span> <span class="st">&quot;EcoDiet&quot;</span>)
-data &lt;-<span class="st"> </span><span class="kw">load_data</span>(example_stomach_path, example_isotope_path)</code></pre></div>
-<p>So for example, if you have put your two csv files in a folder named <code>my_EcoDiet_analysis</code>, you need to run:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data &lt;-<span class="st"> </span><span class="kw">load_data</span>(<span class="st">&quot;my_EcoDiet_analysis/my_stomach_daya.csv&quot;</span>, 
-                  <span class="st">&quot;my_EcoDiet_analysis/my_isotope_daya.csv&quot;</span>)</code></pre></div>
-<p>Now, if your data is already loaded as two data frames in your R environment, you just need to gather them together to form a list with two elements. I will illustrate this with the two example data frames already loaded with the package:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">stomach_data =</span> ecodiet_example_stomach, <span class="dt">isotope_data =</span> ecodiet_example_isotope)</code></pre></div>
+<p>To load and preprocess the example data, you can use the <code>load_data</code> function:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">preprocessed_data &lt;-<span class="st"> </span><span class="kw">load_data</span>(ecodiet_example)</code></pre></div>
 </div>
-<div id="check-the-data-format" class="section level2">
-<h2>Check the data format</h2>
-<p>Your data needs to be in a specific format to be run in the EcoDiet package.</p>
-<p>For the stomachal data, each column is a predator and each row is a prey. Each number reprensents the number of stomachs in which the prey was found for this specific predator. The last row is the total number of full stomachs analyzed for this predator :</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(ecodiet_example_stomach)
-<span class="co">#&gt;               Cod Pout Sardine Shrimps Crabs Bivalves Worms Zooplankton</span>
-<span class="co">#&gt; Cod             0    0       0       0     0        0     0           0</span>
-<span class="co">#&gt; Pout            1    0       0       0     0        0     0           0</span>
-<span class="co">#&gt; Sardine         9    0       0       0     0        0     0           0</span>
-<span class="co">#&gt; Shrimps         4    4      29       0    24        0     0           0</span>
-<span class="co">#&gt; Crabs           1   24       0       0     0        0     0           0</span>
-<span class="co">#&gt; Bivalves        0    3       0       0    11        0     0           0</span>
-<span class="co">#&gt; Worms          16   30       0       1    24        0     0           0</span>
-<span class="co">#&gt; Zooplankton     0   27       6       3     0        0     0           0</span>
-<span class="co">#&gt; Phytoplankton   0    0      14      10     0       16     0          20</span>
-<span class="co">#&gt; Detritus        0    0       0      12    19       18    18           0</span>
-<span class="co">#&gt; Total          21   30      29      19    29       27    18          20</span>
-<span class="co">#&gt;               Phytoplankton Detritus</span>
-<span class="co">#&gt; Cod                       0        0</span>
-<span class="co">#&gt; Pout                      0        0</span>
-<span class="co">#&gt; Sardine                   0        0</span>
-<span class="co">#&gt; Shrimps                   0        0</span>
-<span class="co">#&gt; Crabs                     0        0</span>
-<span class="co">#&gt; Bivalves                  0        0</span>
-<span class="co">#&gt; Worms                     0        0</span>
-<span class="co">#&gt; Zooplankton               0        0</span>
-<span class="co">#&gt; Phytoplankton             0        0</span>
-<span class="co">#&gt; Detritus                  0        0</span>
-<span class="co">#&gt; Total                     0        0</span></code></pre></div>
-<p>For the isotopic data, each row represents a sample from one individual. The <code>Group</code> column indicates the trophic group (it should be the same as for the isotopic data!), and the remaining columns indicates the values for the chemical elements analyzed:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(ecodiet_example_isotope)
-<span class="co">#&gt;   Group      d13C     d15N</span>
-<span class="co">#&gt; 1   Cod -12.94144 19.18913</span>
-<span class="co">#&gt; 2   Cod -14.96070 20.23939</span>
-<span class="co">#&gt; 3   Cod -13.77822 19.48809</span>
-<span class="co">#&gt; 4   Cod -12.83875 20.31473</span>
-<span class="co">#&gt; 5   Cod -13.75181 20.62660</span>
-<span class="co">#&gt; 6   Cod -14.02245 19.31500</span></code></pre></div>
+<div id="rescale-the-stomachal-data" class="section level2">
+<h2>Rescale the stomachal data</h2>
+<p>If the occurrences in your stomachal data are too small, you may need to rescale them, i.e., to inrease them using the number of full stomachs as a reference. For that you can use the <code>rescale_stomach_data</code> function.</p>
+<p>Here are our example stomachal data, and the number of full stomachs, before rescaling them:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">preprocessed_data<span class="op">$</span>o
+<span class="co">#&gt;               Bivalves Cod Crabs Detritus Phytoplankton Pout Sardine</span>
+<span class="co">#&gt; Bivalves             0   0    11        0             0    3       0</span>
+<span class="co">#&gt; Cod                  0   0     0        0             0    0       0</span>
+<span class="co">#&gt; Crabs                0   1     0        0             0   24       0</span>
+<span class="co">#&gt; Detritus            18   0    19        0             0    0       0</span>
+<span class="co">#&gt; Phytoplankton       16   0     0        0             0    0      14</span>
+<span class="co">#&gt; Pout                 0   1     0        0             0    0       0</span>
+<span class="co">#&gt; Sardine              0   9     0        0             0    0       0</span>
+<span class="co">#&gt; Shrimps              0   4    24        0             0    4      29</span>
+<span class="co">#&gt; Worms                0  16    24        0             0   30       0</span>
+<span class="co">#&gt; Zooplankton          0   0     0        0             0   27       6</span>
+<span class="co">#&gt;               Shrimps Worms Zooplankton</span>
+<span class="co">#&gt; Bivalves            0     0           0</span>
+<span class="co">#&gt; Cod                 0     0           0</span>
+<span class="co">#&gt; Crabs               0     0           0</span>
+<span class="co">#&gt; Detritus           12    18           0</span>
+<span class="co">#&gt; Phytoplankton      10     0          20</span>
+<span class="co">#&gt; Pout                0     0           0</span>
+<span class="co">#&gt; Sardine             0     0           0</span>
+<span class="co">#&gt; Shrimps             0     0           0</span>
+<span class="co">#&gt; Worms               1     0           0</span>
+<span class="co">#&gt; Zooplankton         3     0           0</span>
+preprocessed_data<span class="op">$</span>n_sca
+<span class="co">#&gt;      Bivalves Cod Crabs Detritus Phytoplankton Pout Sardine Shrimps Worms</span>
+<span class="co">#&gt; Full       27  21    29        0             0   30      29      19    18</span>
+<span class="co">#&gt;      Zooplankton</span>
+<span class="co">#&gt; Full          20</span></code></pre></div>
+<p>And here are the stomachal data after they have been rescaled:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">preprocessed_data<span class="op">$</span>o &lt;-<span class="st"> </span><span class="kw">rescale_stomach_data</span>(preprocessed_data<span class="op">$</span>o, preprocessed_data<span class="op">$</span>n_sca)
+preprocessed_data<span class="op">$</span>o
+<span class="co">#&gt;               Bivalves Cod Crabs Detritus Phytoplankton Pout Sardine</span>
+<span class="co">#&gt; Bivalves             0   0    13        0             0    3       0</span>
+<span class="co">#&gt; Cod                  0   0     0        0             0    0       0</span>
+<span class="co">#&gt; Crabs                0   1     0        0             0   24       0</span>
+<span class="co">#&gt; Detritus            27   0    23        0             0    0       0</span>
+<span class="co">#&gt; Phytoplankton       24   0     0        0             0    0      14</span>
+<span class="co">#&gt; Pout                 0   1     0        0             0    0       0</span>
+<span class="co">#&gt; Sardine              0  12     0        0             0    0       0</span>
+<span class="co">#&gt; Shrimps              0   5    29        0             0    4      29</span>
+<span class="co">#&gt; Worms                0  21    29        0             0   30       0</span>
+<span class="co">#&gt; Zooplankton          0   0     0        0             0   27       6</span>
+<span class="co">#&gt;               Shrimps Worms Zooplankton</span>
+<span class="co">#&gt; Bivalves            0     0           0</span>
+<span class="co">#&gt; Cod                 0     0           0</span>
+<span class="co">#&gt; Crabs               0     0           0</span>
+<span class="co">#&gt; Detritus           19    18           0</span>
+<span class="co">#&gt; Phytoplankton      16     0          20</span>
+<span class="co">#&gt; Pout                0     0           0</span>
+<span class="co">#&gt; Sardine             0     0           0</span>
+<span class="co">#&gt; Shrimps             0     0           0</span>
+<span class="co">#&gt; Worms               2     0           0</span>
+<span class="co">#&gt; Zooplankton         5     0           0</span></code></pre></div>
 </div>
 <div id="write-the-model" class="section level2">
 <h2>Write the model</h2>

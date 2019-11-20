@@ -3,6 +3,5 @@
 .RData
 .Ruserdata
 EcoDiet.Rproj
-#inst/doc
-#doc
 Meta
+doc
