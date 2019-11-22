@@ -93,9 +93,7 @@ load_data <- function(raw_data_list){
   priors_lit <- priors_lit[,order(colnames(priors_lit))]
   priors_lit <- priors_lit[order(rownames(priors_lit)),]
   
-  ED_conf <- 3
-  switch_conf_2_3 <- ifelse(ED_conf%in%c(2,3),1,0)
-  switch_conf_3 <- ifelse(ED_conf==3,1,0)
+  switch_prior <- 1
   
   data_list <- list(
     y     = SIA_input	,
@@ -116,8 +114,7 @@ load_data <- function(raw_data_list){
     CVs   = CV_calc,
     alpha_lit = priors_lit,
     n_lit = n_lit,
-    switch_conf_2_3 = switch_conf_2_3,
-    switch_conf_3 = switch_conf_3
+    switch_conf_3 = switch_prior
   )
   
   return(data_list)

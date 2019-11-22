@@ -74,6 +74,20 @@ preprocessed_data$o
 
 ## Write the model
 
+Then we need to write the model in the BUGS syntax. Currently there is only one configuration of the EcoDiet model, so no parameter is needed to write the model:
+
+```{r}
+model_def <- write_model()
+
+```
+
+After that, you can save the model in a .bug file to keep it:
+
+```{r, eval = FALSE}
+cat(model_def, file = "EcoDiet_model.bug")
+
+```
+
 ## Environment on which this vignette has been run
 
 ```{r}
