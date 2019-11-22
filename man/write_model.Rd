@@ -10,7 +10,7 @@ write_model()
 \item{file_name}{the name of the bugs files on which the model will be written}
 }
 \value{
-a string containing the model definition written in bugs syntaw
+a string containing the model definition written in bugs syntax
 }
 \description{
 Write the EcoDiet model in bugs langage on a file

@@ -6,6 +6,8 @@
 \alias{EcoDiet-package}
 \title{EcoDiet: Estimating a diet matrix from isotopic and stomachal data sources}
 \description{
+\if{html}{\figure{logo.png}{options: align='right'}}
+
 The goal of the package is to estimate trophic links and a diet matrix 
     from isotopic and stomachal data using a Bayesian Hierarchical Model. The package 
     relies on rjags to run a MCMC approximation of the different variables.

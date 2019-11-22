@@ -1,7 +1,7 @@
 #' Write the EcoDiet model in bugs langage on a file
 #'
 #' @param file_name the name of the bugs files on which the model will be written
-#' @return a string containing the model definition written in bugs syntaw
+#' @return a string containing the model definition written in bugs syntax
 #' 
 #' @examples
 #' model_def <- write_model()
