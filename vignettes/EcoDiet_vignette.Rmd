@@ -73,3 +73,11 @@ preprocessed_data$o
 ```
 
 ## Write the model
+
+## Environment on which this vignette has been run
+
+```{r}
+devtools::session_info()
+
+```
+
