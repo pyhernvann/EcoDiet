@@ -11,7 +11,8 @@
 write_model <- function(){
 
   model_def <- 
-"for (i in 1:nc){
+"model{
+for (i in 1:nc){
   
   for (k in 1:ns[ic[i]]){
   
@@ -111,6 +112,7 @@ alpha[is[i, k], ic[i]] <- ((1 - is_link_identified[i]) + is_link_identified[i] *
 
 rho[is[i, k], ic[i]] ~ dgamma(alpha[is[i, k], ic[i]], 1)
 PI[is[i,k],ic[i]] <- (rho[is[i,k],ic[i]])/sum(rho[is[i,1:ns[ic[i]]],ic[i]])
+}
 }
 }"
 
