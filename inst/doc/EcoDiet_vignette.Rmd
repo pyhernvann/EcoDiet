@@ -45,7 +45,14 @@ library(EcoDiet)
 
 ## Load the data
 
-To load and preprocess the example data, you can use the `load_data` function:
+We will use the example data that is provided with the package. You can see it consists of a list of 10 elements, each containing an important data to run the EcoDiet model.
+
+```{r}
+names(ecodiet_example)
+
+```
+
+We first need to load and rearrange the data with the `load_data` function:
 
 ```{r}
 preprocessed_data <- load_data(ecodiet_example)
@@ -73,3 +80,25 @@ preprocessed_data$o
 ```
 
 ## Write the model
+
+Then we need to write the model in the BUGS syntax. Currently there is only one configuration of the EcoDiet model, so no parameter is needed to write the model:
+
+```{r}
+model_def <- write_model()
+
+```
+
+After that, you can save the model in a .bug file to keep it:
+
+```{r, eval = FALSE}
+cat(model_def, file = "EcoDiet_model.bug")
+
+```
+
+## Environment on which this vignette has been run
+
+```{r}
+devtools::session_info()
+
+```
+

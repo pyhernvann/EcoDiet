@@ -45,7 +45,14 @@ library(EcoDiet)
 
 ## Load the data
 
-To load and preprocess the example data, you can use the `load_data` function:
+We will use the example data that is provided with the package. You can see it consists of a list of 10 elements, each containing an important data to run the EcoDiet model.
+
+```{r}
+names(ecodiet_example)
+
+```
+
+We first need to load and rearrange the data with the `load_data` function:
 
 ```{r}
 preprocessed_data <- load_data(ecodiet_example)

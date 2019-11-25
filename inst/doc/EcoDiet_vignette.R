@@ -17,6 +17,10 @@ library(EcoDiet)
 
 
 ## ------------------------------------------------------------------------
+names(ecodiet_example)
+
+
+## ------------------------------------------------------------------------
 preprocessed_data <- load_data(ecodiet_example)
 
 
@@ -28,5 +32,17 @@ preprocessed_data$n_sca
 ## ------------------------------------------------------------------------
 preprocessed_data$o <- rescale_stomach_data(preprocessed_data$o, preprocessed_data$n_sca)
 preprocessed_data$o
+
+
+## ------------------------------------------------------------------------
+model_def <- write_model()
+
+
+## ---- eval = FALSE-------------------------------------------------------
+#  cat(model_def, file = "EcoDiet_model.bug")
+#  
+
+## ------------------------------------------------------------------------
+devtools::session_info()
 
 

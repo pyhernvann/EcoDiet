@@ -77,12 +77,10 @@ load_data <- function(raw_data_list){
   Ped <- as.matrix(Pedigree_literature_data)
   Ped <- Ped[ ,order(colnames(Ped))]
   
-  g_slope_param <- 0.5
-  g_slope_param <- as.vector(g_slope_param)
+  g_slope_param <- as.vector(raw_data_list$g_slope_param)
   CV_calc <- 1 - Ped * g_slope_param[1]
   
-  n_lit_param <- 30
-  n_lit <- as.matrix(n_lit_param)
+  n_lit <- as.matrix(raw_data_list$n_lit_param)
   
   literature_data <- raw_data_list$literature_data
   priors_lit <- as.matrix(literature_data)
