@@ -1,8 +1,8 @@
 # EcoDiet
 
-This repo will soon contain the EcoDiet package. *Work in progress!*
+**Work in progress!**
 
-You can download the package from GitHub with this command:
+You can download the EcoDiet package from GitHub with this command:
 
 ```
 devtools::install_github("heloisethero/EcoDiet", auth_token='c570f1b55d68a8ae0fb38428155e19a426814d15')
