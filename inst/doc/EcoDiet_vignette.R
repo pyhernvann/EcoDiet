@@ -10,7 +10,7 @@ knitr::opts_chunk$set(
 #  
 
 ## ---- eval = FALSE-------------------------------------------------------
-#  devtools::install_github("heloisethero/EcoDiet", auth_token='c570f1b55d68a8ae0fb38428155e19a426814d15', build_vignettes = TRUE)
+#  devtools::install_github("heloisethero/EcoDiet", auth_token='c570f1b55d68a8ae0fb38428155e19a426814d15')
 
 ## ------------------------------------------------------------------------
 library(EcoDiet)
@@ -41,6 +41,10 @@ model_def <- write_model()
 ## ---- eval = FALSE-------------------------------------------------------
 #  cat(model_def, file = "EcoDiet_model.bug")
 #  
+
+## ------------------------------------------------------------------------
+inits <- initialize_model(preprocessed_data)
+
 
 ## ------------------------------------------------------------------------
 devtools::session_info()

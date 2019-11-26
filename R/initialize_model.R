@@ -18,7 +18,7 @@ initialize_model <- function(data){
   
   init_LAMBDA <- matrix(NA, nb_grp, nb_grp)
   init_LAMBDA[, ic[id_without_sca]] <- topo_run[, ic[id_without_sca]]
-  init_LAMBDA[init_LAMBDA==0] <- NA
+  init_LAMBDA[init_LAMBDA == 0] <- NA
   
   for (i in 1:nb_with_sca){
     for (k in 1:ns[ic[id_with_sca[i]]]){

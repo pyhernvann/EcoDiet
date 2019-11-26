@@ -35,7 +35,7 @@ library(devtools)
 And now we can load the EcoDiet package:
 
 ```{r, eval = FALSE}
-devtools::install_github("heloisethero/EcoDiet", auth_token='c570f1b55d68a8ae0fb38428155e19a426814d15', build_vignettes = TRUE)
+devtools::install_github("heloisethero/EcoDiet", auth_token='c570f1b55d68a8ae0fb38428155e19a426814d15')
 ```
 
 ```{r}
@@ -59,7 +59,7 @@ preprocessed_data <- load_data(ecodiet_example)
 
 ```
 
-## Rescale the stomachal data
+## Rescale the stomachal data (optional)
 
 If the occurrences in your stomachal data are too small, you may need to rescale them, i.e., to inrease them using the number of full stomachs as a reference. For that you can use the `rescale_stomach_data` function.
 
@@ -94,6 +94,21 @@ After that, you can save the model in a .bug file to keep it:
 cat(model_def, file = "EcoDiet_model.bug")
 
 ```
+
+## Specify initial values for the model
+
+The next step is to initiate the variables, i.e., to define starting points from which to run the MCMC chains. Here the inialization is made with fixed numeric values, defined by some data statistics.
+
+```{r}
+inits <- initialize_model(preprocessed_data)
+
+```
+
+## Run the model
+
+## Check the convergence
+
+## Plot the results
 
 ## Environment on which this vignette has been run
 
