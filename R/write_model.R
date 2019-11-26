@@ -4,20 +4,20 @@
 #' @return a string containing the model definition written in bugs syntax
 #' 
 #' @examples
-#' model_def <- write_model()
+#' model_string <- write_model()
 #'
 #' @export
 
 write_model <- function(){
 
-  model_def <- 
+  model_string <- 
 "model{
 for (i in 1:nc){
   
   for (k in 1:ns[ic[i]]){
   
   o[is[i, k], ic[i]] ~ dbin(eta[is[i, k], ic[i]], n_sca[1, ic[i]])        
-  LAMBDA[is[i, k], ic[i]] <- dbern((eta[is[i, k], ic[i]]))      
+  LAMBDA[is[i, k], ic[i]] ~ dbern((eta[is[i, k], ic[i]]))      
   
   }
   
@@ -116,5 +116,5 @@ PI[is[i,k],ic[i]] <- (rho[is[i,k],ic[i]])/sum(rho[is[i,1:ns[ic[i]]],ic[i]])
 }
 }"
 
-  return(model_def)
+  return(model_string)
 }
