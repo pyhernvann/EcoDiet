@@ -84,14 +84,14 @@ preprocessed_data$o
 Then we need to write the model in the BUGS syntax. Currently there is only one configuration of the EcoDiet model, so no parameter is needed to write the model:
 
 ```{r}
-model_def <- write_model()
+model_string <- write_model()
 
 ```
 
 After that, you can save the model in a .bug file to keep it:
 
 ```{r, eval = FALSE}
-cat(model_def, file = "EcoDiet_model.bug")
+cat(model_string, file = "EcoDiet_model.bug")
 
 ```
 
@@ -100,15 +100,23 @@ cat(model_def, file = "EcoDiet_model.bug")
 The next step is to initiate the variables, i.e., to define starting points from which to run the MCMC chains. Here the inialization is made with fixed numeric values, defined by some data statistics.
 
 ```{r}
-inits <- initialize_model(preprocessed_data)
+inits <- initialize_model(preprocessed_data, ecodiet_example$topo_run)
 
 ```
 
 ## Run the model
 
-## Check the convergence
+The model can now be run directly through the model definition string generated earlier:
+```{r}
+mcmc_output <- run_model(preprocessed_data, inits, textConnection(model_string))
 
-## Plot the results
+```
+
+The model can also be run from the model definition BUGS file:
+```{r, eval = FALSE}
+mcmc_output <- run_model(preprocessed_data, inits, "EcoDiet_model.bug")
+
+```
 
 ## Environment on which this vignette has been run
 
