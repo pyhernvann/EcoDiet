@@ -4,10 +4,12 @@
 \alias{initialize_model}
 \title{Initialize the different variables of the EcoDiet model to start the MCMC chains}
 \usage{
-initialize_model(data)
+initialize_model(data, topo_run)
 }
 \arguments{
 \item{data}{the list of the preprocessed data needed to compute the dimension of the variables}
+
+\item{topo_run}{the topology matrix that is part of the raw data}
 }
 \value{
 a list containing the initial values for each variable that need to be initialized
@@ -16,6 +18,6 @@ a list containing the initial values for each variable that need to be initializ
 Initialize the different variables of the EcoDiet model to start the MCMC chains
 }
 \examples{
-inits <- initialize_model(preprocessed_data)
+inits <- initialize_model(preprocessed_data, ecodiet_example$topo_run)
 
 }

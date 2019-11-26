@@ -16,6 +16,6 @@ a string containing the model definition written in bugs syntax
 Write the EcoDiet model in bugs langage on a file
 }
 \examples{
-model_def <- write_model()
+model_string <- write_model()
 
 }

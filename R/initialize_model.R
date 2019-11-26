@@ -1,16 +1,21 @@
 #' Initialize the different variables of the EcoDiet model to start the MCMC chains
 #'
 #' @param data the list of the preprocessed data needed to compute the dimension of the variables
+#' @param topo_run the topology matrix that is part of the raw data
 #' @return a list containing the initial values for each variable that need to be initialized
 #' 
 #' @examples
-#' inits <- initialize_model(preprocessed_data)
+#' inits <- initialize_model(preprocessed_data, ecodiet_example$topo_run)
 #'
 #' @export
 
-initialize_model <- function(data){
+initialize_model <- function(data, topo_run){
   attach(data)
   nb_grp <- nb + nc
+  
+  topo_run <- topo_run[, order(colnames(topo_run))]
+  topo_run <- topo_run[order(rownames(topo_run)), ]
+  topo_run <- as.matrix(topo_run)
   
   id_with_sca <- which(n_sca[1, ic] != 0)
   id_without_sca <- seq(1, nc)[-id_with_sca]  
@@ -55,6 +60,8 @@ initialize_model <- function(data){
   init_xi        <- matrix(0, nrow = ne, ncol = 1) 
   init_theta     <- matrix(0, nrow = ne, ncol = nb_grp) 
   init_tau_theta <- matrix(1, nrow = ne, ncol = 1) 
+  
+  ib <- which(colSums(topo_run) == 0)
   init_theta[, ib] <- NA
   
   init_list <- list(  

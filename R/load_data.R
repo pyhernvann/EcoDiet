@@ -102,15 +102,13 @@ load_data <- function(raw_data_list){
     ZEROS = matrix(0, nrow=nb_elements, ncol=nb_cons),
     ID    = diag(nb_elements),
     ic    = id_cons,
-    ib    = id_base,
     is    = id_source,
     n_sca = nb_stom_SCA_data,
     g     = Ped,
     CVs   = CV_calc,
     alpha_lit = priors_lit,
     n_lit = n_lit,
-    switch_conf_3 = switch_prior,
-    topo_run = topo_run
+    switch_conf_3 = switch_prior
   )
   
   return(data_list)
