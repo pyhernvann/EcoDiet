@@ -2,6 +2,8 @@
 
 *This is a work in progress!*
 
+## R installation
+
 EcoDiet is an R package so before anything, you should download and install/update R.
 
 ## JAGS installation
@@ -33,7 +35,7 @@ If you get an error message during installation, pleasure try the longer procedu
 
 #### For MacOS and Linux users (longer procedure)
 
-* You need to first download JAGS source code from [here](https://sourceforge.net/projects/mcmc-jags/). The file you will get should look like this: `JAGS-4.3.0.tar.gz`. (The version number will change with time.)
+* You need to first download JAGS source code from [here](https://sourceforge.net/projects/mcmc-jags/). The file you will get should look like this: `JAGS-4.3.0.tar.gz`. (The version number may be different.)
 
 * You will then need to uncompress the file with this bash command on the terminal:
 ```
@@ -51,7 +53,35 @@ make
 sudo make install
 ```
 
-## To install the EcoDiet package
+## rjags installation
+
+Then you need to install the rjags package for R.
+
+#### For Windows users
+
+#### For MacOS and Linux users
+
+First you should run on the terminal:
+```
+which jags
+```
+
+If nothing happens, it means you have not managed to install JAGS, so you should go back to the previous section.
+
+If you see `/usr/bin/jags` appearing, you are safe and you can use this simple command in R:
+```
+install.packages('rjags')
+```
+
+If you see another path appearing such as `/usr/local/bin/jags`, you will need to specify this path to rjags with this command in R:
+```
+install.packages("rjags", configure.args="--with-jags-include=/usr/local/include/JAGS 
+--with-jags-lib=/usr/local/lib/JAGS --with-jags-modules=/usr/local/lib/JAGS/modules")
+```
+
+Thanks to [Yu-Sung Su's blog](http://yusung.blogspot.com/2009/01/install-jags-and-rjags-in-fedora.html) for this solution.
+
+## EcoDiet installation
 
 You can download the EcoDiet package with this command in R:
 ```
