@@ -1,6 +1,6 @@
 # EcoDiet
 
-*Work in progress!*
+*This is a work in progress!*
 
 ## To install the package
 
@@ -25,7 +25,7 @@ The vignettes will explain to you how to use this package. To access the vignett
 ```
 browseVignettes("EcoDiet")
 ```
-or this:
+or:
 ```
 vignette("EcoDiet_vignette")
 ```
