@@ -8,7 +8,7 @@ EcoDiet is an R package so before anything, you should download and install/upda
 
 EcoDiet relies on the JAGS program to run so you will also need to download and install JAGS.
 
-### For Windows users
+#### For Windows users
 
 You can:
 
@@ -17,7 +17,21 @@ To ensure JAGS is found by the R program, precise its path with this command in 
 Sys.setenv(JAGS_HOME='****/Program Files/JAGS/JAGS-4.2.0')
 ```
 
-### For MacOS and Linux users
+#### For MacOS and Linux users (simple procedure)
+
+Try this command if you are on MacOS:
+```
+sudo brew install jags
+```
+
+or this command if you are on Linux:
+```
+sudo apt-get install jags
+```
+
+If you get an error message during installation, pleasure try the longer procedure described below.
+
+#### For MacOS and Linux users (longer procedure)
 
 * You need to first download JAGS source code from [here](https://sourceforge.net/projects/mcmc-jags/). The file you will get should look like this: `JAGS-4.3.0.tar.gz`. (The version number will change with time.)
 
@@ -36,7 +50,6 @@ cd JAGS-4.3.0/
 make
 sudo make install
 ```
-(Because you will use sudo, the terminal may ask you to enter your computer password. That's normal, just do it.)
 
 ## To install the EcoDiet package
 
