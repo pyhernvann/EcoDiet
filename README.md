@@ -10,7 +10,7 @@ EcoDiet is an R package so before anything, you should download and install/upda
 
 ## JAGS installation
 
-EcoDiet relies on the JAGS program to run so you will also need to download and install JAGS.
+EcoDiet relies on the JAGS program to run so you will also need to download and install/update JAGS.
 
 #### For Windows users
 
@@ -34,9 +34,7 @@ If you get an error message during installation, tou should try to follow [this 
 
 ## EcoDiet installation
 
-As the EcoDiet package is only stored on GitHub for now, we need to use the `install_github` function from the `devtools` package to load it.
-
-So we will first install and load the `devtools` package:
+As the EcoDiet package is only stored on GitHub for now, we need to use the `install_github` function from the `devtools` package to load it. So we will first install and load the `devtools` package:
 
 ```{r, eval = FALSE}
 install.packages("devtools")
