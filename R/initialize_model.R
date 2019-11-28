@@ -5,8 +5,9 @@
 #' @return a list containing the initial values for each variable that need to be initialized
 #' 
 #' @examples
-#' inits <- initialize_model(preprocessed_data, ecodiet_example$topo_run)
+#' inits <- initialize_model(load(ecodiet_example), ecodiet_example$topo_run)
 #'
+#' importFrom("stats", "median", "var")
 #' @export
 
 initialize_model <- function(data, topo_run){
