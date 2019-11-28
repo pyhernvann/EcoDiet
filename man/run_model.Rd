@@ -4,7 +4,7 @@
 \alias{run_model}
 \title{Run the MCMC chains for the EcoDiet model}
 \usage{
-run_model(data, inits, model_file, n.iter = 1000)
+run_model(data, inits, model_file, n_iter = 1000)
 }
 \arguments{
 \item{data}{the list containing the different loaded and preprocessed data objects}

@@ -13,6 +13,7 @@ Depends:
 Imports:
     ggplot2,
     R2jags,
+    rjags,
     coda
 Suggests: 
     knitr,
