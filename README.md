@@ -2,6 +2,8 @@
 
 *This is a work in progress!*
 
+![](man/figures/logo.PNG)
+
 ## R installation
 
 EcoDiet is an R package so before anything, you should download and install/update R.
@@ -51,7 +53,6 @@ So we will first install and load the `devtools` package:
 
 ```{r, eval = FALSE}
 install.packages("devtools")
-library(devtools)
 ```
 
 And now we can load the EcoDiet package:
@@ -67,6 +68,3 @@ The vignettes will then explain to you how to use this package. To access the vi
 browseVignettes("EcoDiet")
 ```
 And click on the HTML button next to the vignette you are interested in.
-
-
-![](man/figures/logo.PNG)
