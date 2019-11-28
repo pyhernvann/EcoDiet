@@ -11,24 +11,28 @@
 #'
 #' @export
 
-
-run_model <- function(data, inits, model_file, n.iter = 1e+03){
+run_model <- function(data, inits, model_file, n_iter = 1e+03){
   
-  n.chains <- 3
-  n.burnin <- floor(n.iter/2)
-  n.thin <- max(1, floor((n.iter - n.burnin)/1000))
+  start_time <- Sys.time()
+  
+  n_chains <- 3
+  n_burnin <- floor(n_iter/2)
+  n_thin <- max(1, floor((n_iter - n_burnin)/1000))
 
-  inits <- rep(list(inits), n.chains)
+  inits <- rep(list(inits), n_chains)
 
   mcmc_output <- R2jags::jags(
     data = data, 
     inits = inits,
     parameters.to.save = c("LAMBDA", "PI"), 
     model.file = model_file,
-    n.chains = n.chains, n.iter = n.iter, 
-    n.burnin = n.burnin, n.thin = n.thin)
+    n.chains = n_chains, n.iter = n_iter, 
+    n.burnin = n_burnin, n.thin = n_thin)
   
   mcmc_output <- coda::as.mcmc(mcmc_output)
+  
+  end_time <- Sys.time()
+  cat(end_time - start_time)
   
   return(mcmc_output)
 }
