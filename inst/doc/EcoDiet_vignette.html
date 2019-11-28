@@ -13,7 +13,7 @@
 
 <meta name="author" content="Heloise Thero" />
 
-<meta name="date" content="2019-11-26" />
+<meta name="date" content="2019-11-28" />
 
 <title>How to run the Ecodiet package</title>
 
@@ -96,21 +96,17 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">How to run the Ecodiet package</h1>
 <h4 class="author">Heloise Thero</h4>
-<h4 class="date">2019-11-26</h4>
+<h4 class="date">2019-11-28</h4>
 
 
 
 <p>The goal of EcoDiet is to combine two sources of data: isotopic and stomachal data with priors based on the litterature to model the trophic links and diet matrix.</p>
 <p>We will use an artificial dataset stored as a list of 8 elements, with isotopic and stomachal data from 10 trophic groups. The data was created to show how the EcoDiet package works.</p>
-<div id="install-the-package" class="section level2">
-<h2>Install the package</h2>
-<p>The first thing to do is to load the EcoDiet package. As it is only stored on GitHub for now, we need to use the <code>install_github</code> function from the <code>devtools</code> package to load it.</p>
-<p>So we will first install and load the <code>devtools</code> package:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;devtools&quot;</span>)
-<span class="kw">library</span>(devtools)</code></pre></div>
-<p>And now we can load the EcoDiet package:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;heloisethero/EcoDiet&quot;</span>, <span class="dt">auth_token=</span><span class="st">'c570f1b55d68a8ae0fb38428155e19a426814d15'</span>)</code></pre></div>
+<div id="load-the-package" class="section level2">
+<h2>Load the package</h2>
+<p>The first thing to do is to load the EcoDiet package.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(EcoDiet)</code></pre></div>
+<p>If you have an error, please try to reinstall everything following <a href="https://github.com/heloisethero/EcoDiet/blob/master/README.md">the instructions in the README</a></p>
 </div>
 <div id="load-the-data" class="section level2">
 <h2>Load the data</h2>
@@ -123,64 +119,6 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <span class="co">#&gt;  [9] &quot;g_slope_param&quot;            &quot;n_lit_param&quot;</span></code></pre></div>
 <p>We first need to load and rearrange the data with the <code>load_data</code> function:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">preprocessed_data &lt;-<span class="st"> </span><span class="kw">load_data</span>(ecodiet_example)</code></pre></div>
-</div>
-<div id="rescale-the-stomachal-data-optional" class="section level2">
-<h2>Rescale the stomachal data (optional)</h2>
-<p>If the occurrences in your stomachal data are too small, you may need to rescale them, i.e., to inrease them using the number of full stomachs as a reference. For that you can use the <code>rescale_stomach_data</code> function.</p>
-<p>Here are our example stomachal data, and the number of full stomachs, before rescaling them:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">preprocessed_data<span class="op">$</span>o
-<span class="co">#&gt;               Bivalves Cod Crabs Detritus Phytoplankton Pout Sardine</span>
-<span class="co">#&gt; Bivalves             0   0    11        0             0    3       0</span>
-<span class="co">#&gt; Cod                  0   0     0        0             0    0       0</span>
-<span class="co">#&gt; Crabs                0   1     0        0             0   24       0</span>
-<span class="co">#&gt; Detritus            18   0    19        0             0    0       0</span>
-<span class="co">#&gt; Phytoplankton       16   0     0        0             0    0      14</span>
-<span class="co">#&gt; Pout                 0   1     0        0             0    0       0</span>
-<span class="co">#&gt; Sardine              0   9     0        0             0    0       0</span>
-<span class="co">#&gt; Shrimps              0   4    24        0             0    4      29</span>
-<span class="co">#&gt; Worms                0  16    24        0             0   30       0</span>
-<span class="co">#&gt; Zooplankton          0   0     0        0             0   27       6</span>
-<span class="co">#&gt;               Shrimps Worms Zooplankton</span>
-<span class="co">#&gt; Bivalves            0     0           0</span>
-<span class="co">#&gt; Cod                 0     0           0</span>
-<span class="co">#&gt; Crabs               0     0           0</span>
-<span class="co">#&gt; Detritus           12    18           0</span>
-<span class="co">#&gt; Phytoplankton      10     0          20</span>
-<span class="co">#&gt; Pout                0     0           0</span>
-<span class="co">#&gt; Sardine             0     0           0</span>
-<span class="co">#&gt; Shrimps             0     0           0</span>
-<span class="co">#&gt; Worms               1     0           0</span>
-<span class="co">#&gt; Zooplankton         3     0           0</span>
-preprocessed_data<span class="op">$</span>n_sca
-<span class="co">#&gt;      Bivalves Cod Crabs Detritus Phytoplankton Pout Sardine Shrimps Worms</span>
-<span class="co">#&gt; Full       27  21    29        0             0   30      29      19    18</span>
-<span class="co">#&gt;      Zooplankton</span>
-<span class="co">#&gt; Full          20</span></code></pre></div>
-<p>And here are the stomachal data after they have been rescaled:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">preprocessed_data<span class="op">$</span>o &lt;-<span class="st"> </span><span class="kw">rescale_stomach_data</span>(preprocessed_data<span class="op">$</span>o, preprocessed_data<span class="op">$</span>n_sca)
-preprocessed_data<span class="op">$</span>o
-<span class="co">#&gt;               Bivalves Cod Crabs Detritus Phytoplankton Pout Sardine</span>
-<span class="co">#&gt; Bivalves             0   0    13        0             0    3       0</span>
-<span class="co">#&gt; Cod                  0   0     0        0             0    0       0</span>
-<span class="co">#&gt; Crabs                0   1     0        0             0   24       0</span>
-<span class="co">#&gt; Detritus            27   0    23        0             0    0       0</span>
-<span class="co">#&gt; Phytoplankton       24   0     0        0             0    0      14</span>
-<span class="co">#&gt; Pout                 0   1     0        0             0    0       0</span>
-<span class="co">#&gt; Sardine              0  12     0        0             0    0       0</span>
-<span class="co">#&gt; Shrimps              0   5    29        0             0    4      29</span>
-<span class="co">#&gt; Worms                0  21    29        0             0   30       0</span>
-<span class="co">#&gt; Zooplankton          0   0     0        0             0   27       6</span>
-<span class="co">#&gt;               Shrimps Worms Zooplankton</span>
-<span class="co">#&gt; Bivalves            0     0           0</span>
-<span class="co">#&gt; Cod                 0     0           0</span>
-<span class="co">#&gt; Crabs               0     0           0</span>
-<span class="co">#&gt; Detritus           19    18           0</span>
-<span class="co">#&gt; Phytoplankton      16     0          20</span>
-<span class="co">#&gt; Pout                0     0           0</span>
-<span class="co">#&gt; Sardine             0     0           0</span>
-<span class="co">#&gt; Shrimps             0     0           0</span>
-<span class="co">#&gt; Worms               2     0           0</span>
-<span class="co">#&gt; Zooplankton         5     0           0</span></code></pre></div>
 </div>
 <div id="write-the-model" class="section level2">
 <h2>Write the model</h2>
@@ -207,7 +145,9 @@ preprocessed_data<span class="op">$</span>o
 <span class="co">#&gt;    Unobserved stochastic nodes: 125</span>
 <span class="co">#&gt;    Total graph size: 1580</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; Initializing model</span></code></pre></div>
+<span class="co">#&gt; Initializing model</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; 21.5406</span></code></pre></div>
 <p>The model can also be run from the model definition BUGS file:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mcmc_output &lt;-<span class="st"> </span><span class="kw">run_model</span>(preprocessed_data, inits, <span class="st">&quot;EcoDiet_model.bug&quot;</span>)</code></pre></div>
 </div>
@@ -224,7 +164,7 @@ preprocessed_data<span class="op">$</span>o
 <span class="co">#&gt;  collate  French_France.1252          </span>
 <span class="co">#&gt;  ctype    French_France.1252          </span>
 <span class="co">#&gt;  tz       Europe/Paris                </span>
-<span class="co">#&gt;  date     2019-11-26                  </span>
+<span class="co">#&gt;  date     2019-11-28                  </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; - Packages --------------------------------------------------------------</span>
 <span class="co">#&gt;  package     * version   date       lib source        </span>
@@ -241,7 +181,7 @@ preprocessed_data<span class="op">$</span>o
 <span class="co">#&gt;  devtools      2.2.1     2019-09-24 [2] CRAN (R 3.5.3)</span>
 <span class="co">#&gt;  digest        0.6.22    2019-10-21 [2] CRAN (R 3.5.2)</span>
 <span class="co">#&gt;  dplyr         0.8.3     2019-07-04 [2] CRAN (R 3.5.3)</span>
-<span class="co">#&gt;  EcoDiet     * 0.0.0.900 2019-11-26 [1] local         </span>
+<span class="co">#&gt;  EcoDiet     * 0.0.0.900 2019-11-28 [1] local         </span>
 <span class="co">#&gt;  ellipsis      0.3.0     2019-09-20 [2] CRAN (R 3.5.3)</span>
 <span class="co">#&gt;  evaluate      0.14      2019-05-28 [2] CRAN (R 3.5.3)</span>
 <span class="co">#&gt;  fs            1.3.1     2019-05-06 [2] CRAN (R 3.5.3)</span>
@@ -285,7 +225,7 @@ preprocessed_data<span class="op">$</span>o
 <span class="co">#&gt;  xfun          0.10      2019-10-01 [2] CRAN (R 3.5.3)</span>
 <span class="co">#&gt;  yaml          2.2.0     2018-07-25 [2] CRAN (R 3.5.3)</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; [1] C:/Users/hthero/AppData/Local/Temp/RtmpWcDB2G/temp_libpath38e835a51978</span>
+<span class="co">#&gt; [1] C:/Users/hthero/AppData/Local/Temp/RtmpioX7AW/temp_libpath16385cea5545</span>
 <span class="co">#&gt; [2] C:/Users/hthero/Documents/R/win-library/3.5</span>
 <span class="co">#&gt; [3] C:/Program Files/R/R-3.5.2/library</span></code></pre></div>
 </div>

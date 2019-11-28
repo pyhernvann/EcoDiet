@@ -1,0 +1,36 @@
+---
+title: "How to rescale stomachal data"
+author: "Heloise Thero"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{How to run the EcoDiet package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+If the occurrences in your stomachal data are too small, you may need to rescale them, i.e., to inrease them using the number of full stomachs as a reference. For that you can use the `rescale_stomach_data` function.
+
+We first need to load and rearrange the data inside our example:
+
+```{r}
+library(EcoDiet)
+preprocessed_data <- load_data(ecodiet_example)
+
+```
+
+Here are our example stomachal data, and the number of full stomachs, before rescaling them:
+
+```{r}
+preprocessed_data$o
+preprocessed_data$n_sca
+
+```
+
+And here are the stomachal data after they have been rescaled:
+
+```{r}
+preprocessed_data$o <- rescale_stomach_data(preprocessed_data$o, preprocessed_data$n_sca)
+preprocessed_data$o
+
+```

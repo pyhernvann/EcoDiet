@@ -20,28 +20,16 @@ The goal of EcoDiet is to combine two sources of data: isotopic and stomachal da
 
 We will use an artificial dataset stored as a list of 8 elements, with isotopic and stomachal data from 10 trophic groups. The data was created to show how the EcoDiet package works. 
 
-## Install the package
+## Load the package
 
-The first thing to do is to load the EcoDiet package. As it is only stored on GitHub for now, we need to use the `install_github` function from the `devtools` package to load it.
-
-So we will first install and load the `devtools` package:
-
-```{r, eval = FALSE}
-install.packages("devtools")
-library(devtools)
-
-```
-
-And now we can load the EcoDiet package:
-
-```{r, eval = FALSE}
-devtools::install_github("heloisethero/EcoDiet", auth_token='c570f1b55d68a8ae0fb38428155e19a426814d15')
-```
+The first thing to do is to load the EcoDiet package.
 
 ```{r}
 library(EcoDiet)
 
 ```
+
+If you have an error, please try to reinstall everything following [the instructions in the README](https://github.com/heloisethero/EcoDiet/blob/master/README.md)
 
 ## Load the data
 
@@ -59,25 +47,6 @@ preprocessed_data <- load_data(ecodiet_example)
 
 ```
 
-## Rescale the stomachal data (optional)
-
-If the occurrences in your stomachal data are too small, you may need to rescale them, i.e., to inrease them using the number of full stomachs as a reference. For that you can use the `rescale_stomach_data` function.
-
-Here are our example stomachal data, and the number of full stomachs, before rescaling them:
-
-```{r}
-preprocessed_data$o
-preprocessed_data$n_sca
-
-```
-
-And here are the stomachal data after they have been rescaled:
-
-```{r}
-preprocessed_data$o <- rescale_stomach_data(preprocessed_data$o, preprocessed_data$n_sca)
-preprocessed_data$o
-
-```
 
 ## Write the model
 
