@@ -83,8 +83,19 @@ Thanks to [Yu-Sung Su's blog](http://yusung.blogspot.com/2009/01/install-jags-an
 
 ## EcoDiet installation
 
-You can download the EcoDiet package with this command in R:
+As the EcoDiet package is only stored on GitHub for now, we need to use the `install_github` function from the `devtools` package to load it.
+
+So we will first install and load the `devtools` package:
+
+```{r, eval = FALSE}
+install.packages("devtools")
+library(devtools)
+
 ```
+
+And now we can load the EcoDiet package:
+
+```{r, eval = FALSE}
 devtools::install_github("heloisethero/EcoDiet", auth_token='c570f1b55d68a8ae0fb38428155e19a426814d15')
 ```
 
