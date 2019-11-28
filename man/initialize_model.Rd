@@ -18,6 +18,7 @@ a list containing the initial values for each variable that need to be initializ
 Initialize the different variables of the EcoDiet model to start the MCMC chains
 }
 \examples{
-inits <- initialize_model(preprocessed_data, ecodiet_example$topo_run)
+inits <- initialize_model(load(ecodiet_example), ecodiet_example$topo_run)
 
+importFrom("stats", "median", "var")
 }

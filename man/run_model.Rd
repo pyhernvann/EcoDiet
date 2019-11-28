@@ -11,7 +11,9 @@ run_model(data, inits, model_file, n_iter = 1000)
 
 \item{inits}{the list containing the initial values of the variables}
 
-\item{model_string}{the string containing the definition of the EcoDiet model}
+\item{model_file}{the file containing the definition of the EcoDiet model}
+
+\item{n_iter}{the number of iterations for the model to be run}
 }
 \value{
 an mcmc.list containing the variables to store, i.e., the pi and lambda variables
