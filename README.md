@@ -57,7 +57,7 @@ library(devtools)
 And now we can load the EcoDiet package:
 
 ```{r, eval = FALSE}
-devtools::install_github("heloisethero/EcoDiet", auth_token='c570f1b55d68a8ae0fb38428155e19a426814d15')
+devtools::install_github("heloisethero/EcoDiet", build_vignettes = TRUE)
 ```
 
 ## To learn how to use EcoDiet
@@ -66,6 +66,7 @@ The vignettes will then explain to you how to use this package. To access the vi
 ```
 browseVignettes("EcoDiet")
 ```
+And click on the HTML button next to the vignette you are interested in.
 
 
 ![](man/figures/logo.PNG)
