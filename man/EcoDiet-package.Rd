@@ -18,6 +18,11 @@ The goal of the package is to estimate trophic links and a diet matrix
 Authors:
 \itemize{
   \item Pierre-Yves Hernvann
+  \item Didier Gascuel
+  \item Dorothee Kopp
+  \item Marianne Robert
+  \item Jerome Guitton
+  \item Etienne Rivot
 }
 
 }

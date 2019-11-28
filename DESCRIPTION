@@ -6,8 +6,13 @@ Description: The goal of the package is to estimate trophic links and a diet mat
     relies on rjags to run a MCMC approximation of the different variables.
 Version: 0.0.0.900
 Authors@R: c(
+    person("Heloise", "Thero", email = "thero.heloise@gmail.com", role = "cre"),
     person("Pierre-Yves", "Hernvann", role = "aut"),
-    person("Heloise", "Thero", email = "thero.heloise@gmail.com", role = "cre"))
+    person("Didier", "Gascuel", role = "aut"),
+    person("Dorothee", "Kopp", role = "aut"),
+    person("Marianne", "Robert", role = "aut"),
+    person("Jerome", "Guitton", role = "aut"),
+    person("Etienne", "Rivot", role = "aut"))
 Depends:
     R (>= 2.10)
 Imports:
