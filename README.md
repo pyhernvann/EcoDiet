@@ -32,19 +32,6 @@ sudo apt-get install jags
 
 If you get an error message during installation, tou should try to follow [this post from Yu-Sung Su's blog](http://yusung.blogspot.com/2009/01/install-jags-and-rjags-in-fedora.html).
 
-## rjags installation
-
-You can then open R and use this command:
-```
-install.packages("rjags")
-```
-
-To test if everything works well, you should try this command in R:
-```
-library(rjags)
-```
-If you see the message `Linked to JAGS 4.3.0` it means everything is working fine.
-
 ## EcoDiet installation
 
 As the EcoDiet package is only stored on GitHub for now, we need to use the `install_github` function from the `devtools` package to load it.
@@ -61,7 +48,7 @@ And now we can load the EcoDiet package:
 devtools::install_github("heloisethero/EcoDiet", build_vignettes = TRUE)
 ```
 
-## To learn how to use EcoDiet
+## Learn how to use EcoDiet
 
 The vignettes will then explain to you how to use this package. To access the vignettes you can run in R:
 ```
