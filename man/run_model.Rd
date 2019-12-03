@@ -2,9 +2,9 @@
 % Please edit documentation in R/run_model.R
 \name{run_model}
 \alias{run_model}
-\title{Run the MCMC chains for the EcoDiet model}
+\title{Run the MCMC chains for the EcoDiet model with the rjags package}
 \usage{
-run_model(data, inits, model_file, n_iter = 1000)
+run_model(data, inits, model_file, n_iter = 1000, n_chains = 3)
 }
 \arguments{
 \item{data}{the list containing the different loaded and preprocessed data objects}
@@ -13,15 +13,17 @@ run_model(data, inits, model_file, n_iter = 1000)
 
 \item{model_file}{the file containing the definition of the EcoDiet model}
 
-\item{n_iter}{the number of iterations for the model to be run}
+\item{n_iter}{the number of iterations to be run}
+
+\item{n_chains}{the number of Markov chains to be run}
 }
 \value{
 an mcmc.list containing the variables to store, i.e., the pi and lambda variables
 }
 \description{
-Run the MCMC chains for the EcoDiet model
+Run the MCMC chains for the EcoDiet model with the rjags package
 }
 \examples{
-mcmc_output <- run_model(preprocessed_data, model_string)
+mcmc_output <- run_model(preprocessed_data, inits, model_string)
 
 }

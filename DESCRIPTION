@@ -3,7 +3,8 @@ Type: Package
 Title: Estimating a diet matrix from isotopic and stomachal data sources
 Description: The goal of the package is to estimate trophic links and a diet matrix 
     from isotopic and stomachal data using a Bayesian Hierarchical Model. The package 
-    relies on rjags to run a MCMC approximation of the different variables.
+    relies on the JAGS software and the rjags package to run a MCMC approximation of 
+    the different variables.
 Version: 0.0.0.900
 Authors@R: c(
     person("Heloise", "Thero", email = "thero.heloise@gmail.com", role = "cre"),
@@ -17,9 +18,7 @@ Depends:
     R (>= 2.10)
 Imports:
     ggplot2,
-    R2jags,
-    rjags,
-    coda
+    rjags
 Suggests: 
     knitr,
     rmarkdown,
