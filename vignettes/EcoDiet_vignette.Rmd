@@ -87,6 +87,12 @@ mcmc_output <- run_model(preprocessed_data, inits, "EcoDiet_model.bug")
 
 ```
 
+The model's output can then be saved in a Rdata file:
+```{r, eval = FALSE}
+save(mcmc_output, file ="test_mcmc_output")
+```
+
+
 ## Environment on which this vignette has been run
 
 ```{r}
