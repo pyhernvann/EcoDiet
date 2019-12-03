@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 The goal of EcoDiet is to combine two sources of data: isotopic and stomachal data with priors based on the litterature to model the trophic links and diet matrix.
 
-We will use an artificial dataset stored as a list of 8 elements, with isotopic and stomachal data from 10 trophic groups. The data was created to show how the EcoDiet package works. 
+We will use an artificial dataset stored as a list of 10 elements, including the isotopic and stomachal data from 10 trophic groups. The data was created to show how the EcoDiet package works. 
 
 ## Load the package
 
