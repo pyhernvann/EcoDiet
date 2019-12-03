@@ -36,7 +36,7 @@ load_data <- function(raw_data_list){
   # stomachal data
   
   nb_stom_SCA_data <- raw_data_list$nb_stom_SCA_data
-  nb_stom_SCA_data <- nb_stom_SCA_data[, order(colnames(nb_stom_SCA_data))]
+  nb_stom_SCA_data <- as.matrix(nb_stom_SCA_data[, order(colnames(nb_stom_SCA_data))])
   
   
   SCA_data <- raw_data_list$SCA_data
