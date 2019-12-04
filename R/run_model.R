@@ -28,8 +28,10 @@ run_model <- function(data, inits, model_file, n_iter = 1e+03, n_chains = 3){
     n.chains = n_chains,
     n.adapt = n_adapt)
   
+  cat("\nBurning in the MCMC chain...\n\n")
   update(jags_model, n.iter = n_burnin)
-  
+
+  cat("\nSampling finally the MCMC chains...\n\n")
   mcmc_output <- rjags::coda.samples(
     model = jags_model,
     variable.name = c("LAMBDA", "PI"),
