@@ -10,7 +10,8 @@
 
 The goal of the package is to estimate trophic links and a diet matrix 
     from isotopic and stomachal data using a Bayesian Hierarchical Model. The package 
-    relies on rjags to run a MCMC approximation of the different variables.
+    relies on the JAGS software and the rjags package to run a MCMC approximation of 
+    the different variables.
 }
 \author{
 \strong{Maintainer}: Heloise Thero \email{thero.heloise@gmail.com}
