@@ -71,12 +71,12 @@ inits <- initialize_model(preprocessed_data, ecodiet_example$topo_run)
 
 The model can now be run directly through the model definition string generated earlier:
 ```{r}
-mcmc_output <- run_model(preprocessed_data, inits, textConnection(model_string))
+mcmc_output <- run_model(textConnection(model_string), preprocessed_data, inits)
 ```
 
 The model can also be run from the model definition BUGS file:
 ```{r, eval = FALSE}
-mcmc_output <- run_model(preprocessed_data, inits, "EcoDiet_model.bug")
+mcmc_output <- run_model("EcoDiet_model.bug", preprocessed_data, inits)
 ```
 
 ## Save the model's results

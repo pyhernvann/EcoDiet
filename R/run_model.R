@@ -1,8 +1,10 @@
 #' Run the MCMC chains for the EcoDiet model with the rjags package
 #'
-#' @param data the list containing the different loaded and preprocessed data objects
-#' @param inits the list containing the initial values of the variables
 #' @param model_file the file containing the definition of the EcoDiet model
+#' @param data the list containing the different loaded and preprocessed data objects
+#' @param inits the list containing the initial values of the variables.
+#' By default the initialisation values are null, i.e., the first parameters at the beginning
+#' of the chains are drawns randomly from their prior distribution.
 #' @param n_iter the number of iterations to be run
 #' @param n_chains the number of Markov chains to be run
 #' 
@@ -13,7 +15,7 @@
 #'
 #' @export
 
-run_model <- function(data, inits, model_file, n_iter = 1e+03, n_chains = 3){
+run_model <- function(model_file, data, inits = NULL, n_iter = 1e+03, n_chains = 3){
   
   start_time <- Sys.time()
   
@@ -22,13 +24,13 @@ run_model <- function(data, inits, model_file, n_iter = 1e+03, n_chains = 3){
   n_thin <- max(1, floor((n_iter - n_burnin)/1000))
   
   jags_model <- rjags::jags.model(
+    file = model_file,
     data = data, 
     inits = inits,
-    file = model_file,
     n.chains = n_chains,
     n.adapt = n_adapt)
   
-  cat("\nBurning in the MCMC chain...\n\n")
+  cat("\nBurning in the MCMC chains...\n\n")
   update(jags_model, n.iter = n_burnin)
 
   cat("\nSampling finally the MCMC chains...\n\n")
