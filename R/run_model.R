@@ -39,7 +39,7 @@ run_model <- function(data, inits, model_file, n_iter = 1e+03, n_chains = 3){
     thin = n_thin)
   
   end_time <- Sys.time()
-  cat(end_time - start_time)
+  print(end_time - start_time)
   
   return(mcmc_output)
 }
