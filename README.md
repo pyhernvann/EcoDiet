@@ -1,8 +1,6 @@
-# EcoDiet
+# EcoDiet <img src="man/figures/logo.PNG" align="right" width="120" />
 
 *This is a work in progress!*
-
-![](man/figures/logo.PNG)
 
 ## R installation
 
@@ -30,11 +28,11 @@ sudo apt-get update
 sudo apt-get install jags
 ```
 
-If you get an error message during installation, tou should try to follow [this post from Yu-Sung Su's blog](http://yusung.blogspot.com/2009/01/install-jags-and-rjags-in-fedora.html).
+If you get an error message during installation, you should try to follow [this post from Yu-Sung Su's blog](http://yusung.blogspot.com/2009/01/install-jags-and-rjags-in-fedora.html).
 
 ## EcoDiet installation
 
-As the EcoDiet package is only stored on GitHub for now, we need to use the `install_github` function from the `devtools` package to load it. So we will first install and load the `devtools` package:
+As the EcoDiet package is only stored on GitHub for now, we need to use the `install_github` function from the `devtools` package to load it. So we will first install the `devtools` package:
 
 ```{r, eval = FALSE}
 install.packages("devtools")
@@ -52,4 +50,4 @@ The vignettes will then explain to you how to use this package. To access the vi
 ```
 browseVignettes("EcoDiet")
 ```
-And click on the HTML button next to the vignette you are interested in.
+And click on the HTML button next to the vignette you are interested in (for example "quick start").
