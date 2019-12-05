@@ -41,9 +41,8 @@ names(ecodiet_example)
 We first need to load and rearrange the data with the `load_data` function:
 
 ```{r}
-preprocessed_data <- load_data(ecodiet_example)
+data <- preprocess_data(ecodiet_example)
 ```
-
 
 ## Write the model
 
@@ -59,25 +58,19 @@ After that, you can save the model in a .bug file to keep it:
 cat(model_string, file = "EcoDiet_model.bug")
 ```
 
-## Specify initial values for the model
-
-The next step is to initiate the variables, i.e., to define starting points from which to run the MCMC chains. Here the inialization is made with fixed numeric values, defined by some data statistics.
-
-```{r}
-inits <- initialize_model(preprocessed_data, ecodiet_example$topo_run)
-```
-
 ## Run the model
 
-The model can now be run directly through the model definition string generated earlier:
+The model will likely take a long time to run. So first we will do a little test by trying:
 ```{r}
-mcmc_output <- run_model(textConnection(model_string), preprocessed_data, inits)
+mcmc_output <- run_model(textConnection(model_string), data)
 ```
 
-The model can also be run from the model definition BUGS file:
+If everything went smoothly, you can now try to run the model with enough iterations for your variables to converge:
 ```{r, eval = FALSE}
-mcmc_output <- run_model("EcoDiet_model.bug", preprocessed_data, inits)
+mcmc_output <- run_model(textConnection(model_string), data, n_iter = 1e+06)
 ```
+
+If you see a convergence error, check the `convergence_problems` vignette.
 
 ## Save the model's results
 

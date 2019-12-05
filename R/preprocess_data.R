@@ -1,15 +1,15 @@
-#' Load the raw data and process it to feed the EcoDiet model
+#' Load and preprocess the raw data to feed the EcoDiet model
 #'
 #' @param raw_data_list the list containing the different raw data objects
 #' 
 #' @return a list of processed data, ready to be run by the EcoDiet model
 #' 
 #' @examples
-#' data <- load_data(ecodiet_example)
+#' data <- preprocess_data(ecodiet_example)
 #'
 #' @export
 
-load_data <- function(raw_data_list){
+preprocess_data <- function(raw_data_list){
   
   topo_run <- raw_data_list$topo_run
   topo_run <- topo_run[, order(colnames(topo_run))]

@@ -15,11 +15,11 @@
 #'
 #' @export
 
-run_model <- function(model_file, data, inits = NULL, n_iter = 1e+03, n_chains = 3){
+run_model <- function(model_file, data, inits = NULL, n_iter = 1e+02, n_chains = 3){
   
   start_time <- Sys.time()
   
-  n_adapt <- 1e+03
+  n_adapt <- min(n_iter, 1e+03)
   n_burnin <- floor(n_iter/2)
   n_thin <- max(1, floor((n_iter - n_burnin)/1000))
   
@@ -41,6 +41,7 @@ run_model <- function(model_file, data, inits = NULL, n_iter = 1e+03, n_chains =
     thin = n_thin)
   
   end_time <- Sys.time()
+  print("The time that the model took to run is:") 
   print(end_time - start_time)
   
   return(mcmc_output)
