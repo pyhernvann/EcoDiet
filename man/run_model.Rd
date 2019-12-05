@@ -4,7 +4,7 @@
 \alias{run_model}
 \title{Run the MCMC chains for the EcoDiet model with the rjags package}
 \usage{
-run_model(model_file, data, inits = NULL, n_iter = 100, n_chains = 3)
+run_model(model_file, data, inits = NULL, n_iter = 1000, n_chains = 3)
 }
 \arguments{
 \item{model_file}{the file containing the definition of the EcoDiet model}
