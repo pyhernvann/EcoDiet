@@ -2,7 +2,7 @@
 % Please edit documentation in R/write_model.R
 \name{write_model}
 \alias{write_model}
-\title{Write the EcoDiet model in bugs langage on a file}
+\title{Write a string containing the EcoDiet model in the BUGS syntax}
 \usage{
 write_model()
 }
@@ -13,7 +13,7 @@ write_model()
 a string containing the model definition written in bugs syntax
 }
 \description{
-Write the EcoDiet model in bugs langage on a file
+Write a string containing the EcoDiet model in the BUGS syntax
 }
 \examples{
 model_string <- write_model()
