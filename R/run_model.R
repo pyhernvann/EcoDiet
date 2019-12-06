@@ -1,3 +1,34 @@
+#' Print a message if there is a convergence problem with the MCMC chains
+#' This is an internal function called only in the run_model function below.
+#' 
+#' @param mcmc_output the mcmc.list containing the variables to store, i.e., the pi and lambda variables
+#' @keywords internal
+
+print_convergence_diagnostic <- function(mcmc_output){
+  
+  gelman <- coda::gelman.diag(mcmc_output, multivariate = FALSE)$psrf
+  save(gelman, file = "convergence_diagnostic.Rdata")
+  
+  # We keep only the point estimates of the psrf
+  gelman <- gelman[, 1] 
+  variable_number <- length(gelman)
+  
+  # The NAs are for the variables that were always equal to 0 or 1,
+  # and we consider that these variables have converged by default.
+  gelman <- gelman[which(!is.nan(gelman))] 
+  variable_number_over_1.1 <- length(gelman[which(gelman > 1.1)])
+  
+  if (variable_number_over_1.1 > 0){
+    message("\n          /!\\   /!\\   CONVERGENCE PROBLEM   /!\\   /!\\ \n")
+    message("Out of the ", variable_number,  " variables, ",
+            variable_number_over_1.1, " variables have a Gelman-Rubin statistic > 1.1.")
+    message("\nYou should increase the number of iterations of your model with the `n_iter` argument:")
+    message("> mcmc_output <- run_model(textConnection(model_string), data, n_iter = 1e+06)\n")
+  }
+  
+}
+
+
 #' Run the MCMC chains for the EcoDiet model with the rjags package
 #'
 #' @param model_file the file containing the definition of the EcoDiet model
@@ -46,25 +77,7 @@ run_model <- function(model_file, data, inits = NULL, n_iter = 1e+03, n_chains =
   cat("\nTo run, the model took a ")
   print(end_time - start_time) 
   
-  gelman <- coda::gelman.diag(mcmc_output, multivariate = FALSE)$psrf
-  save(gelman, file = "convergence_diagnostic.Rdata")
-  
-  # We keep only the point estimates of the psrf
-  gelman <- gelman[, 1] 
-  variable_number <- length(gelman)
-  
-  # The NAs are for the variables that were always equal to 0 or 1,
-  # and we consider that these variables have converged by default.
-  gelman <- gelman[which(!is.nan(gelman))] 
-  variable_number_over_1.1 <- length(gelman[which(gelman > 1.1)])
-  
-  if (variable_number_over_1.1 > 0){
-    message("\n          /!\\   /!\\   CONVERGENCE PROBLEM   /!\\   /!\\ \n")
-    message("Out of the ", variable_number,  " variables, ",
-            variable_number_over_1.1, " variables have a Gelman-Rubin statistic > 1.1.")
-    message("\nYou should increase the number of iterations of your model with the `n_iter` argument:")
-    message("> mcmc_output <- run_model(textConnection(model_string), data, n_iter = 1e+06)\n")
-  }
+  print_convergence_diagnostic(mcmc_output)
   
   return(mcmc_output)
 }
