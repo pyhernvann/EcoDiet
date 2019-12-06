@@ -34,25 +34,25 @@ dzeta[ic[i]] <- n_lit * g[ic[i]]
 
 for (k in 1:ns[ic[i]]){
 
-eta_hyperparam_1[is[i,k], ic[i]] <- ifelse(alpha_lit[is[i,k],ic[i]] == 0, 1, (dzeta[ic[i]]))
-eta_hyperparam_2[is[i,k], ic[i]] <- dzeta[ic[i]] + 1 - eta_hyperparam_1[is[i,k],ic[i]]	
+eta_hyperparam_1[is[i, k], ic[i]] <- ifelse(alpha_lit[is[i, k],ic[i]] == 0, 1, (dzeta[ic[i]]))
+eta_hyperparam_2[is[i, k], ic[i]] <- dzeta[ic[i]] + 1 - eta_hyperparam_1[is[i,k],ic[i]]	
 
-eta[is[i,k], ic[i]] ~ dbeta(eta_hyperparam_1[is[i, k], ic[i]] * switch_conf_3 + (1 - switch_conf_3), 
+eta[is[i, k], ic[i]] ~ dbeta(eta_hyperparam_1[is[i, k], ic[i]] * switch_conf_3 + (1 - switch_conf_3), 
 eta_hyperparam_2[is[i, k], ic[i]] * switch_conf_3 + (1 - switch_conf_3))
 
 }
 }
 
 
-for(i in 1:(nb + nc)){
+for (i in 1:(nb + nc)){
 
-for(j in 1:ne){
+for (j in 1:ne){
 
 mu[j, i]  ~ dnorm(0, 1.0E-6)
 
 }
 
-for(l in 1:n_sia[1, i]){
+for (l in 1:n_sia[1, i]){
 
 y[, i, l] ~ dmnorm(mu[, i], SIGMA_inv[, , i])
 
@@ -63,11 +63,11 @@ SIGMA[1:ne, 1:ne, i] <- inverse(SIGMA_inv[, ,i])
 
 }
 
-for(j in 1:ne){
+for (j in 1:ne){
 
-for(i in 1:nc){
+for (i in 1:nc){
 
-for(k in 1:ns[ic[i]]){
+for (k in 1:ns[ic[i]]){
 
 mix_numerator[j, is[i, k], ic[i]] <- PI[is[i, k], ic[i]] * q[j, is[i, k]] * (mu[j, is[i, k]] + delta[j, ic[i]])
 mix_denominator[j, is[i, k], ic[i]] <- PI[is[i, k], ic[i]] * q[j, is[i, k]]
@@ -80,13 +80,13 @@ sum(mix_numerator[j, is[i, 1:ns[ic[i]]], ic[i]]) / sum(mix_denominator[j, is[i, 
 2) + 0.0001
 
 delta[j, ic[i]] <- DELTA[j, 1] + group_effect[j, ic[i]]
-group_effect[j,ic[i]] <-  xi[j,1] * theta[j,ic[i]]
-theta[j,ic[i]] ~ dnorm(0, tau_theta[j, 1])
+group_effect[j, ic[i]] <-  xi[j,1] * theta[j,ic[i]]
+theta[j, ic[i]] ~ dnorm(0, tau_theta[j, 1])
 
 }
 
-xi[j,1] ~ dnorm(0, 0.0016)
-tau_theta[j,1] ~ dgamma(0.5, 0.5)
+xi[j, 1] ~ dnorm(0, 0.0016)
+tau_theta[j, 1] ~ dgamma(0.5, 0.5)
 sigma[j] <- abs(xi[j, 1]) / sqrt(tau_theta[j, 1])
 
 }
@@ -107,11 +107,11 @@ add[is[i, k], ic[i]] <- ifelse(alpha_lit[is[i, k], ic[i]] == 0,
 0)
 
 alpha[is[i, k], ic[i]] <- ((1 - is_link_identified[i]) + is_link_identified[i] * LAMBDA[is[i,k],ic[i]]) * 
-((1-switch_conf_3) + switch_conf_3 * (alpha_lit[is[i, k], ic[i]] + add[is[i,k],ic[i]]) * iota[ic[i]] / psi[ic[i]]) +
+((1 - switch_conf_3) + switch_conf_3 * (alpha_lit[is[i, k], ic[i]] + add[is[i, k], ic[i]]) * iota[ic[i]] / psi[ic[i]]) +
 0.1
 
 rho[is[i, k], ic[i]] ~ dgamma(alpha[is[i, k], ic[i]], 1)
-PI[is[i,k],ic[i]] <- (rho[is[i,k],ic[i]])/sum(rho[is[i,1:ns[ic[i]]],ic[i]])
+PI[is[i, k], ic[i]] <- (rho[is[i, k], ic[i]]) / sum(rho[is[i, 1:ns[ic[i]]], ic[i]])
 }
 }
 }"
