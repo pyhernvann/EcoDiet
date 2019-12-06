@@ -41,8 +41,8 @@ run_model <- function(model_file, data, inits = NULL, n_iter = 1e+03, n_chains =
     thin = n_thin)
   
   end_time <- Sys.time()
-  cat("The time that the model took to run is:") 
-  print(end_time - start_time)
+  cat("\nTo run, the model took a ")
+  print(end_time - start_time) 
   
   gelman <- coda::gelman.diag(mcmc_output, multivariate = FALSE)$psrf[, 1]
   variable_number <- length(gelman)
