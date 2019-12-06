@@ -40,12 +40,14 @@ run_model <- function(model_file, data, inits = NULL, n_iter = 1e+03, n_chains =
     n.iter = (n_iter - n_burnin),
     thin = n_thin)
   
+  save(mcmc_output, file ="mcmc_output.Rdata")
+  
   end_time <- Sys.time()
   cat("\nTo run, the model took a ")
   print(end_time - start_time) 
   
   gelman <- coda::gelman.diag(mcmc_output, multivariate = FALSE)$psrf
-  save(gelman, file = "convergence_diagnostic")
+  save(gelman, file = "convergence_diagnostic.Rdata")
   
   # We keep only the point estimates of the psrf
   gelman <- gelman[, 1] 

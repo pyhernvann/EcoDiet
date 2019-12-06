@@ -62,7 +62,7 @@ If you have tried everything and that nothing works, it can be valuable to bette
 
 We are using the Gelman-Rubin statistic (or potential scale reduction factor) to measure convergence for each variable. The full statistic is saved as `convergence_diagnostic`, and you can acess it using:
 ```{r, eval = FALSE}
-load("convergence_diagnostic")
+load("convergence_diagnostic.Rdata")
 View(gelman)
 ```
 It will allow you to understand which variables has not converged properly (the closer it is to 1, the better it has converged).

@@ -74,13 +74,12 @@ If you again see a convergence error with a million iterations, you should look 
 
 ## Save the model's results
 
-If the model was long to run, the best is to save the whole MCMC list in a Rdata file:
+The model's results are automatically saved in a file named `mcmc_ouput` so you can access them using:
 ```{r, eval = FALSE}
-save(mcmc_output, file ="mcmc_output")
+load("mcmc_ouput.Rdata")
 ```
-This way the model won't have to be re-run.
 
-In Bayesian models, the parameters are modelled by a probability distributions. So here the model's outputs are the approximate probability distributions for the trophic links between species (LAMBDA parameters) and the diet estimates of a prey for a predator (PI parameters). To summarize these distributions, we can use point estimates like the mean or the median.
+In Bayesian models, the parameters are modelled by probability distributions. So here the model's outputs are the approximated probability distributions for the trophic links between species (LAMBDA parameters) and the diet estimates of a prey for a predator (PI parameters). To summarize these distributions, we can use point estimates like the mean or the median.
 
 We can access the mean (and other statistics) of the variables with the `summary` function:
 
