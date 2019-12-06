@@ -1,10 +1,10 @@
 ---
-title: "How to make the model converge"
+title: "Solutions to make your model converge"
 author: "Heloise Thero"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{How to make the model converge}
+  %\VignetteIndexEntry{Solutions to make your model converge}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

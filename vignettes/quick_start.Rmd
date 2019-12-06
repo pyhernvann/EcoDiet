@@ -1,10 +1,10 @@
 ---
-title: "How to run the Ecodiet package (quick start)"
+title: "Introduction to EcoDiet (quick start)"
 author: "Heloise Thero"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{How to run the Ecodiet package (quick start)}
+  %\VignetteIndexEntry{Introduction to EcoDiet (quick start)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
