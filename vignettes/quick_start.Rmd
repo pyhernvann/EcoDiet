@@ -65,7 +65,7 @@ The model will likely take a long time to run. So first we will do a little test
 mcmc_output <- run_model(textConnection(model_string), data)
 ```
 
-If everything went smoothly, you can now try to run the model with enough iterations for your variables to converge:
+This was a test, so we have put a small number of iterations. As you can see from the printed message, it was not enough for the model to converge, so you should now re-run your model with a higher number of iterations:
 ```{r, eval = FALSE}
 mcmc_output <- run_model(textConnection(model_string), data, n_iter = 1e+06)
 ```
