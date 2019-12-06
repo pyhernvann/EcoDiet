@@ -1,4 +1,4 @@
-#' Write the EcoDiet model in bugs langage on a file
+#' Write a string containing the EcoDiet model in the BUGS syntax
 #'
 #' @param file_name the name of the bugs files on which the model will be written
 #' @return a string containing the model definition written in bugs syntax
