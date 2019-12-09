@@ -12,17 +12,16 @@
 
 initialize_model <- function(data, topo_run){
   attach(data)
-  nb_grp <- nb + nc
   
   topo_run <- topo_run[, order(colnames(topo_run))]
   topo_run <- topo_run[order(rownames(topo_run)), ]
   topo_run <- as.matrix(topo_run)
   
-  id_with_sca <- which(n_sca[1, ic] != 0)
+  id_with_sca <- which(nb_o[1, list_pred] != 0)
   id_without_sca <- seq(1, nc)[-id_with_sca]  
   nb_with_sca <- length(id_with_sca)
   
-  init_LAMBDA <- matrix(NA, nb_grp, nb_grp)
+  init_LAMBDA <- matrix(NA, nb_group, nb_group)
   init_LAMBDA[, ic[id_without_sca]] <- topo_run[, ic[id_without_sca]]
   init_LAMBDA[init_LAMBDA == 0] <- NA
   
@@ -39,8 +38,8 @@ initialize_model <- function(data, topo_run){
   }
   
   init_mu   <- apply(y, c(1,2), mean, na.rm=TRUE)
-  init_SIGMA_inv <- array(0, dim = c(ne, ne, nb_grp))
-  for (sp in 1:nb_grp){
+  init_SIGMA_inv <- array(0, dim = c(ne, ne, nb_group))
+  for (sp in 1:nb_group){
     for (j in 1:ne){
       init_SIGMA_inv[j,j,sp] <- 1 / var(t(y[1:ne, sp, ])[, j], na.rm = "TRUE")
     }
@@ -55,11 +54,11 @@ initialize_model <- function(data, topo_run){
     }
   }
   
-  init_rho <- matrix(NA, nrow = nb_grp, ncol = nb_grp) 
+  init_rho <- matrix(NA, nrow = nb_group, ncol = nb_group) 
   for(i in 1:nc){init_rho[is[i, 1:ns[ic[i]]], ic[i]] <- 1.0}
   
   init_xi        <- matrix(0, nrow = ne, ncol = 1) 
-  init_theta     <- matrix(0, nrow = ne, ncol = nb_grp) 
+  init_theta     <- matrix(0, nrow = ne, ncol = nb_group) 
   init_tau_theta <- matrix(1, nrow = ne, ncol = 1) 
   
   ib <- which(colSums(topo_run) == 0)

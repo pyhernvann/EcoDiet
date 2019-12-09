@@ -36,6 +36,8 @@ Here we are using the data to define some fixed initialization values that we kn
 
 ```{r, eval = FALSE}
 inits <- initialize_model(data, ecodiet_example$topo_run)
+```
+```{r, eval = FALSE}
 mcmc_output <- run_model(textConnection(model_string), data, inits = inits, n_iter = 1e+06)
 ```
 
@@ -52,7 +54,7 @@ data$o
 And here are the stomachal data after they have been rescaled:
 
 ```{r}
-data$o <- rescale_stomach_data(data$o, data$n_sca)
+data$o <- rescale_stomach_data(data$o, data$nb_o)
 data$o
 ```
 

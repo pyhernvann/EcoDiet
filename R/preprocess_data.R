@@ -34,36 +34,34 @@ preprocess_data <- function(raw_data_list){
   
   # stomachal data
   
-  nb_o <- raw_data_list$nb_stom_SCA_data
+  stomach_data <- raw_data_list$stomach_data
+  stomach_data <- stomach_data[, order(colnames(stomach_data))]
+  stomach_data <- stomach_data[order(rownames(stomach_data)), ]
+  stomach_data <- as.matrix(stomach_data)
+  
+  nb_o <- raw_data_list$number_full_stomachs
   nb_o <- as.matrix(nb_o[, order(colnames(nb_o))])
-  
-  
-  SCA_data <- raw_data_list$SCA_data
-  SCA_data <- SCA_data[, order(colnames(SCA_data))]
-  SCA_data <- SCA_data[order(rownames(SCA_data)), ]
-  SCA_input <- as.matrix(SCA_data)
   
   # parameters for the isotopic analysis
   
-  el_conc <- as.matrix(raw_data_list$element_conc_data)
+  el_conc <- as.matrix(raw_data_list$element_concentration)
   
   tdf <- as.vector(raw_data_list$mean_tdf)
   
   # SIA data preprocessing
   
-  SIA_data <- raw_data_list$isotope_data
-  SIA_data <- SIA_data[order(SIA_data$Group), ] 
+  isotope_data <- raw_data_list$isotope_data
+  isotope_data <- isotope_data[order(isotope_data$Group), ] 
   
-  nb_elem <- ncol(SIA_data) - 1
-  nb_max_spl <- max(table(SIA_data$Group))
-  
-  SIA_input <- array(NA, dim=c(nb_elem, nb_group, nb_max_spl))
+  nb_elem <- ncol(isotope_data) - 1
+
+  SIA_input <- array(NA, dim = c(nb_elem, nb_group, max(table(isotope_data$Group))))
   names_grp <- rownames(topo_run)
   colnames(SIA_input) <- names_grp
   
   for (el in 1:nb_elem){
     for (grp in 1:nb_group){
-      SIA_input[el, grp, ] <- SIA_data[SIA_data$Group==names_grp[grp], el + 1]
+      SIA_input[el, grp, ] <- isotope_data[isotope_data$Group==names_grp[grp], el + 1]
     }
   }
   
@@ -92,7 +90,7 @@ preprocess_data <- function(raw_data_list){
   data_list <- list(
     y          = SIA_input,
     nb_y       = nb_y,
-    o          = SCA_input,
+    o          = stomach_data,
     nb_o       = nb_o,
     nb_elem    = nb_elem,
     nb_group   = nb_group,
