@@ -11,27 +11,26 @@
 
 preprocess_data <- function(raw_data_list){
   
+  # Constructs the index from the binary web matrix
+  
   topo_run <- raw_data_list$topo_run
   topo_run <- topo_run[, order(colnames(topo_run))]
   topo_run <- topo_run[order(rownames(topo_run)), ]
   topo_run <- as.matrix(topo_run)
   
-  # Constructs the index from the binary web matrix
+  nb_group <- ncol(topo_run)
+  nb_prey  <- colSums(topo_run)
   
-  names_grp <- rownames(topo_run)
-  nb_grp <- nrow(topo_run)
-  nb_sources  <- colSums(topo_run)
+  list_pred <- as.vector(which(colSums(topo_run) != 0))
+  nb_pred <- length(list_pred)
   
-  id_base <- which(colSums(topo_run) == 0)
-  nb_base <- length(id_base)
-  id_cons <- which(colSums(topo_run) != 0)
-  nb_cons <- length(id_cons)
+  list_prey <- matrix(data = NA, nrow = nb_group, ncol = nb_group)
+  for (i in 1:nb_group){
+    if (sum(topo_run[, i]) > 0) {
+      list_prey[i, 1:nb_prey[i]] <- as.vector(which(topo_run[, i] != 0))
+    }
+  }
   
-  id_source <- t(sapply(1:nb_cons,function(i){ 
-    output <- rep(NA,max(nb_sources)) 
-    output[1:nb_sources[id_cons][i]] <- which(topo_run[,id_cons[i]]==1) 
-    output
-  }))
   
   # stomachal data
   
@@ -58,11 +57,12 @@ preprocess_data <- function(raw_data_list){
   nb_elements <- ncol(SIA_data) - 1
   nb_max_spl <- max(table(SIA_data$Group))
   
-  SIA_input <- array(NA, dim=c(nb_elements, nb_grp, nb_max_spl))
+  SIA_input <- array(NA, dim=c(nb_elements, nb_group, nb_max_spl))
+  names_grp <- rownames(topo_run)
   colnames(SIA_input) <- names_grp
   
   for (el in 1:nb_elements){
-    for (grp in 1:nb_grp){
+    for (grp in 1:nb_group){
       SIA_input[el, grp, ] <- SIA_data[SIA_data$Group==names_grp[grp], el + 1]
     }
   }
@@ -92,17 +92,16 @@ preprocess_data <- function(raw_data_list){
   data_list <- list(
     y     = SIA_input	,
     o     = SCA_input,
-    nb    = nb_base,
-    nc   	= nb_cons,
-    ns    = nb_sources,
+    nb_group    = nb_group,
+    nb_prey    = nb_prey,
+    list_pred    = list_pred,
+    list_prey   = list_prey,
     n_sia = nb_samples,
     ne    = nb_elements,
     DELTA = tdf ,
     q     = el_conc,
-    ZEROS = matrix(0, nrow=nb_elements, ncol=nb_cons),
+    ZEROS = matrix(0, nrow=nb_elements, ncol=nb_group),
     ID    = diag(nb_elements),
-    ic    = id_cons,
-    is    = id_source,
     n_sca = nb_stom_SCA_data,
     g     = Ped,
     CVs   = CV_calc,
