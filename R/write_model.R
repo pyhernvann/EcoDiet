@@ -16,12 +16,12 @@ write_model <- function(){
     
     for (k in list_prey[i, 1:nb_prey[i]]){
     
-      o[k, i] ~ dbin(eta[k, i], nb_o[1, i])        
-      LAMBDA[k, i] ~ dbern((eta[k, i]))      
+      o[k, i] ~ dbin(eta[k, i], nb_o[1, i])
+      LAMBDA[k, i] ~ dbern((eta[k, i]))
     
     }
     
-    s[i] <- sum(LAMBDA[list_prey[i, 1:nb_prey[i]], i])  
+    s[i] <- sum(LAMBDA[list_prey[i, 1:nb_prey[i]], i])
     
     is_link_identified[i] <- ifelse(s[i] == 0, 0, 1)
     
@@ -58,9 +58,8 @@ write_model <- function(){
     
     }
     
-    SIGMA_inv[1:nb_elem, 1:nb_elem, i] ~ dwish(ID[1:nb_elem, 1:nb_elem], nb_elem)
-    SIGMA[1:nb_elem, 1:nb_elem, i] <- inverse(SIGMA_inv[, ,i])
-  
+    SIGMA_inv[1:nb_elem, 1:nb_elem, i] ~ dwish(ID, nb_elem)
+
   }
   
   for (j in 1:nb_elem){
@@ -79,14 +78,14 @@ write_model <- function(){
       sum(mix_numerator[j, list_prey[i, 1:nb_prey[i]], i]) / sum(mix_denominator[j, list_prey[i, 1:nb_prey[i]], i]), 
       2) + 0.0001
       
-      delta[j, i] <- DELTA[j, 1] + group_effect[j, i]
-      group_effect[j, i] <-  xi[j,1] * theta[j,i]
-      theta[j, i] ~ dnorm(0, tau_theta[j, 1])
+      delta[j, i] <- DELTA[j] + group_effect[j, i]
+      group_effect[j, i] <-  xi[j] * theta[j,i]
+      theta[j, i] ~ dnorm(0, tau_theta[j])
     
     }
     
-    xi[j, 1] ~ dnorm(0, 0.0016)
-    tau_theta[j, 1] ~ dgamma(0.5, 0.5)
+    xi[j] ~ dnorm(0, 0.0016)
+    tau_theta[j] ~ dgamma(0.5, 0.5)
 
   }
   

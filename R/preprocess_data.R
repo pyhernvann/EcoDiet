@@ -47,7 +47,7 @@ preprocess_data <- function(raw_data_list){
   
   el_conc <- as.matrix(raw_data_list$element_conc_data)
   
-  tdf <- as.matrix(raw_data_list$mean_tdf)
+  tdf <- as.vector(raw_data_list$mean_tdf)
   
   # SIA data preprocessing
   
