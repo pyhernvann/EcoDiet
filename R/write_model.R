@@ -16,7 +16,7 @@ write_model <- function(){
     
     for (k in list_prey[i, 1:nb_prey[i]]){
     
-      o[k, i] ~ dbin(eta[k, i], n_sca[1, i])        
+      o[k, i] ~ dbin(eta[k, i], nb_o[1, i])        
       LAMBDA[k, i] ~ dbern((eta[k, i]))      
     
     }
@@ -35,7 +35,7 @@ write_model <- function(){
     for (k in list_prey[i, 1:nb_prey[i]]){
     
       eta_hyperparam_1[k, i] <- ifelse(alpha_lit[k,i] == 0, 1, (dzeta[i]))
-      eta_hyperparam_2[k, i] <- dzeta[i] + 1 - eta_hyperparam_1[k,i]	
+      eta_hyperparam_2[k, i] <- dzeta[i] + 1 - eta_hyperparam_1[k, i]	
       
       eta[k, i] ~ dbeta(eta_hyperparam_1[k, i] * switch_conf_3 + (1 - switch_conf_3), 
       eta_hyperparam_2[k, i] * switch_conf_3 + (1 - switch_conf_3))
@@ -46,24 +46,24 @@ write_model <- function(){
   
   for (i in 1:nb_group){
   
-    for (j in 1:ne){
+    for (j in 1:nb_elem){
     
       mu[j, i]  ~ dnorm(0, 1.0E-6)
     
     }
     
-    for (l in 1:n_sia[1, i]){
+    for (l in 1:nb_y[1, i]){
     
       y[, i, l] ~ dmnorm(mu[, i], SIGMA_inv[, , i])
     
     }
     
-    SIGMA_inv[1:ne, 1:ne, i] ~ dwish(ID[1:ne, 1:ne], ne)
-    SIGMA[1:ne, 1:ne, i] <- inverse(SIGMA_inv[, ,i])
+    SIGMA_inv[1:nb_elem, 1:nb_elem, i] ~ dwish(ID[1:nb_elem, 1:nb_elem], nb_elem)
+    SIGMA[1:nb_elem, 1:nb_elem, i] <- inverse(SIGMA_inv[, ,i])
   
   }
   
-  for (j in 1:ne){
+  for (j in 1:nb_elem){
   
     for (i in list_pred){
     

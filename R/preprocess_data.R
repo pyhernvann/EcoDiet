@@ -34,8 +34,8 @@ preprocess_data <- function(raw_data_list){
   
   # stomachal data
   
-  nb_stom_SCA_data <- raw_data_list$nb_stom_SCA_data
-  nb_stom_SCA_data <- as.matrix(nb_stom_SCA_data[, order(colnames(nb_stom_SCA_data))])
+  nb_o <- raw_data_list$nb_stom_SCA_data
+  nb_o <- as.matrix(nb_o[, order(colnames(nb_o))])
   
   
   SCA_data <- raw_data_list$SCA_data
@@ -54,20 +54,20 @@ preprocess_data <- function(raw_data_list){
   SIA_data <- raw_data_list$isotope_data
   SIA_data <- SIA_data[order(SIA_data$Group), ] 
   
-  nb_elements <- ncol(SIA_data) - 1
+  nb_elem <- ncol(SIA_data) - 1
   nb_max_spl <- max(table(SIA_data$Group))
   
-  SIA_input <- array(NA, dim=c(nb_elements, nb_group, nb_max_spl))
+  SIA_input <- array(NA, dim=c(nb_elem, nb_group, nb_max_spl))
   names_grp <- rownames(topo_run)
   colnames(SIA_input) <- names_grp
   
-  for (el in 1:nb_elements){
+  for (el in 1:nb_elem){
     for (grp in 1:nb_group){
       SIA_input[el, grp, ] <- SIA_data[SIA_data$Group==names_grp[grp], el + 1]
     }
   }
   
-  nb_samples <- apply(ifelse(!is.na(SIA_input), 1, 0), seq(1, nb_elements), sum)
+  nb_y <- apply(ifelse(!is.na(SIA_input), 1, 0), seq(1, nb_elem), sum)
   
   # parameters for the priors
   
@@ -90,19 +90,19 @@ preprocess_data <- function(raw_data_list){
   switch_prior <- 1
   
   data_list <- list(
-    y     = SIA_input	,
-    o     = SCA_input,
-    nb_group    = nb_group,
+    y          = SIA_input,
+    nb_y       = nb_y,
+    o          = SCA_input,
+    nb_o       = nb_o,
+    nb_elem    = nb_elem,
+    nb_group   = nb_group,
     nb_prey    = nb_prey,
-    list_pred    = list_pred,
-    list_prey   = list_prey,
-    n_sia = nb_samples,
-    ne    = nb_elements,
+    list_pred  = list_pred,
+    list_prey  = list_prey,
     DELTA = tdf ,
     q     = el_conc,
-    ZEROS = matrix(0, nrow=nb_elements, ncol=nb_group),
-    ID    = diag(nb_elements),
-    n_sca = nb_stom_SCA_data,
+    ZEROS = matrix(0, nrow = nb_elem, ncol = nb_group),
+    ID    = diag(nb_elem),
     g     = Ped,
     CVs   = CV_calc,
     alpha_lit = priors_lit,
