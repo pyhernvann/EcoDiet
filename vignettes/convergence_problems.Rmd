@@ -75,4 +75,4 @@ If you have a doubt about the relevance of the Gelman-Rubin statistic, or if you
 
 ```{r}
 devtools::session_info()
-
+```
