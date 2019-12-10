@@ -5,7 +5,7 @@ Description: The goal of the package is to estimate trophic links and a diet mat
     from isotopic and stomachal data using a Bayesian Hierarchical Model. The package 
     relies on the JAGS software and the rjags package to run a MCMC approximation of 
     the different variables.
-Version: 0.0.0.900
+Version: 0.0.0.910
 Authors@R: c(
     person("Heloise", "Thero", email = "thero.heloise@gmail.com", role = "cre"),
     person("Pierre-Yves", "Hernvann", role = "aut"),
