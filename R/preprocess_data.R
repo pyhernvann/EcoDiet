@@ -9,7 +9,52 @@
 #'
 #' @export
 
-preprocess_data <- function(raw_data_list){
+preprocess_data <- function(stomach_data_path, isotope_data_path, 
+                            trophic_enrichment_factor, literature_prior){
+  
+  # Rearrange the stomachal data
+  
+  stomach_data <- read.csv(stomach_data_path)
+  
+  if (ncol(stomach_data) == nrow(stomach_data) && colnames(stomach_data)[1] == "X"){
+    row.names(stomach_data) <- stomach_data[, 1]
+    stomach_data[, 1] <- NULL
+  }
+  
+  stomach_data <- stomach_data[, order(colnames(stomach_data))]
+  
+  nb_o <- stomach_data[nrow(stomach_data), ]
+  nb_o <- as.matrix(nb_o)
+  
+  stomach_data <- stomach_data[-nrow(stomach_data), ]
+  stomach_data <- stomach_data[order(rownames(stomach_data)), ]
+  stomach_data <- as.matrix(stomach_data)
+  
+  if (ncol(stomach_data) != nrow(stomach_data)){
+    stop("You should have the same number of preys and predators in your stomachal data.")
+  }
+  if (!all(colnames(stomach_data) == rownames(stomach_data))){
+    stop("The trophic groups in the rows and colums should have the same names in your stomachal data.")
+  }
+  
+  # Rearrange the isotopic data
+  
+  isotope_data <- read.csv(isotope_data_path)
+  isotope_data <- isotope_data[order(isotope_data$Group), ] 
+  
+  nb_elem <- ncol(isotope_data) - 1
+  
+  SIA_input <- array(NA, dim = c(nb_elem, nb_group, max(table(isotope_data$Group))))
+  names_grp <- rownames(topo_run)
+  colnames(SIA_input) <- names_grp
+  
+  for (el in 1:nb_elem){
+    for (grp in 1:nb_group){
+      SIA_input[el, grp, ] <- isotope_data[isotope_data$Group==names_grp[grp], el + 1]
+    }
+  }
+  
+  nb_y <- apply(ifelse(!is.na(SIA_input), 1, 0), seq(1, nb_elem), sum)
   
   # Constructs the index from the binary web matrix
   
@@ -31,61 +76,15 @@ preprocess_data <- function(raw_data_list){
     }
   }
   
-  
-  # stomachal data
-  
-  stomach_data <- raw_data_list$stomach_data
-  stomach_data <- stomach_data[, order(colnames(stomach_data))]
-  stomach_data <- stomach_data[order(rownames(stomach_data)), ]
-  stomach_data <- as.matrix(stomach_data)
-  
-  nb_o <- raw_data_list$number_full_stomachs
-  nb_o <- as.matrix(nb_o[, order(colnames(nb_o))])
-  
   # parameters for the isotopic analysis
   
   el_conc <- as.matrix(raw_data_list$element_concentration)
   
   tdf <- as.vector(raw_data_list$mean_tdf)
   
-  # SIA data preprocessing
-  
-  isotope_data <- raw_data_list$isotope_data
-  isotope_data <- isotope_data[order(isotope_data$Group), ] 
-  
-  nb_elem <- ncol(isotope_data) - 1
 
-  SIA_input <- array(NA, dim = c(nb_elem, nb_group, max(table(isotope_data$Group))))
-  names_grp <- rownames(topo_run)
-  colnames(SIA_input) <- names_grp
   
-  for (el in 1:nb_elem){
-    for (grp in 1:nb_group){
-      SIA_input[el, grp, ] <- isotope_data[isotope_data$Group==names_grp[grp], el + 1]
-    }
-  }
-  
-  nb_y <- apply(ifelse(!is.na(SIA_input), 1, 0), seq(1, nb_elem), sum)
-  
-  # parameters for the priors
-  
-  literature_data <- raw_data_list$literature_data
-  
-  Pedigree_literature_data <- raw_data_list$pedigree_literature_data
-  Ped <- as.matrix(Pedigree_literature_data)
-  Ped <- Ped[ ,order(colnames(Ped))]
-  
-  g_slope_param <- as.vector(raw_data_list$g_slope_param)
-  CV_calc <- 1 - Ped * g_slope_param[1]
-  
-  n_lit <- as.matrix(raw_data_list$n_lit_param)
-  
-  literature_data <- raw_data_list$literature_data
-  priors_lit <- as.matrix(literature_data)
-  priors_lit <- priors_lit[,order(colnames(priors_lit))]
-  priors_lit <- priors_lit[order(rownames(priors_lit)),]
-  
-  switch_prior <- 1
+  # Create the data list to feed the JAGS function
   
   data_list <- list(
     y          = SIA_input,
@@ -100,13 +99,35 @@ preprocess_data <- function(raw_data_list){
     DELTA = tdf ,
     q     = el_conc,
     ZEROS = matrix(0, nrow = nb_elem, ncol = nb_group),
-    ID    = diag(nb_elem),
-    g     = Ped,
-    CVs   = CV_calc,
-    alpha_lit = priors_lit,
-    n_lit = n_lit,
-    switch_conf_3 = switch_prior
+    ID    = diag(nb_elem)
   )
+  
+  if (literature_prior == TRUE){
+    
+    literature_data <- raw_data_list$literature_data
+    
+    Pedigree_literature_data <- raw_data_list$pedigree_literature_data
+    Ped <- as.matrix(Pedigree_literature_data)
+    Ped <- Ped[ ,order(colnames(Ped))]
+    
+    g_slope_param <- as.vector(raw_data_list$g_slope_param)
+    CV_calc <- 1 - Ped * g_slope_param[1]
+    
+    n_lit <- as.matrix(raw_data_list$n_lit_param)
+    
+    literature_data <- raw_data_list$literature_data
+    priors_lit <- as.matrix(literature_data)
+    priors_lit <- priors_lit[,order(colnames(priors_lit))]
+    priors_lit <- priors_lit[order(rownames(priors_lit)),]
+    
+    
+    data_list <- c(data_list, list(
+      g     = Ped,
+      CVs   = CV_calc,
+      alpha_lit = priors_lit,
+      n_lit = n_lit
+    ))
+  }
   
   return(data_list)
 }

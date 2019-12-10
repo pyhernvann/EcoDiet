@@ -4,7 +4,12 @@
 \alias{preprocess_data}
 \title{Load and preprocess the raw data to feed the EcoDiet model}
 \usage{
-preprocess_data(raw_data_list)
+preprocess_data(
+  stomach_data_path,
+  isotope_data_path,
+  trophic_enrichment_factor,
+  literature_prior
+)
 }
 \arguments{
 \item{raw_data_list}{the list containing the different raw data objects}
