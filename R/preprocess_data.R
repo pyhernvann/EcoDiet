@@ -64,6 +64,13 @@ preprocess_data <- function(stomach_data_path, isotope_data_path,
   
   # Check the isotopic data
   
+  if (colnames(isotope_data)[1] != "group"){
+    stop("The first column of the isotopic data should be named \"group\".")
+  }
+  if (colnames(isotope_data)[2] != "sample"){
+    stop("The second column of the isotopic data should be named \"sample\".")
+  }
+  
   if (length(unique(isotope_data$group)) != ncol(stomach_data)){
     stop("You should have the same number of trophic groups in your stomachal and isotopic data.")
   }
