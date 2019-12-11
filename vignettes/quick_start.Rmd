@@ -19,9 +19,12 @@ knitr::opts_chunk$set(
 The goal of EcoDiet is to combine two sources of data: isotopic and stomachal data with priors based on the litterature to model the trophic links and diet matrix.
 
 There are two ways to use this package:
+
 * With stomachal and isotopic data, and a study from the literature allowing to set specific priors
+
 * With stomachal and isotopic data only (so the priors will be uninformative by default)
-In this vignette, we will explain the later use. If you want to use the EcoDiet model with data from the literature, please read the `literature_prior` vignette.
+
+In this vignette, we will explain the later and simpler use. If you want to use the EcoDiet model with data from the literature, please read the `literature_prior` vignette.
 
 ## Load the package
 
@@ -45,7 +48,7 @@ read.csv(example_stomach_data_path)
 
 As you can see, the stomachal data should have the predator names as the column headers, and the first column should contains the prey names. The number represents the number of predator stomachs in which this prey was found. For example here "31" indicates that 31 medium animals were found in the big animals' stomachs. The last row contains the number of full stomachs analyzed for each predator.
 
-Note that you should enter the stomach data for *all* trophic groups, even the groups at the base of your ecosystem for which you did not analyze the stomachs. In that case, the column will be filled with zeros (as with the "small" animals in the example).
+Note that you should enter the stomach data for **all** trophic groups, even the groups at the base of your ecosystem for which you did not analyze the stomachs. In that case, the column will be filled with zeros (as with the "small" animals in the example).
 
 Here is the example isotopic data:
 
@@ -55,11 +58,11 @@ example_isotope_data_path <- system.file("extdata", "example_isotope_data.csv",
 read.csv(example_isotope_data_path)
 ```
 
-Each line is an isotope measurement from one individual, the first column indicates to which group the individual belongs, and the other column are the isotopic measures.
+Each line representes one isotope sample, the first column indicates to which group the individual belongs, the second column indicates the sample index (it should go from 1 to the total number of samples for this group), and the other columns contain the isotopic measures.
 
 ## Load the data
 
-If your data is stored in two csv files (for example exported from Excel), you need to know the path of these two csv files in your computer. Here are the paths for the example data: 
+To load your data, you will need to know the path of the csv files in your computer. Here are the paths for the example data: 
 ```{r}
 print(example_stomach_data_path)
 ```
@@ -67,7 +70,7 @@ print(example_stomach_data_path)
 print(example_isotope_data_path)
 ```
 
-And they will be used by the `preprocess_data` function:
+The `preprocess_data` function loads the data and rearrange it in a specific format for the EcoDiet model to be able to run. You need to put **your own data paths**:
 ```{r}
 data <- preprocess_data(stomach_data_path = example_stomach_data_path, 
                         isotope_data_path = example_isotope_data_path,
@@ -75,20 +78,11 @@ data <- preprocess_data(stomach_data_path = example_stomach_data_path,
                         literature_prior = FALSE)
 ```
 
-Note that you need to specify the trophic enrichment factors that corresponds to your isotope data! If your isotopic data files contains d13C and d15N data as in the example, then you should enter the trophic enrichment factor for the d13C and d15N (in that order).
+Note that you need to specify the trophic enrichment factors that **corresponds** to your isotopic data! If your isotopic data files contains d13C and d15N data as in the example, then you should enter the trophic enrichment factor for the d13C and d15N isotopes (in that order).
 
 We also need to indicate that we will not use informative priors fixed from the literature with the argument `literature_prior`. If you want to add informative priors, please read the `literature_prior` vignette.
 
-If you have put your two csv files in a folder named `my_EcoDiet_analysis`, then you need to run:
-
-```{r, eval = FALSE}
-data <- preprocess_data(stomach_data_path = "my_EcoDiet_analysis/my_stomach_data.csv", 
-                        isotope_data_path = "my_EcoDiet_analysis/my_isotope_data.csv",
-                        trophic_enrichment_factor = c(0.8, 3.4),
-                        literature_prior = FALSE)
-```
-
-This function loads the data and rearrange it in a specific format for the EcoDiet model to be able to run. This is an important step that should not be skipped!
+If an error appears, it means your data is not in the correct format. Please read the error message and try to make your data follow the example csv files.
 
 ## Write the model
 
