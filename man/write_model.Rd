@@ -4,7 +4,7 @@
 \alias{write_model}
 \title{Write a string containing the EcoDiet model in the BUGS syntax}
 \usage{
-write_model()
+write_model(literature_prior = FALSE)
 }
 \arguments{
 \item{file_name}{the name of the bugs files on which the model will be written}

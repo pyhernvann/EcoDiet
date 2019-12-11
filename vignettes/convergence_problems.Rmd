@@ -15,8 +15,15 @@ Of course before running the model, we neet to have preprocessed the data and wr
 
 ```{r}
 library(EcoDiet)
-data <- preprocess_data(ecodiet_example)
-model_string <- write_model()
+example_stomach_data_path <- system.file("extdata", "example_stomach_data.csv",
+                                    package = "EcoDiet")
+example_isotope_data_path <- system.file("extdata", "example_isotope_data.csv",
+                                    package = "EcoDiet")
+data <- preprocess_data(stomach_data_path = example_stomach_data_path, 
+                        isotope_data_path = example_isotope_data_path,
+                        trophic_enrichment_factor = c(0.8, 3.4),
+                        literature_prior = FALSE)
+model_string <- write_model(literature_prior = FALSE)
 ```
 
 ## Increase the number of iterations
