@@ -9,104 +9,138 @@
 #'
 #' @export
 
-preprocess_data <- function(raw_data_list){
+preprocess_data <- function(stomach_data_path, isotope_data_path, 
+                            trophic_enrichment_factor, literature_prior,
+                            element_concentration = 1, binary_web = NULL){
   
-  # Constructs the index from the binary web matrix
+  # Rearrange the stomachal data
   
-  topo_run <- raw_data_list$topo_run
-  topo_run <- topo_run[, order(colnames(topo_run))]
-  topo_run <- topo_run[order(rownames(topo_run)), ]
-  topo_run <- as.matrix(topo_run)
+  stomach_data <- read.csv(stomach_data_path)
   
-  nb_group <- ncol(topo_run)
-  nb_prey  <- colSums(topo_run)
+  if (ncol(stomach_data) == nrow(stomach_data) && colnames(stomach_data)[1] == "X"){
+    row.names(stomach_data) <- stomach_data[, 1]
+    stomach_data[, 1] <- NULL
+  }
   
-  list_pred <- as.vector(which(colSums(topo_run) != 0))
+  stomach_data <- stomach_data[, order(colnames(stomach_data))]
+  
+  nb_o <- stomach_data[nrow(stomach_data), ]
+  nb_o <- as.matrix(nb_o)
+  
+  stomach_data <- stomach_data[-nrow(stomach_data), ]
+  stomach_data <- stomach_data[order(rownames(stomach_data)), ]
+  o <- as.matrix(stomach_data)
+  
+  nb_group <- ncol(stomach_data)
+  
+  # Check the stomachal data
+  
+  if (ncol(stomach_data) != nrow(stomach_data)){
+    stop("You should have the same number of preys and predators in your stomachal data.")
+  }
+  if (!all(colnames(stomach_data) == rownames(stomach_data))){
+    stop("The trophic groups in the rows and colums should have the same names in your stomachal data.")
+  }
+  
+  # Rearrange the isotopic data
+  
+  isotope_data <- read.csv(isotope_data_path)
+  isotope_data <- isotope_data[order(isotope_data$group), ]
+  
+  nb_elem <- ncol(isotope_data) - 2
+  nb_y <- as.vector(table(isotope_data$group))
+  
+  y <- array(NA, dim = c(nb_group, max(nb_y) + 1, nb_elem))
+  for (el in 1:nb_elem){
+    y[, , el] <- as.matrix(reshape(isotope_data[, c(1, 2, el + 2)], direction = "wide", 
+                                   timevar = "sample", idvar = "group"))
+  }
+  rownames(y) <- y[, 1, 1]
+  y <- y[, -1, ]
+  
+  if (length(element_concentration) == 1){
+    element_concentration <- matrix(element_concentration, nrow = nb_elem, ncol = nb_group)
+  }
+  
+  # Check the isotopic data
+  
+  if (length(unique(isotope_data$group)) != ncol(stomach_data)){
+    stop("You should have the same number of trophic groups in your stomachal and isotopic data.")
+  }
+  if (!all(as.vector(unique(isotope_data$group)) == colnames(stomach_data))){
+    stop("The trophic groups in the isotopic data should have the same names as in your stomachal data.")
+  }
+  
+  for (elem in 1:nb_elem){
+    if (!all(rowSums(!is.na(y[, , elem])) == nb_y)){
+      stop("You should have the same number of samples for each element within each trophic group.")
+    }
+  }
+  
+  # Constructs the binary web matrix from the stomachal data
+  
+  if (is.null(binary_web)){
+    binary_web <- 1 * (stomach_data > 0)
+  } 
+  
+  # Constructs the model indices from the binary web matrix
+  
+  nb_prey  <- colSums(binary_web)
+  
+  list_pred <- as.vector(which(colSums(binary_web) != 0))
   nb_pred <- length(list_pred)
   
   list_prey <- matrix(data = NA, nrow = nb_group, ncol = nb_group)
   for (i in 1:nb_group){
-    if (sum(topo_run[, i]) > 0) {
-      list_prey[i, 1:nb_prey[i]] <- as.vector(which(topo_run[, i] != 0))
+    if (sum(binary_web[, i]) > 0) {
+      list_prey[i, 1:nb_prey[i]] <- as.vector(which(binary_web[, i] != 0))
     }
   }
   
-  
-  # stomachal data
-  
-  stomach_data <- raw_data_list$stomach_data
-  stomach_data <- stomach_data[, order(colnames(stomach_data))]
-  stomach_data <- stomach_data[order(rownames(stomach_data)), ]
-  stomach_data <- as.matrix(stomach_data)
-  
-  nb_o <- raw_data_list$number_full_stomachs
-  nb_o <- as.matrix(nb_o[, order(colnames(nb_o))])
-  
-  # parameters for the isotopic analysis
-  
-  el_conc <- as.matrix(raw_data_list$element_concentration)
-  
-  tdf <- as.vector(raw_data_list$mean_tdf)
-  
-  # SIA data preprocessing
-  
-  isotope_data <- raw_data_list$isotope_data
-  isotope_data <- isotope_data[order(isotope_data$Group), ] 
-  
-  nb_elem <- ncol(isotope_data) - 1
-
-  SIA_input <- array(NA, dim = c(nb_elem, nb_group, max(table(isotope_data$Group))))
-  names_grp <- rownames(topo_run)
-  colnames(SIA_input) <- names_grp
-  
-  for (el in 1:nb_elem){
-    for (grp in 1:nb_group){
-      SIA_input[el, grp, ] <- isotope_data[isotope_data$Group==names_grp[grp], el + 1]
-    }
-  }
-  
-  nb_y <- apply(ifelse(!is.na(SIA_input), 1, 0), seq(1, nb_elem), sum)
-  
-  # parameters for the priors
-  
-  literature_data <- raw_data_list$literature_data
-  
-  Pedigree_literature_data <- raw_data_list$pedigree_literature_data
-  Ped <- as.matrix(Pedigree_literature_data)
-  Ped <- Ped[ ,order(colnames(Ped))]
-  
-  g_slope_param <- as.vector(raw_data_list$g_slope_param)
-  CV_calc <- 1 - Ped * g_slope_param[1]
-  
-  n_lit <- as.matrix(raw_data_list$n_lit_param)
-  
-  literature_data <- raw_data_list$literature_data
-  priors_lit <- as.matrix(literature_data)
-  priors_lit <- priors_lit[,order(colnames(priors_lit))]
-  priors_lit <- priors_lit[order(rownames(priors_lit)),]
-  
-  switch_prior <- 1
+  # Create the data list to feed the JAGS function
   
   data_list <- list(
-    y          = SIA_input,
+    y          = y,
     nb_y       = nb_y,
-    o          = stomach_data,
+    o          = o,
     nb_o       = nb_o,
     nb_elem    = nb_elem,
     nb_group   = nb_group,
-    nb_prey    = nb_prey,
     list_pred  = list_pred,
     list_prey  = list_prey,
-    DELTA = tdf ,
-    q     = el_conc,
-    ZEROS = matrix(0, nrow = nb_elem, ncol = nb_group),
-    ID    = diag(nb_elem),
-    g     = Ped,
-    CVs   = CV_calc,
-    alpha_lit = priors_lit,
-    n_lit = n_lit,
-    switch_conf_3 = switch_prior
+    nb_prey    = nb_prey,
+    DELTA      = trophic_enrichment_factor,
+    q          = element_concentration,
+    ZEROS      = matrix(0, nrow = nb_elem, ncol = nb_group),
+    ID         = diag(nb_elem)
   )
+  
+  if (literature_prior == TRUE){
+    
+    literature_data <- raw_data_list$literature_data
+    
+    Pedigree_literature_data <- raw_data_list$pedigree_literature_data
+    Ped <- as.matrix(Pedigree_literature_data)
+    Ped <- Ped[ ,order(colnames(Ped))]
+    
+    g_slope_param <- as.vector(raw_data_list$g_slope_param)
+    CV_calc <- 1 - Ped * g_slope_param[1]
+    
+    nb_lit <- as.matrix(raw_data_list$n_lit_param)
+    
+    literature_data <- raw_data_list$literature_data
+    priors_lit <- as.matrix(literature_data)
+    priors_lit <- priors_lit[,order(colnames(priors_lit))]
+    priors_lit <- priors_lit[order(rownames(priors_lit)),]
+    
+    
+    data_list <- c(data_list, list(
+      ped     = Ped,
+      CVs   = CV_calc,
+      alpha_lit = priors_lit,
+      nb_lit = nb_lit
+    ))
+  }
   
   return(data_list)
 }
