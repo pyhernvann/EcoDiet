@@ -1,10 +1,10 @@
 ---
-title: "Introduction to EcoDiet (quick start)"
+title: "Introduction"
 author: "Heloise Thero"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Introduction to EcoDiet (quick start)}
+  %\VignetteIndexEntry{Introduction}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -44,7 +44,7 @@ Your data should be in a specific format to be treated by the package. Here is t
 ```{r}
 example_stomach_data_path <- system.file("extdata", "example_stomach_data.csv",
                                     package = "EcoDiet")
-read.csv(example_stomach_data_path)
+knitr::kable(read.csv(example_stomach_data_path))
 ```
 
 As you can see, the stomachal data should have the predator names as the column headers, and the first column should contains the prey names. The number represents the number of predator stomachs in which this prey was found. For example here "31" indicates that 31 medium animals were found in the big animals' stomachs. The last row contains the number of full stomachs analyzed for each predator.
@@ -56,21 +56,7 @@ Here is the example isotopic data:
 ```{r}
 example_isotope_data_path <- system.file("extdata", "example_isotope_data.csv",
                                     package = "EcoDiet")
-head(read.csv(example_isotope_data_path))
-```
-
-Each line is an isotope measurement from one individual, the first column indicates to which group the individual belongs, and the other column are the isotopic measures.
-
-## Load the data
-
-If your data is stored in two csv files (for example exported from Excel), you need to know the path of these two csv files in your computer. Here are the paths for the example data: 
-```{r}
-print(example_stomach_data_path)
-```
-```{r}
-example_isotope_data_path <- system.file("extdata", "example_isotope_data.csv",
-                                    package = "EcoDiet")
-read.csv(example_isotope_data_path)
+knitr::kable(read.csv(example_isotope_data_path))
 ```
 
 Each line representes one isotope sample, the first column indicates to which group the individual belongs, the second column indicates the sample index (it should go from 1 to the total number of samples for this group), and the other columns contain the isotopic measures.
@@ -157,8 +143,6 @@ Finally these summary informations can be saved as csv files with the `write_csv
 write.csv(mcmc_summary, file = "mcmc_summary.csv")
 write.csv(mcmc_quantiles, file = "mcmc_quantiles.csv")
 ```
-
-## Plot the results
 
 ## Environment on which this vignette has been run
 
