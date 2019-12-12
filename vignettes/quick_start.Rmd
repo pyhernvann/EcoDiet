@@ -26,6 +26,7 @@ There are two ways to use this package:
 
 In this vignette, we will explain the later and simpler use. If you want to use the EcoDiet model with data from the literature, please read the `literature_prior` vignette.
 
+
 ## Load the package
 
 The first thing to do is to load the EcoDiet package.
@@ -52,6 +53,20 @@ Note that you should enter the stomach data for **all** trophic groups, even the
 
 Here is the example isotopic data:
 
+```{r}
+example_isotope_data_path <- system.file("extdata", "example_isotope_data.csv",
+                                    package = "EcoDiet")
+head(read.csv(example_isotope_data_path))
+```
+
+Each line is an isotope measurement from one individual, the first column indicates to which group the individual belongs, and the other column are the isotopic measures.
+
+## Load the data
+
+If your data is stored in two csv files (for example exported from Excel), you need to know the path of these two csv files in your computer. Here are the paths for the example data: 
+```{r}
+print(example_stomach_data_path)
+```
 ```{r}
 example_isotope_data_path <- system.file("extdata", "example_isotope_data.csv",
                                     package = "EcoDiet")

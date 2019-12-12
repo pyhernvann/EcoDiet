@@ -12,6 +12,7 @@
 preprocess_data <- function(stomach_data_path, isotope_data_path, 
                             trophic_enrichment_factor, literature_prior,
                             element_concentration = 1, binary_web = NULL){
+
   
   # Rearrange the stomachal data
   
@@ -34,6 +35,7 @@ preprocess_data <- function(stomach_data_path, isotope_data_path,
   nb_group <- ncol(stomach_data)
   
   # Check the stomachal data
+
   
   if (ncol(stomach_data) != nrow(stomach_data)){
     stop("You should have the same number of preys and predators in your stomachal data.")
@@ -49,6 +51,7 @@ preprocess_data <- function(stomach_data_path, isotope_data_path,
   
   nb_elem <- ncol(isotope_data) - 2
   nb_y <- as.vector(table(isotope_data$group))
+
   
   y <- array(NA, dim = c(nb_group, max(nb_y) + 1, nb_elem))
   for (el in 1:nb_elem){
@@ -103,7 +106,7 @@ preprocess_data <- function(stomach_data_path, isotope_data_path,
       list_prey[i, 1:nb_prey[i]] <- as.vector(which(binary_web[, i] != 0))
     }
   }
-  
+
   # Create the data list to feed the JAGS function
   
   data_list <- list(
@@ -134,6 +137,7 @@ preprocess_data <- function(stomach_data_path, isotope_data_path,
     CV_calc <- 1 - Ped * g_slope_param[1]
     
     nb_lit <- as.matrix(raw_data_list$n_lit_param)
+
     
     literature_data <- raw_data_list$literature_data
     priors_lit <- as.matrix(literature_data)
