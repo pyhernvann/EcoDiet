@@ -67,7 +67,7 @@ run_model <- function(model_file, data, inits = NULL, n_iter = 1e+03, n_chains =
   cat("\nSampling finally the MCMC chains...\n\n")
   mcmc_output <- rjags::coda.samples(
     model = jags_model,
-    variable.name = c("LAMBDA", "PI"),
+    variable.name = c("eta", "PI"),
     n.iter = (n_iter - n_burnin),
     thin = n_thin)
   
