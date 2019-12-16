@@ -16,7 +16,7 @@ write_model <- function(literature_prior = FALSE){
     
     for (k in list_prey[i, 1:nb_prey[i]]){
     
-      o[k, i] ~ dbin(eta[k, i], nb_o[1, i])
+      o[k, i] ~ dbin(eta[k, i], nb_o[i])
       LAMBDA[k, i] ~ dbern((eta[k, i]))
     
     }

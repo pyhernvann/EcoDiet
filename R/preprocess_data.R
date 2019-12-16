@@ -5,29 +5,57 @@
 #' 
 #' @keywords internal
 
-check_stomach_data <- function(stomach_data, nb_o){
+check_stomach_data <- function(stomach_data){
   
-  # Check the rows and columns of the stomachal data
-  if (ncol(stomach_data) != nrow(stomach_data)){
-    stop("You should have the same number of preys and predators in your stomachal data.
-  But here you have ", nrow(stomach_data), " preys in the rows, and ", 
-         ncol(stomach_data), " predators in the columns.")
+  # Check the rows and columns number of the stomachal data
+  if (ncol(stomach_data) != nrow(stomach_data) - 1){
+    stop("You should have the same number of preys and predators in your stomachal data.\n",
+         "  But here you have ", nrow(stomach_data) - 1, " preys in the rows (\"", 
+         paste(rownames(stomach_data)[-nrow(stomach_data)], collapse = ", "), "\"), and ", 
+         ncol(stomach_data), " predators in the columns (\"", 
+         paste(colnames(stomach_data), collapse = ", "), "\").")
   }
-  if (!all(colnames(stomach_data) == rownames(stomach_data))){
-    stop("The trophic groups should have the same names in the rows and the columns of the stomachal data.
-  But here the trophic groups are named \"", paste(rownames(stomach_data), collapse = ", "),
-         "\" in the rows and \"", paste(colnames(stomach_data), collapse = ", "), "\" in the colums.")
+  
+  # Check the rows and columns names of the stomachal data
+  if (rownames(stomach_data)[nrow(stomach_data)] != "full"){
+    stop("The last row of the stomachal data should be named \"full\".\n",
+         "  But here it is named \"", rownames(stomach_data)[nrow(stomach_data)], "\".\n",
+         "  Please rename it.")
+  }
+  if (!all(colnames(stomach_data) == rownames(stomach_data)[-nrow(stomach_data)])){
+    stop("The trophic groups should have the same names in the rows and the columns of the stomachal data.\n",
+         "  But here the trophic groups are named \"", 
+         paste(rownames(stomach_data)[-nrow(stomach_data)], collapse = ", "), "\" in the rows and \"",
+         paste(colnames(stomach_data), collapse = ", "), "\" in the colums.\n",
+         "  Please rename them to be consistent.")
   }
   
   # Check the content of the stomachal data
   if (!is.integer(stomach_data)){
-    stop("The stomachal data should contain only integer values, and not decimal or character.")
+    stop("The stomachal data should only contain integer values, and not decimal or character.\n",
+         "  Please remove the values that do not correspond to a number of stomachs.")
+  }
+  if (sum(is.na(stomach_data)) > 0){
+    stop("The stomachal data should not contain NA or NaN.\n",
+         "  But the number of stomachs from the predator \"",
+         colnames(stomach_data)[which(is.na(stomach_data), arr.ind = T)[, 2][1]],
+         "\" contain abnormal values.\n",
+         "  Please enter a positive value or a zero instead.")
   }
   if (!all(stomach_data >= 0)){
-    stop("The stomachal data should contain only positive values or zeros.")
+    stop("The stomachal data should only contain positive values or zeros.\n",
+         "  But we have found negative integers here:\n",
+         paste("line", which(!stomach_data >= 0, arr.ind = T)[, 1], 
+                  "column", which(!stomach_data >= 0, arr.ind = T)[, 2], collapse = ",\n"),
+         ".\n  Please enter a positive value or a zero instead.")
   }
-  if (!all(apply(stomach_data, 2, max) <= nb_o)){
-    stop("The stomachal data cannot contain values higher than the number of full stomachs analyzed.")
+  if (!all(apply(stomach_data[-nrow(stomach_data), ], 2, max) <= stomach_data[nrow(stomach_data), ])){
+    stop("The stomachal data should not contain values higher than the number of full stomachs analyzed.\n",
+         "  But a prey is said to be found in more stomachs ", 
+         "than the total number of stomachs for the predators named \"", 
+         paste(names(which(!apply(stomach_data[-nrow(stomach_data), ], 2, max) <= stomach_data[nrow(stomach_data), ])), 
+               collapse = "\", \""), 
+         "\".\n  Please change this number to a normal value.")
   }
   
 }
@@ -43,33 +71,44 @@ check_isotope_data <- function(isotope_data, stomach_data){
   
   # Check the column name of the isotopic data
   if (colnames(isotope_data)[1] != "group"){
-    stop("The first column of the isotopic data should be named \"group\".
-  But here it is named \"", colnames(isotope_data)[1],"\". Please rename it.")
+    stop("The first column of the isotopic data should be named \"group\".\n",
+  "  But here it is named \"", colnames(isotope_data)[1],"\".\n  Please rename it.")
   }
 
   # Check the coherence between the isotopic and stomachal data
   if (length(unique(isotope_data$group)) != ncol(stomach_data)){
-    stop("You should have the same number of trophic groups in your stomachal and isotopic data.
-  But here you have ", ncol(stomach_data), " trophic groups in your stomachal data (\"", 
+    stop("You should have the same number of trophic groups in your stomachal and isotopic data.\n",
+         "  But here you have ", ncol(stomach_data), " trophic groups in your stomachal data (\"", 
          paste(colnames(stomach_data), collapse = ", "), "\"), and ", 
-         length(unique(isotope_data$group)), " in your isotopic data(\"", 
-         paste(unique(isotope_data$group), collapse = ", "), "\").")
+         length(unique(isotope_data$group)), " in your isotopic data (\"", 
+         paste(sort(unique(isotope_data$group)), collapse = ", "), "\").\n",
+         "  Please put the same number of trophic groups in both datasets.")
   }
-  if (!all(as.vector(unique(isotope_data$group)) == colnames(stomach_data))){
-    stop("The trophic groups in the isotopic data and in the stomachal data should have the same names.
-  But here your trophic groups are called: \"", paste(colnames(stomach_data), collapse = ", "), 
-         "\" in your stomachal data, and: \"", paste(unique(isotope_data$group), collapse = ", "), 
-         "\" in your isotopic data.")
+  if (!all(as.vector(sort(unique(isotope_data$group))) == colnames(stomach_data))){
+    stop("The trophic groups in the isotopic data and in the stomachal data should have the same names.\n",
+         "  But here your trophic groups are called: \"", paste(colnames(stomach_data), collapse = ", "), 
+         "\" in your stomachal data, and: \"", paste(sort(unique(isotope_data$group)), collapse = ", "), 
+         "\" in your isotopic data.\n",
+         "  Please rename them to be consistent.")
   }
   
   # Check the content of the isotopic data
-  if (sum(is.na(isotope_data[, 3:ncol(isotope_data)])) > 0){
-    stop("The isotopic data should not contain NA values.
-  But we have found NA here:
-", paste("line", which(is.na(isotope_data[, 3:ncol(isotope_data)]), arr.ind = T)[, 1], 
-         "column", which(is.na(isotope_data[, 3:ncol(isotope_data)]), arr.ind = T)[, 1] + 2, 
-         collapse = ",\n"), ".
-  Please enter a numerical value instead or remove the corresponding row(s).")
+  if (!is.numeric(as.matrix(isotope_data[, 2:ncol(isotope_data)]))){
+    stop("The isotope data should only contain numerical values, and not text.\n",
+         "  Please remove the values that do not correspond to isotopic measures.")
+  }
+  if (sum(is.na(isotope_data[, 2:ncol(isotope_data)])) > 0){
+    stop("The isotopic data should not contain NA or NaN.\n",
+         "  But we have found at least one NA in the \"",
+         isotope_data[which(is.na(isotope_data), arr.ind = T)[, 1][1], 1],
+         "\" trophic group for the \"",
+         colnames(isotope_data)[which(is.na(isotope_data), arr.ind = T)[, 2][1]], 
+         "\" measurement.\n",
+         "  Please enter a numerical value instead or remove the corresponding row.")
+  }
+  if (sum(is.infinite(as.matrix(isotope_data[, 2:ncol(isotope_data)]))) > 0){
+    stop("The isotopic data should not contain Infinite values (Inf).\n",
+         "  Please enter a numerical value instead or remove the corresponding row.")
   }
 }
 
@@ -97,16 +136,14 @@ preprocess_data <- function(stomach_data, isotope_data,
   }
   
   stomach_data <- stomach_data[, order(colnames(stomach_data))]
-  
-  nb_o <- stomach_data[nrow(stomach_data), ]
-  nb_o <- as.matrix(nb_o)
-  
-  stomach_data <- stomach_data[-nrow(stomach_data), ]
-  stomach_data <- stomach_data[order(rownames(stomach_data)), ]
+  stomach_data <- rbind(stomach_data[order(rownames(stomach_data)[-nrow(stomach_data)]), ], 
+                        stomach_data[nrow(stomach_data), ])
   stomach_data <- as.matrix(stomach_data)
   
   check_stomach_data(stomach_data)
   
+  nb_o <- stomach_data[nrow(stomach_data), ]
+  stomach_data <- stomach_data[-nrow(stomach_data), ]
   nb_group <- ncol(stomach_data)
   
   # Rearrange the isotopic data
@@ -115,8 +152,6 @@ preprocess_data <- function(stomach_data, isotope_data,
   
   nb_elem <- ncol(isotope_data) - 1
   nb_y <- as.vector(table(isotope_data$group))
-  
-  isotope_data <- isotope_data[order(isotope_data$group), ]
   
   sample <- vector()
   for (i in 1:nb_group){
