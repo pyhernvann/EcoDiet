@@ -3,6 +3,7 @@
 #' @param stomach_data the almost raw stomachal data
 #' 
 #' @keywords internal
+#' @noRd
 
 check_stomach_data <- function(stomach_data){
   
@@ -66,6 +67,7 @@ check_stomach_data <- function(stomach_data){
 #' @param stomach_data the preprocessed stomachal data
 #' 
 #' @keywords internal
+#' @noRd
 
 check_isotope_data <- function(isotope_data, stomach_data){
   
@@ -119,6 +121,7 @@ check_isotope_data <- function(isotope_data, stomach_data){
 #' @param isotope_data the raw isotopic data
 #' 
 #' @keywords internal
+#' @noRd
 
 check_tef_data <- function(trophic_enrichment_factor, isotope_data){
   # Check the format

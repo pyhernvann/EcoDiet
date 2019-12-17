@@ -4,7 +4,7 @@
 \alias{run_model}
 \title{Run the MCMC chains for the EcoDiet model with the rjags package}
 \usage{
-run_model(model_file, data, inits = NULL, n_iter = 1000, n_chains = 3)
+run_model(model_file, data, inits = NULL, nb_iter = 1000, nb_adapt = 1000)
 }
 \arguments{
 \item{model_file}{the file containing the definition of the EcoDiet model}
@@ -15,9 +15,7 @@ run_model(model_file, data, inits = NULL, n_iter = 1000, n_chains = 3)
 By default the initialisation values are null, i.e., the first parameters at the beginning
 of the chains are drawns randomly from their prior distribution.}
 
-\item{n_iter}{the number of iterations to be run}
-
-\item{n_chains}{the number of Markov chains to be run}
+\item{nb_iter}{the number of iterations to be run}
 }
 \value{
 an mcmc.list containing the variables to store, i.e., the pi and lambda variables

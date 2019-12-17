@@ -2,7 +2,9 @@
 #' This is an internal function called only in the run_model function below.
 #' 
 #' @param mcmc_output the mcmc.list containing the variables to store, i.e., the pi and lambda variables
+#' 
 #' @keywords internal
+#' @noRd
 
 print_convergence_diagnostic <- function(mcmc_output){
   

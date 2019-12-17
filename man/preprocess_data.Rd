@@ -5,8 +5,8 @@
 \title{Load and preprocess the raw data to feed the EcoDiet model}
 \usage{
 preprocess_data(
-  stomach_data_path,
-  isotope_data_path,
+  stomach_data,
+  isotope_data,
   trophic_enrichment_factor,
   literature_prior,
   element_concentration = 1,
