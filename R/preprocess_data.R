@@ -157,6 +157,10 @@ check_tef_data <- function(trophic_enrichment_factor, isotope_data){
 preprocess_data <- function(stomach_data, isotope_data, 
                             trophic_enrichment_factor, literature_prior,
                             element_concentration = 1, binary_web = NULL){
+  
+  if (!is.logical(literature_prior)){
+    stop("The literature_prior should be TRUE or FALSE, not anything else.")
+  }
 
   # Rearrange the stomachal data
   
