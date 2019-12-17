@@ -100,10 +100,10 @@ mcmc_output <- run_model(textConnection(model_string), data)
 
 We have put a small number of iterations for this test (only a thousand). It was not enough for the model to converge as you can see from the printed message. So now you should now re-run your model with a higher number of iterations:
 ```{r, eval = FALSE}
-mcmc_output <- run_model(textConnection(model_string), data, n_iter = 1e+06)
+mcmc_output <- run_model(textConnection(model_string), data, nb_iter = 1e+06)
 ```
 
-If you again see a convergence error with a million iterations, you should look at the `convergence_problems` vignette for solutions.
+If you again see a warning message being printed, should look at the `model_warnings` vignette for solutions.
 
 ## Save the model's results
 

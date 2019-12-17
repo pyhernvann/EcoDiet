@@ -19,11 +19,11 @@ print_convergence_diagnostic <- function(mcmc_output){
   variable_number_over_1.1 <- length(gelman[which(gelman > 1.1)])
   
   if (variable_number_over_1.1 > 0){
-    message("\n          /!\\   /!\\   CONVERGENCE PROBLEM   /!\\   /!\\ \n")
+    message("Warning message:")
+    message("  Convergence problem")
     message("Out of the ", variable_number,  " variables, ",
             variable_number_over_1.1, " variables have a Gelman-Rubin statistic > 1.1.")
-    message("\nYou should increase the number of iterations of your model with the `n_iter` argument:")
-    message("> mcmc_output <- run_model(textConnection(model_string), data, n_iter = 1e+06)\n")
+    message("You should increase the number of iterations of your model with the `nb_iter` argument.\n")
   }
   
 }
@@ -36,8 +36,7 @@ print_convergence_diagnostic <- function(mcmc_output){
 #' @param inits the list containing the initial values of the variables.
 #' By default the initialisation values are null, i.e., the first parameters at the beginning
 #' of the chains are drawns randomly from their prior distribution.
-#' @param n_iter the number of iterations to be run
-#' @param n_chains the number of Markov chains to be run
+#' @param nb_iter the number of iterations to be run
 #' 
 #' @return an mcmc.list containing the variables to store, i.e., the pi and lambda variables
 #' 
@@ -46,36 +45,36 @@ print_convergence_diagnostic <- function(mcmc_output){
 #'
 #' @export
 
-run_model <- function(model_file, data, inits = NULL, n_iter = 1e+03, n_chains = 3){
+run_model <- function(model_file, data, inits = NULL, nb_iter = 1e+03, nb_adapt = 1e+03){
   
   start_time <- Sys.time()
   
-  n_adapt <- 1e+03
-  n_burnin <- floor(n_iter/2)
-  n_thin <- max(1, floor((n_iter - n_burnin)/1000))
+  nb_burnin <- floor(nb_iter/2)
+  nb_thin <- max(1, floor((nb_iter - nb_burnin)/1000))
   
   jags_model <- rjags::jags.model(
     file = model_file,
     data = data, 
     inits = inits,
-    n.chains = n_chains,
-    n.adapt = n_adapt)
+    n.chains = 3,
+    n.adapt = nb_adapt)
   
   cat("\nBurning in the MCMC chains...\n\n")
-  update(jags_model, n.iter = n_burnin)
+  update(jags_model, n.iter = nb_burnin)
 
   cat("\nSampling finally the MCMC chains...\n\n")
   mcmc_output <- rjags::coda.samples(
     model = jags_model,
     variable.name = c("eta", "PI"),
-    n.iter = (n_iter - n_burnin),
-    thin = n_thin)
+    n.iter = (nb_iter - nb_burnin),
+    thin = nb_thin)
   
   save(mcmc_output, file ="mcmc_output.Rdata")
   
   end_time <- Sys.time()
   cat("\nTo run, the model took a ")
   print(end_time - start_time) 
+  cat("\n")
   
   print_convergence_diagnostic(mcmc_output)
   
