@@ -2,7 +2,6 @@
 
 export(initialize_model)
 export(preprocess_data)
-export(rescale_stomach_data)
 export(run_model)
 export(write_model)
 import(ggplot2)
