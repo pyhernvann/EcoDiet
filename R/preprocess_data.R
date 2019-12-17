@@ -1,7 +1,6 @@
 #' Check the format of the stomachal and isotopic data and print an error message if something is not correct
 #' 
-#' @param stomach_data the preprocessed stomachal data
-#' @param isotope_data the preprocessed isotopic data
+#' @param stomach_data the almost raw stomachal data
 #' 
 #' @keywords internal
 
@@ -63,7 +62,8 @@ check_stomach_data <- function(stomach_data){
 
 #' Check that the isotopic data is in a correct format and print an error message if not.
 #' 
-#' @param isotope_data the preprocessed isotopic data
+#' @param isotope_data the raw isotopic data
+#' @param stomach_data the preprocessed stomachal data
 #' 
 #' @keywords internal
 
@@ -93,22 +93,52 @@ check_isotope_data <- function(isotope_data, stomach_data){
   }
   
   # Check the content of the isotopic data
-  if (!is.numeric(as.matrix(isotope_data[, 2:ncol(isotope_data)]))){
-    stop("The isotope data should only contain numerical values, and not text.\n",
+  if (!is.numeric(as.matrix(isotope_data[, -1]))){
+    stop("The isotope data should only contain numbers, and not text.\n",
          "  Please remove the values that do not correspond to isotopic measures.")
   }
-  if (sum(is.na(isotope_data[, 2:ncol(isotope_data)])) > 0){
+  if (sum(is.na(isotope_data[, -1])) > 0){
     stop("The isotopic data should not contain NA or NaN.\n",
          "  But we have found at least one NA in the \"",
          isotope_data[which(is.na(isotope_data), arr.ind = T)[, 1][1], 1],
          "\" trophic group for the \"",
          colnames(isotope_data)[which(is.na(isotope_data), arr.ind = T)[, 2][1]], 
          "\" measurement.\n",
-         "  Please enter a numerical value instead or remove the corresponding row.")
+         "  Please enter a number instead or remove the corresponding row.")
   }
-  if (sum(is.infinite(as.matrix(isotope_data[, 2:ncol(isotope_data)]))) > 0){
+  if (sum(is.infinite(as.matrix(isotope_data[, -1]))) > 0){
     stop("The isotopic data should not contain Infinite values (Inf).\n",
-         "  Please enter a numerical value instead or remove the corresponding row.")
+         "  Please enter a number instead or remove the corresponding row.")
+  }
+}
+
+
+#' Check that the trophic enrichment factor is in a correct format and print an error message if not.
+#' 
+#' @param trophic_enrichment_factor the raw trophic enrichment factor data
+#' @param isotope_data the raw isotopic data
+#' 
+#' @keywords internal
+
+check_tef_data <- function(trophic_enrichment_factor, isotope_data){
+  # Check the format
+  if (!is.vector(trophic_enrichment_factor)){
+    stop("The trophic enrichment factor should be a vector.\n",
+         "  Please enter a vector as in the vignette example: \"trophic_enrichment_factor = c(0.8, 3.4)\".")
+  }
+  if (!is.numeric(trophic_enrichment_factor)){
+    stop("The trophic enrichment factor should contain only numbers.\n",
+         "  But here are the trophic enrichement factors you entered: ", 
+         paste(trophic_enrichment_factor, collapse = ", "), "\n  Please use numbers instead.")
+  }
+  
+  # Check whether the length is consistent with the isotopic data
+  if (length(trophic_enrichment_factor) != ncol(isotope_data) - 1){
+    stop("There should be as many trophic enrichment factors as there are chemical elements in the isotopic data.\n",
+         "  But here there are actually ", length(trophic_enrichment_factor), 
+         " trophic enrichement factors (\"", paste(trophic_enrichment_factor, collapse = ", "), 
+         "\") and ", ncol(isotope_data) - 1, " chemical elements (\"", 
+         paste(colnames(isotope_data)[-1], collapse = ", "), "\") in the isotopic data.")
   }
 }
 
@@ -146,32 +176,33 @@ preprocess_data <- function(stomach_data, isotope_data,
   stomach_data <- stomach_data[-nrow(stomach_data), ]
   nb_group <- ncol(stomach_data)
   
-  # Rearrange the isotopic data
+  # Check the isotopic and trophic enrichement factor data
   
   check_isotope_data(isotope_data, stomach_data)
+  check_tef_data(trophic_enrichment_factor, isotope_data)
+  
+  # Rearrange the isotopic data
+  
+  isotope_data <- isotope_data[order(isotope_data$group), ]
   
   nb_elem <- ncol(isotope_data) - 1
   nb_y <- as.vector(table(isotope_data$group))
-  
-  sample <- vector()
-  for (i in 1:nb_group){
-    sample <- c(sample, 1:table(isotope_data$group)[i])
-  }
-  isotope_data$sample <- sample
 
   y <- array(NA, dim = c(nb_group, max(nb_y) + 1, nb_elem))
+  rownames(y) <- colnames(stomach_data)
   for (el in 1:nb_elem){
-    y[, , el] <- as.matrix(reshape(isotope_data[, c(1, el + 1, nb_elem + 2)], direction = "wide", 
-                                   timevar = "sample", idvar = "group"))
+    for (grp in 1:nb_group){
+      y[grp, 1:nb_y[grp], el] <- isotope_data[isotope_data$group == colnames(stomach_data)[grp], el + 1]
+    }
   }
-  rownames(y) <- y[, 1, 1]
-  y <- y[, -1, ]
+  
+  # Construct the element concentration matrix
   
   if (length(element_concentration) == 1){
     element_concentration <- matrix(element_concentration, nrow = nb_elem, ncol = nb_group)
   }
   
-  # Constructs the binary web matrix from the stomachal data
+  # Construct the binary web matrix from the stomachal data
   
   if (is.null(binary_web)){
     binary_web <- 1 * (stomach_data > 0)
