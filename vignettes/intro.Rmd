@@ -39,7 +39,9 @@ If you have an error, please try to reinstall everything following [the instruct
 
 ## Check your data
 
-Your data should be in a specific format to be treated by the package. Here is the example stomachal data:
+Your data should be in a specific format to be treated by the package. 
+
+* Here is the example stomachal data:
 
 ```{r}
 example_stomach_data_path <- system.file("extdata", "example_stomach_data.csv",
@@ -48,11 +50,13 @@ example_stomach_data <- read.csv(example_stomach_data_path)
 knitr::kable(example_stomach_data)
 ```
 
-As you can see, the stomachal data should have the predator names as the column headers, and the first column should contains the prey names. The number represents the number of predator stomachs in which this prey was found. For example here "31" indicates that 31 medium animals were found in the big animals' stomachs. The last row contains the number of full stomachs analyzed for each predator.
+As you can see, the stomachal data should have the predator names as the column headers, and the first column should contains the prey names. The number represents the number of predator stomachs in which this prey was found. Here for the "huge" animals, 19 full stomachs were analyzed. "Large" animals' dead bodies were found in 17 of these stomachs, and "medium" animals' dead bodies were found in 12 of these stomachs.
+
+The last row contains the number of full stomachs analyzed for each predator.
 
 Note that you should enter the stomach data for **all** trophic groups, even the groups at the base of your ecosystem for which you did not analyze the stomachs. In that case, the column will be filled with zeros (as with the "small" animals in the example).
 
-Here is the example isotopic data:
+* Here is the example isotopic data:
 
 ```{r}
 example_isotope_data_path <- system.file("extdata", "example_isotope_data.csv",
@@ -61,17 +65,22 @@ example_isotope_data <- read.csv(example_isotope_data_path)
 knitr::kable(example_isotope_data)
 ```
 
-Each line representes one isotope sample, the first column indicates to which group the individual belongs, the second column indicates the sample index (it should go from 1 to the total number of samples for this group), and the other columns contain the isotopic measures.
+Each line representes one isotope sample, the first column indicates to which group the individual belongs, and the other columns contain the isotopic measures (for isotopes 13C and 15N in our example).
 
 ## Preprocess the data
 
-You first need to have loaded your csv files as shown previously. If you have a specific CSV format, you can try to use the `sep` argument to load your data:
+* You first need to have loaded your csv files as shown previously. If you have a specific CSV format, you can try to use the `sep` argument to load your data:
 ```{r, eval = FALSE}
-my_stomach_data <- read.csv("my_stomach_data.csv", sep = ";")
-my_isotope_data <- read.csv("my_isotope_data.csv", sep = ";")
+example_stomach_data <- read.csv("my_stomach_data.csv", sep = ";")
+example_isotope_data <- read.csv("my_isotope_data.csv", sep = ";")
 ```
 
-The `preprocess_data` function then check and rearrange the data in a specific format for the EcoDiet model to be able to run:
+* You will also need to define the trophic enrichment factors that corresponds to your isotopic data. If your isotopic data files contains d13C and d15N data as in the example, then you should enter the trophic enrichment factors for the d13C and d15N isotopes (in that order):
+```{r, eval = FALSE}
+trophic_enrichment_factor = c(0.8, 3.4)
+```
+
+* The `preprocess_data` function then check and rearrange the data in a specific format for the EcoDiet model to be able to run:
 ```{r}
 data <- preprocess_data(stomach_data = example_stomach_data, 
                         isotope_data = example_isotope_data,
@@ -79,9 +88,26 @@ data <- preprocess_data(stomach_data = example_stomach_data,
                         literature_prior = FALSE)
 ```
 
-Note that you need to specify the trophic enrichment factors that **corresponds** to your isotopic data! If your isotopic data files contains d13C and d15N data as in the example, then you should enter the trophic enrichment factor for the d13C and d15N isotopes (in that order).
-
 If an error appears, it means your data is not in the correct format. Please read the error message and try to make your data follow the example csv files.
+
+## Check the trophic links matrix
+
+The last message tells you to check which trophic links will be investigated by the model. You cannot assume that all the trophic links are possible (a matrix filled with only ones) or your model will never converge. You therefore need to keep only the reasonnable trophic links (e.g., a whale cannot eat a shrimp). 
+
+The matrix displayed by the `preprocess_data` function is based on the stomachal data but you can add another trophic link if you think it is important. For example, if I want to say that the "huge" animal can also eat "small" animals (even if none was found in the huge's stomachs), I can edit the trophic links matrix this way:
+
+```{r}
+trophic_links <- 1 * (data$o > 0)
+trophic_links[4, 1] <- 1
+
+data <- preprocess_data(stomach_data = example_stomach_data, 
+                        isotope_data = example_isotope_data,
+                        trophic_enrichment_factor = c(0.8, 3.4),
+                        literature_prior = FALSE,
+                        trophic_links = trophic_links)
+```
+
+You can see that the added link appears in the new trophic links matrix. Note that any additional link will make it harder to converge for the model
 
 ## Write the model
 
@@ -98,14 +124,14 @@ The model will likely take a long time to run, so first we will do a little test
 mcmc_output <- run_model(textConnection(model_string), data)
 ```
 
-We have put a small number of iterations for this test (only a thousand). It was not enough for the model to converge as you can see from the printed message. So now you should now re-run your model with a higher number of iterations:
+The test was done with only a thousand iterations, which was not enough for the model to converge (as you can see from the warning message). So you should re-run your model with a higher number of iterations:
 ```{r, eval = FALSE}
 mcmc_output <- run_model(textConnection(model_string), data, nb_iter = 1e+06)
 ```
 
 If you again see a warning message being printed, should look at the `model_warnings` vignette for solutions.
 
-## Save the model's results
+## Save the model's mean results
 
 The model's results are automatically saved in a file named `mcmc_ouput` so you can access them using:
 ```{r, eval = FALSE}
@@ -121,12 +147,20 @@ mcmc_summary <- summary(mcmc_output)$statistics
 print(mcmc_summary)
 ```
 
-We can also see the quantiles of the distributions with the same function. The by-default quantiles are the 2.5%, 25%, 50%, 75% and 97.5% quantiles. Because the median is also the 50% quantile, we can thus access the median of the distributions this way:
+And the results can be saved as a CSV:
+```{r, eval = FALSE}
+write.table(mcmc_summary, file = "mcmc_summary.csv", sep = ",")
+```
+
+## Save the model's distribution results
+
+We can also see the quantiles of the distributions. The by-default quantiles are the 2.5%, 25%, 50%, 75% and 97.5% quantiles.
 
 ```{r}
 mcmc_quantiles <- summary(mcmc_output)$quantiles
 print(mcmc_quantiles)
 ```
+Because the median is also the 50% quantile, we can thus access the median of the distributions this way.
 
 If needed, we can also change the by-default quantiles, for example to obtain the 5% and the 95% quantiles:
 
@@ -135,11 +169,9 @@ mcmc_quantiles <- summary(mcmc_output, quantiles = c(0.05, 0.95))$quantiles
 print(mcmc_quantiles)
 ```
 
-Finally these summary informations can be saved as csv files with the `write_csv` function:
-
+The results can again be saved as a CSV:
 ```{r, eval = FALSE}
-write.csv(mcmc_summary, file = "mcmc_summary.csv")
-write.csv(mcmc_quantiles, file = "mcmc_quantiles.csv")
+write.table(mcmc_quantiles, file = "mcmc_quantiles.csv", sep = ",")
 ```
 
 ## Environment on which this vignette has been run
