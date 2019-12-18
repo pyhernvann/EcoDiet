@@ -1,31 +1,26 @@
+#' Example stomach data
+#'
+#' This is a simulated stomachal dataset, made to illustrate the EcoDiet package functions.
+#'
+#'@format A table with 5 rows and 5 columns. 
+#' The first row contains the predators' names, the first column contains the preys' names.
+#' Each cell contains the number of the predator's stomachs in which this prey was found.
+#' The last row contains the total number of full stomachs for each predator.
+#' 
+#' @name example_stomach_data.csv
 NULL
 
-#' Toy example to test the EcoDiet package
+#' Example isotope data
 #'
-#' This is a simulated toy dataset, made to illustrate the EcoDiet package functions.
+#' This is a simulated isotopic dataset, made to illustrate the EcoDiet package functions.
 #'
-#'@format A list of 10 elements:
+#'@format A table with 24 rows and 3 columns. Each row is an isotopic sample from one individual.
+#'The columns are:
 #'\describe{
-#'   \item{isotope_data}{a data frame with 3 variables: \code{Group}, 
-#'   \code{d13C} and \code{d15N}.}
-#'
-#'   \item{stomach_data}{A data frame with 10 variables, 
-#'    each corresponding to the name of a trophic group:
-#'    \code{Cod}, \code{Pout}, \code{Sardine}, \code{Shrimps},
-#'    \code{Crabs}, \code{Bivalves}, \code{Worms}, \code{Zooplankton},
-#'    \code{Phytoplankton} and \code{Detritus}.
-#'    The number are the number of stomachs in which a specific prey 
-#'    (the group on the row) was found inside a predator (the group on the column).}
-#'    
-#'   \item{number_full_stomachs}{A data frame with 10 variables, 
-#'    each corresponding to the name of a trophic group, 
-#'    containing the number of full stomachs analyzed for each predator.}
-#'    
-#'   \item{element_concentration}{The matrix containing the concentration of each element j 
-#'   in the prey k. It is supposed to be known in advance.}
-#'   
+#'   \item{group}{the trophic group the individual belonged to}
+#'   \item{d13C}{the d13C measurement made on that individual}
+#'   \item{d15N}{the d15N measurement made on that individual}
 #'}
 #'
-#'@examples data("ecodiet_example")
-
-"ecodiet_example"
+#'@name example_isotope_data.csv
+NULL
