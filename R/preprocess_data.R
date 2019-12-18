@@ -159,7 +159,7 @@ check_tef_data <- function(trophic_enrichment_factor, isotope_data){
 
 preprocess_data <- function(stomach_data, isotope_data, 
                             trophic_enrichment_factor, literature_prior,
-                            element_concentration = 1, binary_web = NULL){
+                            element_concentration = 1, trophic_links = NULL){
   
   if (!is.logical(literature_prior)){
     stop("The literature_prior should be TRUE or FALSE, not anything else.")
@@ -211,21 +211,25 @@ preprocess_data <- function(stomach_data, isotope_data,
   
   # Construct the binary web matrix from the stomachal data
   
-  if (is.null(binary_web)){
-    binary_web <- 1 * (stomach_data > 0)
+  if (is.null(trophic_links)){
+    trophic_links <- 1 * (stomach_data > 0)
   } 
+  
+  message("The model will investigate the following trophic links:")
+  print(trophic_links)
+  message("If you want to add other links, you can define a new matrix with the `trophic_links` argument.\n")
   
   # Constructs the model indices from the binary web matrix
   
-  nb_prey  <- colSums(binary_web)
+  nb_prey  <- colSums(trophic_links)
   
-  list_pred <- as.vector(which(colSums(binary_web) != 0))
+  list_pred <- as.vector(which(colSums(trophic_links) != 0))
   nb_pred <- length(list_pred)
   
   list_prey <- matrix(data = NA, nrow = nb_group, ncol = nb_group)
   for (i in 1:nb_group){
-    if (sum(binary_web[, i]) > 0) {
-      list_prey[i, 1:nb_prey[i]] <- as.vector(which(binary_web[, i] != 0))
+    if (sum(trophic_links[, i]) > 0) {
+      list_prey[i, 1:nb_prey[i]] <- as.vector(which(trophic_links[, i] != 0))
     }
   }
   
