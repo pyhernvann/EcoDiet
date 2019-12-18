@@ -10,19 +10,27 @@ preprocess_data(
   trophic_enrichment_factor,
   literature_prior,
   element_concentration = 1,
-  binary_web = NULL
+  trophic_links = NULL
 )
 }
 \arguments{
-\item{raw_data_list}{the list containing the different raw data objects}
+\item{stomach_data}{the table containing the stomachal data in a specific format}
+
+\item{isotope_data}{the table containing the isotopic data in the specific format}
+
+\item{trophic_enrichment_factor}{a vector containing the mean trophic enrichement factor 
+corresponding to each column of the isotope data table (except the group column)}
+
+\item{literature_prior}{a boolean (TRUE or FALSE) indicating whether the model will have 
+prior distributions defined by a study of the literature}
+
+\item{trophic_links}{a potential matrix entered by the user if she wants the model to 
+investigate additionnal trophic links (by default it is NULL and defined from the stomach
+data and the alpha priors if they are defined)}
 }
 \value{
-a list of processed data, ready to be run by the EcoDiet model
+a list of preprocessed data, ready to be run by the EcoDiet model
 }
 \description{
 Load and preprocess the raw data to feed the EcoDiet model
-}
-\examples{
-data <- preprocess_data(ecodiet_example)
-
 }

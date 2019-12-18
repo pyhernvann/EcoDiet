@@ -148,12 +148,17 @@ check_tef_data <- function(trophic_enrichment_factor, isotope_data){
 
 #' Load and preprocess the raw data to feed the EcoDiet model
 #'
-#' @param raw_data_list the list containing the different raw data objects
+#' @param stomach_data the table containing the stomachal data in a specific format
+#' @param isotope_data the table containing the isotopic data in the specific format
+#' @param trophic_enrichment_factor a vector containing the mean trophic enrichement factor 
+#' corresponding to each column of the isotope data table (except the group column)
+#' @param literature_prior a boolean (TRUE or FALSE) indicating whether the model will have 
+#' prior distributions defined by a study of the literature
+#' @param trophic_links a potential matrix entered by the user if she wants the model to 
+#' investigate additionnal trophic links (by default it is NULL and defined from the stomach
+#' data and the alpha priors if they are defined)
 #' 
-#' @return a list of processed data, ready to be run by the EcoDiet model
-#' 
-#' @examples
-#' data <- preprocess_data(ecodiet_example)
+#' @return a list of preprocessed data, ready to be run by the EcoDiet model
 #'
 #' @export
 
