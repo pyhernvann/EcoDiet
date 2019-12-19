@@ -47,11 +47,16 @@ print_convergence_diagnostic <- function(mcmc_output){
 #'
 #' @export
 
-run_model <- function(model_file, data, inits = NULL, nb_iter = 1e+03, nb_adapt = 1e+03){
+run_model <- function(model_file, data, inits = NULL, 
+                      nb_iter = 1e+03, nb_adapt = 1e+03, nb_burnin = floor(nb_iter/2)){
+  
+  if (nb_burnin >= nb_iter){
+    stop("The number of burnin (\"nb_burnin\") needs to be inferior ",
+         "to the number of iterations (\"nb_iter\").\n", "Please decrease it.")
+  }
   
   start_time <- Sys.time()
   
-  nb_burnin <- floor(nb_iter/2)
   nb_thin <- max(1, floor((nb_iter - nb_burnin)/1000))
   
   jags_model <- rjags::jags.model(
