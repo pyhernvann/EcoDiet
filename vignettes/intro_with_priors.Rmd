@@ -1,10 +1,10 @@
 ---
-title: "Introduction"
+title: "How to use EcoDiet with stomachal data, isotopic data and priors from the literature"
 author: "Heloise Thero"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Introduction}
+  %\VignetteIndexEntry{How to use EcoDiet with stomachal data, isotopic data and priors from the literature}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -24,7 +24,7 @@ There are two ways to use this package:
 
 * With stomachal and isotopic data only (so the priors will be uninformative by default)
 
-In this vignette, we will explain the later and simpler use.
+In this vignette, we will explain the former and more complicated use.
 
 
 ## Load the package
@@ -67,12 +67,32 @@ knitr::kable(example_isotope_data)
 
 Each line representes one isotope sample, the first column indicates to which group the individual belongs, and the other columns contain the isotopic measures (for isotopes 13C and 15N in our example).
 
+* Here is the example diet priors from the literature:
+
+```{r}
+example_literature_diets_path <- system.file("extdata", "example_literature_diets.csv",
+                                    package = "EcoDiet")
+example_literature_diets <- read.csv(example_literature_diets_path)
+knitr::kable(example_literature_diets)
+```
+
+The numbers are a summary of the literature. For example if you have found in articles that "huge" animals were found to eat both "large" and "medium" animals, and exceptionnally "small" animals, this is summarized by the 49%, 49% and 2% numbers in the first column. As for the stomachal data, **all** trophic groups should be entered in the matrix (even the "small" animals that are at the base of the ecosystem and are known to eat nobody).
+
+These priors will be used for two things:
+
+1. Each number > 0 will be used to create a possible trophic link that will be investigated by the model (more on this later).
+
+2. All numbers are entered as the alpha parameters for the prior Dirichlet distributions of the diet proportion estimators.
+
 ## Preprocess the data
 
-* You first need to have loaded your csv files as shown previously. If you have a specific CSV format, you can try to use the `sep` argument to load your data:
+* You first need to have loaded your CSV files as shown previously. 
+
+If you have your files in a `data` folder and in a specific CSV format (semicolon separated, and not coma separated), you can try this:
 ```{r, eval = FALSE}
-example_stomach_data <- read.csv("my_stomach_data.csv", sep = ";")
-example_isotope_data <- read.csv("my_isotope_data.csv", sep = ";")
+example_stomach_data    <- read.csv("./data/my_stomach_data.csv",    sep = ";")
+example_isotope_data    <- read.csv("./data/my_isotope_data.csv",    sep = ";")
+example_literature_diets <- read.csv("./data/my_literature_diets.csv", sep = ";")
 ```
 
 * You need to define the trophic enrichment factors that corresponds to your isotopic data. If your isotopic data files contains d13C and d15N data as in the example, then you should enter the trophic enrichment factors for the d13C and d15N isotopes (in that order):
@@ -80,9 +100,9 @@ example_isotope_data <- read.csv("my_isotope_data.csv", sep = ";")
 trophic_enrichment_factor = c(0.8, 3.4)
 ```
 
-* You also need to precise that you won't use priors from the literature in the model:
+* You also need to precise that you will use priors from the literature in the model:
 ```{r, eval = FALSE}
-literature_prior = FALSE
+literature_prior = TRUE
 ```
 
 * The `preprocess_data` function then check and rearrange the data in a specific format for the EcoDiet model to be able to run:
@@ -90,7 +110,8 @@ literature_prior = FALSE
 data <- preprocess_data(stomach_data = example_stomach_data, 
                         isotope_data = example_isotope_data,
                         trophic_enrichment_factor = c(0.8, 3.4),
-                        literature_prior = FALSE)
+                        literature_prior = TRUE,
+                        literature_diets = example_literature_diets)
 ```
 
 If an error appears, it means your data is not in the correct format. Please read the error message and try to make your data follow the example csv files.
@@ -99,27 +120,16 @@ If an error appears, it means your data is not in the correct format. Please rea
 
 The last message tells you to check the trophic links that will be investigated by the model. You cannot assume that all the trophic links are possible (a matrix filled with only ones) or your model will never converge. You therefore need to keep only the reasonnable trophic links (e.g., a whale cannot eat a shrimp). 
 
-The matrix displayed by the `preprocess_data` function is based on the stomachal data but you can add another trophic link if you think it is important. For example, if I want to say that the "huge" animal can also eat "small" animals (even if none was found in the huge's stomachs), I can edit the trophic links matrix this way:
+The matrix displayed by the `preprocess_data` function is based on the stomachal data and the literature diets. If you want to add another trophic link, you can just modify the literature diets to add a small number for the prey-predator couple for which you want to add a trophic link.
 
-```{r}
-trophic_links <- 1 * (data$o > 0)
-trophic_links[4, 1] <- 1
-
-data <- preprocess_data(stomach_data = example_stomach_data, 
-                        isotope_data = example_isotope_data,
-                        trophic_enrichment_factor = c(0.8, 3.4),
-                        literature_prior = FALSE,
-                        trophic_links = trophic_links)
-```
-
-You can see that the added link appears in the new trophic links matrix. Note that any additional link will make it harder to converge for the model.
+## Ohter possible prior parameters
 
 ## Write the model
 
 Then we need to write the model in the BUGS syntax with the `write_model` function. Note that we need to indicate that we will use uninformative priors here:
 
 ```{r}
-model_string <- write_model(literature_prior = FALSE)
+model_string <- write_model(literature_prior = TRUE)
 ```
 
 ## Run the model

@@ -87,7 +87,7 @@ check_isotope_data <- function(isotope_data, stomach_data){
          "  Please put the same number of trophic groups in both datasets.")
   }
   if (!all(as.vector(sort(unique(isotope_data$group))) == colnames(stomach_data))){
-    stop("The trophic groups in the isotopic data and in the stomachal data should have the same names.\n",
+    stop("The trophic groups in the isotopic data and the stomachal data should have the same names.\n",
          "  But here your trophic groups are called: \"", paste(colnames(stomach_data), collapse = ", "), 
          "\" in your stomachal data, and: \"", paste(sort(unique(isotope_data$group)), collapse = ", "), 
          "\" in your isotopic data.\n",
@@ -124,6 +124,7 @@ check_isotope_data <- function(isotope_data, stomach_data){
 #' @noRd
 
 check_tef_data <- function(trophic_enrichment_factor, isotope_data){
+  
   # Check the format
   if (!is.vector(trophic_enrichment_factor)){
     stop("The trophic enrichment factor should be a vector.\n",
@@ -137,7 +138,8 @@ check_tef_data <- function(trophic_enrichment_factor, isotope_data){
   
   # Check whether the length is consistent with the isotopic data
   if (length(trophic_enrichment_factor) != ncol(isotope_data) - 1){
-    stop("There should be as many trophic enrichment factors as there are chemical elements in the isotopic data.\n",
+    stop("There should be as many trophic enrichment factors as", 
+         "there are chemical elements in the isotopic data.\n",
          "  But here there are actually ", length(trophic_enrichment_factor), 
          " trophic enrichement factors (\"", paste(trophic_enrichment_factor, collapse = ", "), 
          "\") and ", ncol(isotope_data) - 1, " chemical elements (\"", 
@@ -145,8 +147,125 @@ check_tef_data <- function(trophic_enrichment_factor, isotope_data){
   }
 }
 
+#' Check that the literature diets matrix is in a correct format and print an error message if not.
+#' 
+#' @param literature_diets the preprocessed literature diets matrix
+#' @param isotope_data the preprocessed isotopic data
+#' 
+#' @keywords internal
+#' @noRd
 
-#' Load and preprocess the raw data to feed the EcoDiet model
+check_literature_diets <- function(literature_diets, isotope_data){
+  
+  # Check the rows and columns of the literature diets
+  if (ncol(literature_diets) != nrow(literature_diets)){
+    stop("You should have the same number of preys and predators in your literature diets.\n",
+         "  But here you have ", nrow(literature_diets), " preys in the rows (\"", 
+         paste(rownames(literature_diets), collapse = ", "), "\"), and ", 
+         ncol(literature_diets), " predators in the columns (\"", 
+         paste(colnames(literature_diets), collapse = ", "), "\").")
+  }
+  if (!all(colnames(literature_diets) == rownames(literature_diets))){
+    stop("The trophic groups should have the same names in the rows and the columns of the literature diets.\n",
+         "  But here the trophic groups are named \"", 
+         paste(rownames(literature_diets), collapse = ", "), "\" in the rows and \"",
+         paste(colnames(literature_diets), collapse = ", "), "\" in the colums.\n",
+         "  Please rename them to be consistent.")
+  }
+  
+  # Check the coherence between the isotopic data and the literature diets
+  if (length(unique(isotope_data$group)) != ncol(literature_diets)){
+    stop("You should have the same number of trophic groups in your literature diets and your isotopic data.\n",
+         "  But here you have ", ncol(literature_diets), " trophic groups in your literature diets (\"", 
+         paste(colnames(literature_diets), collapse = ", "), "\"), and ", 
+         length(unique(isotope_data$group)), " in your isotopic data (\"", 
+         paste(sort(unique(isotope_data$group)), collapse = ", "), "\").\n",
+         "  Please put the same number of trophic groups in both.")
+  }
+  if (!all(as.vector(sort(unique(isotope_data$group))) == colnames(literature_diets))){
+    stop("The trophic groups in the isotopic data and the literature diets should have the same names.\n",
+         "  But here your trophic groups are called: \"", paste(colnames(literature_diets), collapse = ", "), 
+         "\" in your literature diets, and: \"", paste(sort(unique(isotope_data$group)), collapse = ", "), 
+         "\" in your isotopic data.\n",
+         "  Please rename them to be consistent.")
+  }
+  
+  # Check the content of the literature diets
+  if (!is.numeric(literature_diets)){
+    stop("The literature diets should only contain numbers, and not text.\n",
+         "  Please remove the values that do not correspond to a number.")
+  }
+  if (sum(is.na(literature_diets)) > 0){
+    stop("The literature diets data should not contain NA or NaN.\n",
+         "  But the literature diet estimator for the predator \"",
+         colnames(literature_diets)[which(is.na(literature_diets), arr.ind = T)[, 2][1]],
+         "\" contain abnormal values.\n",
+         "  Please enter a value between 0 and 1 instead.")
+  }
+  if (!all((literature_diets >= 0) & (literature_diets <= 1))){
+    stop("The literature diets should only contain values between 0 and 1.\n",
+         "  Please remove the abnormal values.")
+  }
+  if (!all((colSums(literature_diets) == 0) | (colSums(literature_diets) == 1))){
+    stop("Each column of the literature diets matrix should sum to one or be entirely filled with zeros.\n",
+         "  But it is not the case with the \"", 
+         names(which(((colSums(literature_diets) == 0) | (colSums(literature_diets) == 1)) == FALSE))[1],
+         "\" column.\n  Please change that column.")
+  }
+}
+
+
+#' Check that the literature pedigrees are in a correct format and print an error message if not.
+#' 
+#' @param literature_pedigrees the preprocessed literature diets matrix
+#' @param isotope_data the preprocessed isotopic data
+#' 
+#' @keywords internal
+#' @noRd
+
+check_literature_pedigrees <- function(literature_pedigrees, isotope_data){
+  
+  # Check the rows and columns
+  if (nrow(literature_pedigrees) != 1){
+    stop("The literature pedigrees matrix must have only one row.")
+  }
+  if (ncol(literature_pedigrees) != length(unique(isotope_data$group))){
+    stop("The literature pedigrees matrix should have as many columns as ", 
+         "there are trophic groups in the isotopic data.\n",
+         "  But here there are ", ncol(literature_pedigrees), " columns in the literature pedigree matrix (\"", 
+         paste(colnames(literature_pedigrees), collapse = ", "), "\"), and ", 
+         length(unique(isotope_data$group)), "different trophic groups (\"",
+         paste(unique(isotope_data$group), collapse = ", "), "\") in the isotopic data.\n",
+         "  Please put ", length(unique(isotope_data$group)), " columns in the literature pedigrees matrix.")
+  }
+  if (!all(as.vector(sort(unique(isotope_data$group))) == colnames(literature_pedigrees))){
+    stop("The trophic groups in the isotopic data and literature pedigree should have the same names.\n",
+         "  But here your trophic groups are called: \"", paste(colnames(literature_pedigrees), collapse = ", "), 
+         "\" in your literature pedigree, and: \"", paste(sort(unique(isotope_data$group)), collapse = ", "), 
+         "\" in your isotopic data.\n",
+         "  Please rename them to be consistent.")
+  }
+  
+  # Check the content
+  if (!is.numeric(literature_pedigrees)){
+    stop("The literature pedigrees should only contain numbers, and not text.\n",
+         "  Please remove the values that do not correspond to a number.")
+  }
+  if (sum(is.na(literature_pedigrees)) > 0){
+    stop("The literature pedigrees data should not contain NA or NaN.\n",
+         "  But the literature diet estimator for the predator \"",
+         colnames(literature_pedigrees)[which(is.na(literature_pedigrees), arr.ind = T)[, 2][1]],
+         "\" contain abnormal values.\n",
+         "  Please use 1 as a default value instead.")
+  }
+  if (!all((literature_pedigrees >= 0) & (literature_pedigrees <= 1))){
+    stop("The literature pedigrees should only contain values between 0 and 1.\n",
+         "  Please remove the abnormal values.")
+  }
+}
+
+
+#' Load and preprocess the data to feed the EcoDiet model
 #'
 #' @param stomach_data the table containing the stomachal data in a specific format
 #' @param isotope_data the table containing the isotopic data in the specific format
@@ -163,15 +282,16 @@ check_tef_data <- function(trophic_enrichment_factor, isotope_data){
 #' @export
 
 preprocess_data <- function(stomach_data, isotope_data, 
-                            trophic_enrichment_factor, literature_prior,
-                            element_concentration = 1, trophic_links = NULL){
+                            trophic_enrichment_factor, literature_prior = FALSE,
+                            element_concentration = 1, trophic_links = NULL,
+                            literature_diets = NULL, literature_pedigrees = NULL,
+                            literature_slope = 0.5, nb_literature = 10){
   
   if (!is.logical(literature_prior)){
     stop("The literature_prior should be TRUE or FALSE, not anything else.")
   }
 
   # Rearrange the stomachal data
-  
   if (colnames(stomach_data)[1] == "X"){
     row.names(stomach_data) <- stomach_data[, 1]
     stomach_data[, 1] <- NULL
@@ -186,17 +306,15 @@ preprocess_data <- function(stomach_data, isotope_data,
   
   nb_o <- stomach_data[nrow(stomach_data), ]
   stomach_data <- stomach_data[-nrow(stomach_data), ]
-  nb_group <- ncol(stomach_data)
-  
+
   # Check the isotopic and trophic enrichement factor data
-  
   check_isotope_data(isotope_data, stomach_data)
   check_tef_data(trophic_enrichment_factor, isotope_data)
   
   # Rearrange the isotopic data
-  
   isotope_data <- isotope_data[order(isotope_data$group), ]
   
+  nb_group <- length(unique(isotope_data$group))
   nb_elem <- ncol(isotope_data) - 1
   nb_y <- as.vector(table(isotope_data$group))
 
@@ -209,23 +327,46 @@ preprocess_data <- function(stomach_data, isotope_data,
   }
   
   # Construct the element concentration matrix
-  
   if (length(element_concentration) == 1){
     element_concentration <- matrix(element_concentration, nrow = nb_elem, ncol = nb_group)
   }
   
-  # Construct the binary web matrix from the stomachal data
+  if (literature_prior){
+    # Check that the user entered a literature diets matrix
+    if (is.null(literature_diets)){
+      stop("You need to enter a literature diets matrix if you want to use ",
+           "the function `preprocess_data` with the argument `literature_prior = TRUE`.")
+    }
+    
+    # Re-arrange the literature diets matrix
+    if (colnames(literature_diets)[1] == "X"){
+      row.names(literature_diets) <- literature_diets[, 1]
+      literature_diets[, 1] <- NULL
+    }
+    
+    literature_diets <- literature_diets[, order(colnames(literature_diets))]
+    literature_diets <- literature_diets[order(rownames(literature_diets)), ]
+    literature_diets <- as.matrix(literature_diets)
+    
+    # Check the literature diets matrix
+    check_literature_diets(literature_diets, isotope_data)
+  }
   
+  # Construct the binary web matrix from the stomachal data (and the literature diets if it is defined)
   if (is.null(trophic_links)){
-    trophic_links <- 1 * (stomach_data > 0)
+    if (literature_prior){
+      trophic_links <- 1 * ((stomach_data > 0) | (literature_diets > 0))
+    } else {
+      trophic_links <- 1 * (stomach_data > 0)
+    }
   } 
   
+  # Print the trophic links
   message("The model will investigate the following trophic links:")
   print(trophic_links)
   message("If you want to add other links, you can define a new matrix with the `trophic_links` argument.\n")
   
   # Constructs the model indices from the binary web matrix
-  
   nb_prey  <- colSums(trophic_links)
   
   list_pred <- as.vector(which(colSums(trophic_links) != 0))
@@ -239,7 +380,6 @@ preprocess_data <- function(stomach_data, isotope_data,
   }
   
   # Create the data list to feed the JAGS function
-  
   data_list <- list(
     y          = y,
     nb_y       = nb_y,
@@ -255,33 +395,31 @@ preprocess_data <- function(stomach_data, isotope_data,
     ZEROS      = matrix(0, nrow = nb_elem, ncol = nb_group),
     ID         = diag(nb_elem)
   )
-  
-  if (literature_prior == TRUE){
     
-    literature_data <- raw_data_list$literature_data
+  if (literature_prior){
     
-    Pedigree_literature_data <- raw_data_list$pedigree_literature_data
-    Ped <- as.matrix(Pedigree_literature_data)
-    Ped <- Ped[ ,order(colnames(Ped))]
+    if (is.null(literature_pedigrees)){
+      # Create the by-default literature pedigree
+      literature_pedigrees <- matrix(1, ncol = nb_group, nrow = 1)
+      colnames(literature_pedigrees) <- unique(isotope_data$group)
+    } else {
+      # Re-arrange & check the literature pedigree entered by the user
+      literature_pedigrees <- literature_pedigrees[, order(colnames(literature_pedigrees))]
+      literature_pedigrees <- as.matrix(literature_pedigrees)
+      
+      check_literature_pedigrees(literature_pedigrees, isotope_data)
+    }
     
-    g_slope_param <- as.vector(raw_data_list$g_slope_param)
-    CV_calc <- 1 - Ped * g_slope_param[1]
+    # Create the coefficients of variation from the literature pedigree and the slope parameter
+    CVs_literature <- 1 - literature_pedigrees * literature_slope
     
-    nb_lit <- as.matrix(raw_data_list$n_lit_param)
-
-    
-    literature_data <- raw_data_list$literature_data
-    priors_lit <- as.matrix(literature_data)
-    priors_lit <- priors_lit[,order(colnames(priors_lit))]
-    priors_lit <- priors_lit[order(rownames(priors_lit)),]
-    
-    
+    # Supplement the data list in the case of priors from the literature
     data_list <- c(data_list, list(
-      ped     = Ped,
-      CVs   = CV_calc,
-      alpha_lit = priors_lit,
-      nb_lit = nb_lit
-    ))
+      alpha_lit = literature_diets,
+      ped       = literature_pedigrees,
+      CVs       = CVs_literature,
+      nb_lit    = nb_literature
+      ))
   }
   
   return(data_list)
