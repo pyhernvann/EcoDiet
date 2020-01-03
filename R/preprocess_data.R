@@ -121,6 +121,12 @@ check_isotope_data <- function(isotope_data, stomach_data){
 
 check_tef_data <- function(trophic_enrichment_factor, isotope_data){
   
+  # Check the format
+  if (!is.null(dim(trophic_enrichment_factor))){
+    stop("The trophic enrichment factor should be a vector, and not a matrix or an array.\n",
+         "  Please enter a vector as in the vignette's example: \"trophic_enrichment_factor = c(0.8, 3.4)\".")
+  }
+  
   # Check the content
   if (!is.double(trophic_enrichment_factor)){
     stop("The trophic enrichment factor should contain only numbers, not text.\n",
