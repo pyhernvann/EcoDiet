@@ -1,10 +1,10 @@
 ---
-title: "Introduction"
+title: "How to use EcoDiet with stomachal and isotopic data"
 author: "Heloise Thero"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Introduction}
+  %\VignetteIndexEntry{How to use EcoDiet with stomachal and isotopic data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -99,12 +99,21 @@ If an error appears, it means your data is not in the correct format. Please rea
 
 The last message tells you to check the trophic links that will be investigated by the model. You cannot assume that all the trophic links are possible (a matrix filled with only ones) or your model will never converge. You therefore need to keep only the reasonnable trophic links (e.g., a whale cannot eat a shrimp). 
 
-The matrix displayed by the `preprocess_data` function is based on the stomachal data but you can add another trophic link if you think it is important. For example, if I want to say that the "huge" animal can also eat "small" animals (even if none was found in the huge's stomachs), I can edit the trophic links matrix this way:
+The matrix displayed by the `preprocess_data` function is based on the stomachal data but you can add another trophic link if you think it is important. For example, if I want to say that the "huge" animal can also eat "small" animals (even if none was found in the huge's stomachs), I can edit the trophic links matrix. This is the by-default trophic links matrix:
 
 ```{r}
 trophic_links <- 1 * (data$o > 0)
-trophic_links[4, 1] <- 1
+print(trophic_links)
+```
 
+And here I add the trophic link that I find important:
+```{r}
+trophic_links["small", "huge"] <- 1
+print(trophic_links)
+```
+
+Now if I enter the new matrix as an argument of the `preprocess_data` function, I can see that the new trophic links matrix is the one being used:
+```{r}
 data <- preprocess_data(stomach_data = example_stomach_data, 
                         isotope_data = example_isotope_data,
                         trophic_enrichment_factor = c(0.8, 3.4),
@@ -112,7 +121,7 @@ data <- preprocess_data(stomach_data = example_stomach_data,
                         trophic_links = trophic_links)
 ```
 
-You can see that the added link appears in the new trophic links matrix. Note that any additional link will make it harder to converge for the model.
+Any additional link will make it harder for the model to converge, so you should not add them ligthly.
 
 ## Write the model
 
