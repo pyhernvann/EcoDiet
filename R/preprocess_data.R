@@ -32,7 +32,7 @@ check_stomach_data <- function(stomach_data){
   
   # Check the content of the stomachal data
   if (!is.integer(stomach_data)){
-    stop("The stomachal data should only contain integer values, and not decimal or character.\n",
+    stop("The stomachal data should only contain integer values, and not decimal values or text.\n",
          "  Please remove the values that do not correspond to a number of stomachs.")
   }
   if (sum(is.na(stomach_data)) > 0){
@@ -95,9 +95,9 @@ check_isotope_data <- function(isotope_data, stomach_data){
   }
   
   # Check the content of the isotopic data
-  if (!is.numeric(as.matrix(isotope_data[, -1]))){
+  if (!is.double(as.matrix(isotope_data[, -1]))){
     stop("The isotope data should only contain numbers, and not text.\n",
-         "  Please remove the values that do not correspond to isotopic measures.")
+         "  Please remove the values that do not correspond to an isotopic measurement.")
   }
   if (sum(is.na(isotope_data[, -1])) > 0){
     stop("The isotopic data should not contain NA or NaN.\n",
@@ -106,10 +106,6 @@ check_isotope_data <- function(isotope_data, stomach_data){
          "\" trophic group for the \"",
          colnames(isotope_data)[which(is.na(isotope_data), arr.ind = T)[, 2][1]], 
          "\" measurement.\n",
-         "  Please enter a number instead or remove the corresponding row.")
-  }
-  if (sum(is.infinite(as.matrix(isotope_data[, -1]))) > 0){
-    stop("The isotopic data should not contain Infinite values (Inf).\n",
          "  Please enter a number instead or remove the corresponding row.")
   }
 }
@@ -125,15 +121,17 @@ check_isotope_data <- function(isotope_data, stomach_data){
 
 check_tef_data <- function(trophic_enrichment_factor, isotope_data){
   
-  # Check the format
-  if (!is.vector(trophic_enrichment_factor)){
-    stop("The trophic enrichment factor should be a vector.\n",
-         "  Please enter a vector as in the vignette example: \"trophic_enrichment_factor = c(0.8, 3.4)\".")
-  }
-  if (!is.numeric(trophic_enrichment_factor)){
-    stop("The trophic enrichment factor should contain only numbers.\n",
+  # Check the content
+  if (!is.double(trophic_enrichment_factor)){
+    stop("The trophic enrichment factor should contain only numbers, not text.\n",
          "  But here are the trophic enrichement factors you entered: ", 
          paste(trophic_enrichment_factor, collapse = ", "), "\n  Please use numbers instead.")
+  }
+  if (sum(is.na(trophic_enrichment_factor)) > 0){
+    stop("The trophic enrichment factor should not contain NA or NaN.\n",
+         "  But we have found a NA for the enrichment factor corresponding to the \"",
+         colnames(isotope_data)[-1][which(is.na(trophic_enrichment_factor))[1]], "\" isotope.\n",
+         "  Please enter a number instead.")
   }
   
   # Check whether the length is consistent with the isotopic data
@@ -191,7 +189,7 @@ check_literature_diets <- function(literature_diets, isotope_data){
   }
   
   # Check the content of the literature diets
-  if (!is.numeric(literature_diets)){
+  if (!is.double(literature_diets)){
     stop("The literature diets should only contain numbers, and not text.\n",
          "  Please remove the values that do not correspond to a number.")
   }
@@ -247,7 +245,7 @@ check_literature_pedigrees <- function(literature_pedigrees, isotope_data){
   }
   
   # Check the content
-  if (!is.numeric(literature_pedigrees)){
+  if (!is.double(literature_pedigrees)){
     stop("The literature pedigrees should only contain numbers, and not text.\n",
          "  Please remove the values that do not correspond to a number.")
   }
