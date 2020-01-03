@@ -115,7 +115,8 @@ write_model <- function(literature_prior = FALSE){
         1 / (s[i] * (is_link_identified[i]) + nb_prey[i] * (1 - is_link_identified[i])), 
         0)
         
-        alpha[k, i] <- (alpha_lit[k, i] + add[k, i]) * iota[i] / psi[i]) + 0.1
+        alpha[k, i] <- ((1 - is_link_identified[i]) + is_link_identified[i] * LAMBDA[k,i]) * 
+                       ((alpha_lit[k, i] + add[k, i]) * iota[i] / psi[i]) + 0.1
         
         rho[k, i] ~ dgamma(alpha[k, i], 1)
         PI[k, i] <- rho[k, i] / sum(rho[list_prey[i, 1:nb_prey[i]], i])
@@ -128,7 +129,7 @@ write_model <- function(literature_prior = FALSE){
     
     for (k in list_prey[i, 1:nb_prey[i]]){
       
-      alpha[k, i] <- ((1 - is_link_identified[i]) + is_link_identified[i] * LAMBDA[k,i]) + 0.1
+      alpha[k, i] <- (1 - is_link_identified[i]) + is_link_identified[i] * LAMBDA[k,i] + 0.1
       rho[k, i] ~ dgamma(alpha[k, i], 1)
       PI[k, i] <- rho[k, i] / sum(rho[list_prey[i, 1:nb_prey[i]], i])
 
