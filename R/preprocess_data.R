@@ -285,7 +285,7 @@ preprocess_data <- function(stomach_data, isotope_data,
                             trophic_enrichment_factor, literature_prior = FALSE,
                             element_concentration = 1, trophic_links = NULL,
                             literature_diets = NULL, literature_pedigrees = NULL,
-                            literature_slope = 0.5, nb_literature = 10){
+                            nb_literature = 10, literature_slope = 0.5){
   
   if (!is.logical(literature_prior)){
     stop("The literature_prior should be TRUE or FALSE, not anything else.")
@@ -400,14 +400,15 @@ preprocess_data <- function(stomach_data, isotope_data,
     
     if (is.null(literature_pedigrees)){
       # Create the by-default literature pedigree
-      literature_pedigrees <- matrix(1, ncol = nb_group, nrow = 1)
-      colnames(literature_pedigrees) <- unique(isotope_data$group)
+      literature_pedigrees <- rep(1, nb_group)
+      names(literature_pedigrees) <- unique(isotope_data$group)
     } else {
       # Re-arrange & check the literature pedigree entered by the user
       literature_pedigrees <- literature_pedigrees[, order(colnames(literature_pedigrees))]
       literature_pedigrees <- as.matrix(literature_pedigrees)
       
       check_literature_pedigrees(literature_pedigrees, isotope_data)
+      literature_pedigrees <- as.vector(literature_pedigrees)
     }
     
     # Create the coefficients of variation from the literature pedigree and the slope parameter
