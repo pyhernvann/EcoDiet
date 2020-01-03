@@ -55,7 +55,7 @@ run_model <- function(model_file, data, inits = NULL,
          "to the number of iterations (\"nb_iter\").\n", "Please decrease it.")
   }
   
-  start_time <- Sys.time()
+  start_run <- Sys.time()
   
   nb_thin <- max(1, floor((nb_iter - nb_burnin)/1000))
   
@@ -78,10 +78,8 @@ run_model <- function(model_file, data, inits = NULL,
   
   save(mcmc_output, file ="mcmc_output.Rdata")
   
-  end_time <- Sys.time()
-  cat("\nTo run, the model took a ")
-  print(end_time - start_time) 
-  cat("\n")
+  duration_run <- Sys.time() - start_run
+  message("The model took ", round(unclass(duration_run), 1), " ", attr(duration_run, "units"), " to run.\n")
   
   print_convergence_diagnostic(mcmc_output)
   
