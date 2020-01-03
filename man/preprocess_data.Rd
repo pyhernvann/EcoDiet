@@ -2,15 +2,19 @@
 % Please edit documentation in R/preprocess_data.R
 \name{preprocess_data}
 \alias{preprocess_data}
-\title{Load and preprocess the raw data to feed the EcoDiet model}
+\title{Load and preprocess the data to feed the EcoDiet model}
 \usage{
 preprocess_data(
   stomach_data,
   isotope_data,
   trophic_enrichment_factor,
-  literature_prior,
+  literature_prior = FALSE,
   element_concentration = 1,
-  trophic_links = NULL
+  trophic_links = NULL,
+  literature_diets = NULL,
+  literature_pedigrees = NULL,
+  nb_literature = 10,
+  literature_slope = 0.5
 )
 }
 \arguments{
@@ -32,5 +36,5 @@ data and the alpha priors if they are defined)}
 a list of preprocessed data, ready to be run by the EcoDiet model
 }
 \description{
-Load and preprocess the raw data to feed the EcoDiet model
+Load and preprocess the data to feed the EcoDiet model
 }
