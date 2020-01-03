@@ -37,9 +37,9 @@ library(EcoDiet)
 
 If you have an error, please try to reinstall everything following [the instructions in the README](https://github.com/heloisethero/EcoDiet/blob/master/README.md)
 
-## Check your data
+## Load and check your data
 
-Your data should be in a specific format to be treated by the package. 
+You can load your data by importing it as `.csv` files. Your data should be in a specific format to be treated by the package. 
 
 * Here is the example stomachal data:
 
@@ -50,11 +50,11 @@ example_stomach_data <- read.csv(example_stomach_data_path)
 knitr::kable(example_stomach_data)
 ```
 
-As you can see, the stomachal data should have the predator names as the column headers, and the first column should contains the prey names. The number represents the number of predator stomachs in which this prey was found. Here for the "huge" animals, 19 full stomachs were analyzed. "Large" animals' dead bodies were found in 17 of these stomachs, and "medium" animals' dead bodies were found in 12 of these stomachs.
+As you can see, the stomachal data should display the predator names in the column headers, and the first column should contain the prey names. The number represents the number of predator stomachs in which this prey was found. Here for the "huge" animals, 19 full stomachs were analyzed. "Large" animals' remaining pieces were found in 17 of these stomachs, and "medium" animals' remaining pieces were found in 12 of these stomachs.
 
-The last row contains the number of full stomachs analyzed for each predator.
+The last row contains the number of non-empty stomachs analyzed for each predator.
 
-Note that you should enter the stomach data for **all** trophic groups, even the groups at the base of your ecosystem for which you did not analyze the stomachs. In that case, the column will be filled with zeros (as with the "small" animals in the example).
+Note that you should enter the stomach data for **all** trophic groups, even the groups at the base of the food-web for which no stomach analysis was conducted. In that case, the column will be filled with zeros (as with the "small" animals in the example).
 
 * Here is the example isotopic data:
 
@@ -65,9 +65,9 @@ example_isotope_data <- read.csv(example_isotope_data_path)
 knitr::kable(example_isotope_data)
 ```
 
-Each line representes one isotope sample, the first column indicates to which group the individual belongs, and the other columns contain the isotopic measures (for isotopes 13C and 15N in our example).
+Each line represents one single individual sampled, the first column indicates to which trophic group it belongs, and the other columns contain the isotopic measurements (isotopes 13C and 15N in our example).
 
-* Here is the example diet priors from the literature:
+* Here is the example diet matrix from the literature:
 
 ```{r}
 example_literature_diets_path <- system.file("extdata", "example_literature_diets.csv",
@@ -76,13 +76,14 @@ example_literature_diets <- read.csv(example_literature_diets_path)
 knitr::kable(example_literature_diets)
 ```
 
-The numbers are a summary of the literature. For example if you have found in articles that "large" animals eat mostly "small" animals and sometimes "medium" animals, this is summarized by the 0.7 and 0.3 values in the last column. As for the stomachal data, **all** trophic groups should be entered in the matrix (even the "small" animals that are at the base of the ecosystem and are known to eat nobody).
+
+The numbers are a summary of the literature study. For example if you have found in articles that "huge" animals were found to eat both "large" and "medium" animals, and exceptionnally "small" animals, this is summarized by the 49%, 49% and 2% numbers in the first column. As for the stomachal data, **all** trophic groups should be entered in the matrix (even the "small" animals that are at the base of the ecosystem and are known to eat nobody).
 
 These priors will be used for three things:
 
 1. Each number > 0 is used to create a possible trophic link that will be investigated by the model (more on this later).
 
-2. All numbers are used as the alpha parameters for the prior Dirichlet distributions of the diet proportion estimators. So the diets estimated from the literature can serve as a prior to estimate the diet proportions from the isotopic data.
+2. All numbers are used as the hyperparameters alpha of the Dirichlet distributions for the diet proportions priors. So the diets estimated from the literature can serve as a prior to estimate the diet proportions from the isotopic data.
 
 3. All numbers will also be used to set the parameters for the prior Beta distributions of the probabilities of a trophic link. For each number > 0, the probabilities will be shiflted toward 1, while for each number = 0, the probabilities will be shifted toward 0.
 
@@ -90,7 +91,7 @@ These priors will be used for three things:
 
 * You first need to have loaded your CSV files as shown previously. 
 
-If you have your files in a `data` folder and in a specific CSV format (semicolon separated, and not coma separated), you can try this:
+If you have your files in a `data` folder and in a specific `.csv` format (semicolon separated, and not coma separated), you can try this:
 ```{r, eval = FALSE}
 example_stomach_data     <- read.csv("./data/my_stomach_data.csv",     sep = ";")
 example_isotope_data     <- read.csv("./data/my_isotope_data.csv",     sep = ";")
@@ -107,7 +108,7 @@ trophic_enrichment_factor = c(0.8, 3.4)
 literature_prior = TRUE
 ```
 
-* The `preprocess_data` function then check and rearrange the data in a specific format for the EcoDiet model to be able to run:
+* The `preprocess_data` function then checks and rearranges the data in a specific format so that the EcoDiet model can be run:
 ```{r}
 data <- preprocess_data(stomach_data = example_stomach_data, 
                         isotope_data = example_isotope_data,
@@ -116,7 +117,7 @@ data <- preprocess_data(stomach_data = example_stomach_data,
                         literature_diets = example_literature_diets)
 ```
 
-If an error appears, it means your data is not in the correct format. Please read the error message and try to make your data follow the example CSV files.
+If any error appears, it means your data is not in the correct format. Please read the error message and try to make your data follow the example csv files.
 
 ## Check the trophic links matrix
 
