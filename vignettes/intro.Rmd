@@ -16,15 +16,15 @@ knitr::opts_chunk$set(
 )
 ```
 
-The goal of EcoDiet is to combine two sources of data: isotopic and stomachal data with priors based on the litterature to model the trophic links and diet matrix.
+The goal of EcoDiet is to combine isotopic and stomach content data with priors based on the litterature to make inferences on the trophic links and diet matrix.
 
 There are two ways to use this package:
 
-* With stomachal and isotopic data, and a study from the literature allowing to set specific priors
+* Default option - Use non informative priors (set by default) - Only stomach content and isotopic data will be used ;
 
-* With stomachal and isotopic data only (so the priors will be uninformative by default)
+* Use informative priors derived from a litterature survey. Informative priors will be combined with stomach contents and isotopic data. 
 
-In this vignette, we will explain the later and simpler use.
+In this vignette, we will explain how to run the default option (non informative prior).
 
 
 ## Load the package
@@ -37,11 +37,11 @@ library(EcoDiet)
 
 If you have an error, please try to reinstall everything following [the instructions in the README](https://github.com/heloisethero/EcoDiet/blob/master/README.md)
 
-## Check your data
+## Check your data format
 
 Your data should be in a specific format to be treated by the package. 
 
-* Here is the example stomachal data:
+* Example of stomach content data:
 
 ```{r}
 example_stomach_data_path <- system.file("extdata", "example_stomach_data.csv",
@@ -50,13 +50,13 @@ example_stomach_data <- read.csv(example_stomach_data_path)
 knitr::kable(example_stomach_data)
 ```
 
-As you can see, the stomachal data should have the predator names as the column headers, and the first column should contains the prey names. The number represents the number of predator stomachs in which this prey was found. Here for the "huge" animals, 19 full stomachs were analyzed. "Large" animals' dead bodies were found in 17 of these stomachs, and "medium" animals' dead bodies were found in 12 of these stomachs.
+As you can see, the stomach content data should have the predator names as the column headers, and the first column should contain the prey names. The number represents the number of predator stomachs in which this prey was found. In this example, for the "huge" animals, 19 full stomachs were analyzed. "Large" animals' dead bodies were found in 17 of these stomachs, and "medium" animals' dead bodies were found in 12 of these stomachs.
 
 The last row contains the number of full stomachs analyzed for each predator.
 
-Note that you should enter the stomach data for **all** trophic groups, even the groups at the base of your ecosystem for which you did not analyze the stomachs. In that case, the column will be filled with zeros (as with the "small" animals in the example).
+Note that you should enter the stomach content data for **all** trophic groups, even the groups at the base of your trophic network for which you did not analyze the stomachs. In that case, the column will be filled with zeros (as with the "small" animals in the example).
 
-* Here is the example isotopic data:
+* Example of isotopic data:
 
 ```{r}
 example_isotope_data_path <- system.file("extdata", "example_isotope_data.csv",
@@ -65,7 +65,7 @@ example_isotope_data <- read.csv(example_isotope_data_path)
 knitr::kable(example_isotope_data)
 ```
 
-Each line representes one isotope sample, the first column indicates to which group the individual belongs, and the other columns contain the isotopic measures (for isotopes 13C and 15N in our example).
+The example correponds to two isotopic data, 13C and 15N. Each line represents one isotope sample, the first column indicates to which group the individual belongs, and the other columns contain the two isotopic measures 13C and 15N.
 
 ## Preprocess the data
 
@@ -93,20 +93,21 @@ data <- preprocess_data(stomach_data = example_stomach_data,
                         literature_prior = FALSE)
 ```
 
-If an error appears, it means your data is not in the correct format. Please read the error message and try to make your data follow the example csv files.
+If an error appears, it means your data is not in the correct format. Please read the error message and try to rearrange the data in the suitable format as in the example.
 
 ## Check the trophic links matrix
 
-The last message tells you to check the trophic links that will be investigated by the model. You cannot assume that all the trophic links are possible (a matrix filled with only ones) or your model will never converge. You therefore need to keep only the reasonnable trophic links (e.g., a whale cannot eat a shrimp). 
+The last message tells you to check the trophic links that will be investigated by the model. It is generally not possible to assume that all the trophic links are possible ( = a matrix filled with only ones), as it generally corresponds to an over-paramaterized model. The number of possible trophic link to be considered a priori must therefore be kept reasonnable (e.g., a whale cannot eat a shrimp). 
 
-The matrix displayed by the `preprocess_data` function is based on the stomachal data but you can add another trophic link if you think it is important. For example, if I want to say that the "huge" animal can also eat "small" animals (even if none was found in the huge's stomachs), I can edit the trophic links matrix. This is the by-default trophic links matrix:
+First, a default topological matrix derived from the stomach content datais proposed by the `preprocess_data`. The by-default topological matrix can be displayed by the following instruction : 
 
 ```{r}
 trophic_links <- 1 * (data$o > 0)
 print(trophic_links)
 ```
 
-And here I add the trophic link that I find important:
+Additional trophic links (= trophic links that do not appear in the stomach content data but that exist a priori in the trophic network) can be added by the user. For example, to specify that the "huge" animal can also eat "small" animals (even if none was found in the huge's stomachs), the topological matrix can be edited and modified as follows:  
+
 ```{r}
 trophic_links["small", "huge"] <- 1
 print(trophic_links)
@@ -121,11 +122,11 @@ data <- preprocess_data(stomach_data = example_stomach_data,
                         trophic_links = trophic_links)
 ```
 
-Any additional link will make it harder for the model to converge, so you should not add them ligthly.
+Note that any additional link will make the trophic network more complex, then more difficult to estimate. 
 
 ## Write the model
 
-Then we need to write the model in the BUGS syntax with the `write_model` function. Note that we need to indicate that we will use uninformative priors here:
+Then we need to write the model in the BUGS syntax with the `write_model` function. The option non informative priors / informative priors must be specified again at this level. 
 
 ```{r}
 model_string <- write_model(literature_prior = FALSE)
@@ -138,21 +139,21 @@ The model will likely take a long time to run, so first we will do a little test
 mcmc_output <- run_model(textConnection(model_string), data)
 ```
 
-The test was done with only a thousand iterations, which was not enough for the model to converge (as you can see from the warning message). So you should re-run your model with a higher number of iterations:
+The test was done with only a thousand iterations (1000 = the number of MCMC iterations by default), which was not enough for the model to converge (as you can see from the warning message). So you should re-run your model with a higher number of iterations:
 ```{r, eval = FALSE}
 mcmc_output <- run_model(textConnection(model_string), data, nb_iter = 1e+06)
 ```
 
 If you again see a warning message being printed, should look at the `model_warnings` vignette for solutions.
 
-## Save the model's mean results
+## Extract model's results
 
 The model's results are automatically saved in a file named `mcmc_ouput` so you can access them using:
 ```{r, eval = FALSE}
 load("mcmc_ouput.Rdata")
 ```
 
-In Bayesian models, the parameters are modelled by probability distributions. So here the model's outputs are the approximated probability distributions for the trophic links between species (LAMBDA parameters) and the diet estimates of a prey for a predator (PI parameters). To summarize these distributions, we can use point estimates like the mean or the median.
+Raw format of model output are MCMC draws of all model parameters, used to approximate Bayesian posterior distributions. By default, MCMC draws are stored for parameters coding for the trophic links between species (LAMBDA parameters) and the diet estimates of a prey for a predator (PI parameters). To summarize these distributions, we can use point estimates like the mean or the median.
 
 We can access the mean (and other statistics) of the variables with the `summary` function:
 
@@ -160,27 +161,25 @@ We can access the mean (and other statistics) of the variables with the `summary
 mcmc_summary <- summary(mcmc_output)$statistics
 print(mcmc_summary)
 ```
-
-And the results can be saved as a CSV:
-```{r, eval = FALSE}
-write.table(mcmc_summary, file = "mcmc_summary.csv", sep = ",")
-```
-
-## Save the model's distribution results
-
-We can also see the quantiles of the distributions. The by-default quantiles are the 2.5%, 25%, 50%, 75% and 97.5% quantiles.
+We can also extract the quantiles of the distributions. The by-default quantiles are the 2.5%, 25%, 50%, 75% and 97.5% quantiles.
 
 ```{r}
 mcmc_quantiles <- summary(mcmc_output)$quantiles
 print(mcmc_quantiles)
 ```
-Because the median is also the 50% quantile, we can thus access the median of the distributions this way.
 
 If needed, we can also change the by-default quantiles, for example to obtain the 5% and the 95% quantiles:
 
 ```{r}
 mcmc_quantiles <- summary(mcmc_output, quantiles = c(0.05, 0.95))$quantiles
 print(mcmc_quantiles)
+```
+
+## Save the model's distribution results
+
+MCMC summary and quantiles can be saved as a CSV:
+```{r, eval = FALSE}
+write.table(mcmc_summary, file = "mcmc_summary.csv", sep = ",")
 ```
 
 The results can again be saved as a CSV:
