@@ -67,6 +67,13 @@ knitr::kable(example_isotope_data)
 
 Each line representes one isotope sample, the first column indicates to which group the individual belongs, and the other columns contain the isotopic measures (for isotopes 13C and 15N in our example).
 
+## Plot the data
+
+You can visualize your data with the `plot_data` function:
+```{r, fig1, fig.height = 4, fig.width = 6, fig.align = "center"}
+plot_data(isotope_data = example_isotope_data)
+```
+
 ## Preprocess the data
 
 * You first need to have loaded your csv files as shown previously. If you have a specific CSV format, you can try to use the `sep` argument to load your data:
