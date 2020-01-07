@@ -86,6 +86,16 @@ These priors will be used for three things:
 
 3. All numbers will also be used to set the parameters for the prior Beta distributions of the probabilities of a trophic link. For each number > 0, the probabilities will be shifted toward 1, while for each number = 0, the probabilities will be shifted toward 0.
 
+## Plot the data
+
+You can visualize your data with the `plot_data` function:
+
+```{r, fig1, fig.height = 4, fig.width = 6, fig.align = "center"}
+plot_data(isotope_data = example_isotope_data,
+          stomach_data = example_stomach_data,
+          literature_diets = example_literature_diets)
+```
+
 ## Preprocess the data
 
 * You first need to have loaded your CSV files as shown previously. 

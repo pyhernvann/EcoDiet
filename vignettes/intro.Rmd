@@ -71,8 +71,10 @@ Note that you should enter the stomach content data for **all** trophic groups, 
 ## Plot the data
 
 You can visualize your data with the `plot_data` function:
+
 ```{r, fig1, fig.height = 4, fig.width = 6, fig.align = "center"}
-plot_data(isotope_data = example_isotope_data)
+plot_data(isotope_data = example_isotope_data,
+          stomach_data = example_stomach_data)
 ```
 
 ## Preprocess the data
