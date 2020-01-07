@@ -271,7 +271,6 @@ check_literature_pedigrees <- function(literature_pedigrees, isotope_data){
 
 #' Load and preprocess the data to feed the EcoDiet model
 #'
-#' @param stomach_data the table containing the stomachal data in a specific format
 #' @param isotope_data the table containing the isotopic data in the specific format
 #' @param trophic_enrichment_factor a vector containing the mean trophic enrichement factor 
 #' corresponding to each column of the isotope data table (except the group column)
@@ -280,14 +279,17 @@ check_literature_pedigrees <- function(literature_pedigrees, isotope_data){
 #' @param trophic_links a potential matrix entered by the user if she wants the model to 
 #' investigate additionnal trophic links (by default it is NULL and defined from the stomach
 #' data and the alpha priors if they are defined)
+#' @param stomach_data the table containing the stomachal data in a specific format
 #' 
 #' @return a list of preprocessed data, ready to be run by the EcoDiet model
 #'
 #' @export
 
-preprocess_data <- function(stomach_data, isotope_data, 
-                            trophic_enrichment_factor, literature_prior = FALSE,
-                            element_concentration = 1, trophic_links = NULL,
+preprocess_data <- function(isotope_data, trophic_enrichment_factor,
+                            literature_prior = FALSE,
+                            trophic_links = NULL,
+                            element_concentration = 1,
+                            stomach_data = NULL,
                             literature_diets = NULL, literature_pedigrees = NULL,
                             nb_literature = 10, literature_slope = 0.5){
   

@@ -5,12 +5,12 @@
 \title{Load and preprocess the data to feed the EcoDiet model}
 \usage{
 preprocess_data(
-  stomach_data,
   isotope_data,
   trophic_enrichment_factor,
   literature_prior = FALSE,
-  element_concentration = 1,
   trophic_links = NULL,
+  element_concentration = 1,
+  stomach_data = NULL,
   literature_diets = NULL,
   literature_pedigrees = NULL,
   nb_literature = 10,
@@ -18,8 +18,6 @@ preprocess_data(
 )
 }
 \arguments{
-\item{stomach_data}{the table containing the stomachal data in a specific format}
-
 \item{isotope_data}{the table containing the isotopic data in the specific format}
 
 \item{trophic_enrichment_factor}{a vector containing the mean trophic enrichement factor 
@@ -31,6 +29,8 @@ prior distributions defined by a study of the literature}
 \item{trophic_links}{a potential matrix entered by the user if she wants the model to 
 investigate additionnal trophic links (by default it is NULL and defined from the stomach
 data and the alpha priors if they are defined)}
+
+\item{stomach_data}{the table containing the stomachal data in a specific format}
 }
 \value{
 a list of preprocessed data, ready to be run by the EcoDiet model

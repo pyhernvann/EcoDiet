@@ -39,7 +39,18 @@ If you have an error, please try to reinstall everything following [the instruct
 
 ## Load and check your data
 
-You can load your data by importing it as `.csv` files. Your data should be in a specific format to be treated by the package. 
+You can load your data by importing it as `.csv` files. Your data should be in a specific format to be treated by the package.
+
+* Here is the example isotopic data:
+
+```{r}
+example_isotope_data_path <- system.file("extdata", "example_isotope_data.csv",
+                                    package = "EcoDiet")
+example_isotope_data <- read.csv(example_isotope_data_path)
+knitr::kable(example_isotope_data)
+```
+
+Each line represents one single individual sampled, the first column indicates to which trophic group it belongs, and the other columns contain the isotopic measurements (isotopes 13C and 15N in our example).
 
 * Here is the example stomachal data:
 
@@ -55,17 +66,6 @@ As you can see, the stomachal data should display the predator names in the colu
 The last row contains the number of non-empty stomachs analyzed for each predator.
 
 Note that you should enter the stomach data for **all** trophic groups, even the groups at the base of the food-web for which no stomach analysis was conducted. In that case, the column will be filled with zeros (as with the "small" animals in the example).
-
-* Here is the example isotopic data:
-
-```{r}
-example_isotope_data_path <- system.file("extdata", "example_isotope_data.csv",
-                                    package = "EcoDiet")
-example_isotope_data <- read.csv(example_isotope_data_path)
-knitr::kable(example_isotope_data)
-```
-
-Each line represents one single individual sampled, the first column indicates to which trophic group it belongs, and the other columns contain the isotopic measurements (isotopes 13C and 15N in our example).
 
 * Here is the example diet matrix from the literature:
 
@@ -110,10 +110,10 @@ literature_prior = TRUE
 
 * The `preprocess_data` function then checks and rearranges the data in a specific format so that the EcoDiet model can be run:
 ```{r}
-data <- preprocess_data(stomach_data = example_stomach_data, 
-                        isotope_data = example_isotope_data,
+data <- preprocess_data(isotope_data = example_isotope_data,
                         trophic_enrichment_factor = c(0.8, 3.4),
                         literature_prior = TRUE,
+                        stomach_data = example_stomach_data,
                         literature_diets = example_literature_diets)
 ```
 
@@ -135,10 +135,10 @@ knitr::kable(example_literature_diets)
 
 So now the trophic links matrix will be modified to take into account "huge" animals eating "small" animals:
 ```{r}
-data <- preprocess_data(stomach_data = example_stomach_data, 
-                        isotope_data = example_isotope_data,
+data <- preprocess_data(isotope_data = example_isotope_data,
                         trophic_enrichment_factor = c(0.8, 3.4),
                         literature_prior = TRUE,
+                        stomach_data = example_stomach_data,
                         literature_diets = example_literature_diets)
 ```
 
@@ -170,10 +170,10 @@ nb_literature = 12
 You can set different values for these parameters with the `preprocess_data` function:
 
 ```{r}
-data <- preprocess_data(stomach_data = example_stomach_data, 
-                        isotope_data = example_isotope_data,
+data <- preprocess_data(isotope_data = example_isotope_data,
                         trophic_enrichment_factor = c(0.8, 3.4),
                         literature_prior = TRUE,
+                        stomach_data = example_stomach_data,
                         literature_diets = example_literature_diets,
                         literature_pedigrees = example_literature_pedigrees,
                         nb_literature = 12,

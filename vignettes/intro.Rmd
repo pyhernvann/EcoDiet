@@ -41,6 +41,17 @@ If you have an error, please try to reinstall everything following [the instruct
 
 Your data should be in a specific format to be treated by the package. 
 
+* Here is the example isotopic data:
+
+```{r}
+example_isotope_data_path <- system.file("extdata", "example_isotope_data.csv",
+                                    package = "EcoDiet")
+example_isotope_data <- read.csv(example_isotope_data_path)
+knitr::kable(example_isotope_data)
+```
+
+Each line representes one isotope sample, the first column indicates to which group the individual belongs, and the other columns contain the isotopic measures (for isotopes 13C and 15N in our example).
+
 * Here is the example stomachal data:
 
 ```{r}
@@ -55,17 +66,6 @@ As you can see, the stomachal data should have the predator names as the column 
 The last row contains the number of full stomachs analyzed for each predator.
 
 Note that you should enter the stomach data for **all** trophic groups, even the groups at the base of your ecosystem for which you did not analyze the stomachs. In that case, the column will be filled with zeros (as with the "small" animals in the example).
-
-* Here is the example isotopic data:
-
-```{r}
-example_isotope_data_path <- system.file("extdata", "example_isotope_data.csv",
-                                    package = "EcoDiet")
-example_isotope_data <- read.csv(example_isotope_data_path)
-knitr::kable(example_isotope_data)
-```
-
-Each line representes one isotope sample, the first column indicates to which group the individual belongs, and the other columns contain the isotopic measures (for isotopes 13C and 15N in our example).
 
 ## Plot the data
 
@@ -94,10 +94,10 @@ literature_prior = FALSE
 
 * The `preprocess_data` function then check and rearrange the data in a specific format for the EcoDiet model to be able to run:
 ```{r}
-data <- preprocess_data(stomach_data = example_stomach_data, 
-                        isotope_data = example_isotope_data,
+data <- preprocess_data(isotope_data = example_isotope_data,
                         trophic_enrichment_factor = c(0.8, 3.4),
-                        literature_prior = FALSE)
+                        literature_prior = FALSE,
+                        stomach_data = example_stomach_data)
 ```
 
 If an error appears, it means your data is not in the correct format. Please read the error message and try to make your data follow the example csv files.
@@ -121,11 +121,11 @@ print(trophic_links)
 
 Now if I enter the new matrix as an argument of the `preprocess_data` function, I can see that the new trophic links matrix is the one being used:
 ```{r}
-data <- preprocess_data(stomach_data = example_stomach_data, 
-                        isotope_data = example_isotope_data,
+data <- preprocess_data(isotope_data = example_isotope_data,
                         trophic_enrichment_factor = c(0.8, 3.4),
                         literature_prior = FALSE,
-                        trophic_links = trophic_links)
+                        trophic_links = trophic_links,
+                        stomach_data = example_stomach_data)
 ```
 
 Any additional link will make it harder for the model to converge, so you should not add them ligthly.
