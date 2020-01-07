@@ -9,17 +9,22 @@
 
 plot_isotope_data <- function(isotope_data){
   
-  figure <- ggplot(isotope_data, aes(x = d13C, y = d15N, colour = group)) +
-    ggtitle("Isotopic data") +
+  figure <- ggplot(isotope_data,
+                   aes(x = isotope_data[, 2],
+                       y = isotope_data[, 3],
+                       colour = group)) +
+    ggtitle("Isotopic data") + 
+    xlab(names(isotope_data)[2]) + 
+    ylab(names(isotope_data)[3]) +
     geom_point(size = 3) +
     scale_colour_brewer(palette = "Paired") +
     guides(colour = guide_legend(byrow = 1, ncol = 1)) +
     theme_bw() +
     theme(panel.grid.major = element_line(colour = "grey"),
-          panel.grid.minor = element_blank(), 
+          panel.grid.minor = element_blank(),
           axis.title.y = element_text(size = 15),
           axis.title.x = element_text(size = 15),
-          axis.text.y = element_text(size = 12), 
+          axis.text.y = element_text(size = 12),
           axis.text.x = element_text(margin = margin(3, 0, 0, 0), size = 12),
           plot.title = element_text(hjust = 0.5))
   
