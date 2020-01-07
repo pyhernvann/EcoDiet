@@ -80,10 +80,11 @@ The numbers are a summary of the literature study. For example if you have found
 
 These priors will be used for three things:
 
-1. Technically, proportions proposed a priori are used as the parameters "alpha" of the Dirichlet distributions used as prior for the diet proportions. By default (no a priori information), the Dirichlet prior is uninforamtive with parameter alpha = 1/k where k is the number of trophic links identified from the stomach content data.  
+1. The proportions are used as priors for the diet proportions, i.e., they are entered as the parameters "alpha" of the Dirichlet prior distributions. By default (no a priori information), the Dirichlet prior is uninformative with parameter alpha = 1/k where k is the number of trophic links.
 
 2. Specifying a priori information on the diet will automatically impact the topological matrix. It means that each number > 0 in the diet matrix will be used to create a possible trophic link that will be investigated by the model (more on this later).
-All numbers will then be used to set the parameters for the prior Beta distributions of the probabilities of a trophic link. For each number > 0, the probabilities will be shiflted toward 1, while for each number = 0, the probabilities will be shifted toward 0.
+
+3. All numbers will also be used to set the parameters for the prior Beta distributions of the probabilities of a trophic link. For each number > 0, the probabilities will be shifted toward 1, while for each number = 0, the probabilities will be shifted toward 0.
 
 ## Preprocess the data
 
@@ -144,12 +145,7 @@ data <- preprocess_data(isotope_data = example_isotope_data,
 
 The literature diets matrix is a crucial input to use the model with priors, as it used to set a prior on both the trophic link probabilities (ETA variables) and the diet proportions (PI variables). 
 
-### Weighting the influence of prior relative to the data
-
-The weight of the informative prior can be modulated using three additionnal options that can be modified by the user (et sinon, y'a t'il des options par défaut ed prévues " ?: 
-- Pedigree
-- Nb Literature
-- Literature slope
+But other parameters allow you to weight the influence of the prior relative to the data. To do so, three additional variables can be modified by the user:
 
 * the `literature_pedigrees` parameters. This allows us to weight the influence of the prior relative to the data. Ideally information on the diets is extracted from studies recently conducted in the same area. But when local and recent data information is missing, it can also come from foreign areas or older periods with eventually different ecosystem structure and functioning, hence less pertinent regarding the case-study. You can down-weight the importance of these priors by setting a low pedigree score for this predator. You need to enter a pedigree score (a number between 0 to 1) for each predator. By default they are all equal to 1. Here is the example literature pedigrees:
 

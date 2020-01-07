@@ -20,7 +20,7 @@ The goal of EcoDiet is to combine isotopic and stomach content data with priors 
 
 There are two ways to use this package:
 
-* Default option - Use non informative priors (set by default) - Only stomach content and isotopic data will be used ;
+* Default option - Only stomach content and isotopic data will be used and non informative priors will be used by default ;
 
 * Use informative priors derived from a litterature survey. Informative priors will be combined with stomach contents and isotopic data. 
 
@@ -187,11 +187,7 @@ print(mcmc_quantiles)
 
 MCMC summary and quantiles can be saved as a CSV:
 ```{r, eval = FALSE}
-write.table(mcmc_summary, file = "mcmc_summary.csv", sep = ",")
-```
-
-The results can again be saved as a CSV:
-```{r, eval = FALSE}
+write.table(mcmc_summary,   file = "mcmc_summary.csv",   sep = ",")
 write.table(mcmc_quantiles, file = "mcmc_quantiles.csv", sep = ",")
 ```
 
