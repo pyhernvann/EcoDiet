@@ -1,4 +1,5 @@
-#' Check the format of the stomachal and isotopic data and print an error message if something is not correct
+#' Check the format of the stomachal and isotopic data and print an error message 
+#' if something is not correct
 #' 
 #' @param stomach_data the almost raw stomachal data
 #' 
@@ -53,7 +54,8 @@ check_stomach_data <- function(stomach_data){
     stop("The stomachal data should not contain values higher than the number of full stomachs analyzed.\n",
          "  But a prey is said to be found in more stomachs ", 
          "than the total number of stomachs for the predators named \"", 
-         paste(names(which(!apply(stomach_data[-nrow(stomach_data), ], 2, max) <= stomach_data[nrow(stomach_data), ])), 
+         paste(names(which(!apply(stomach_data[-nrow(stomach_data), ], 2, max) <= 
+                             stomach_data[nrow(stomach_data), ])), 
                collapse = "\", \""), 
          "\".\n  Please change this number to a normal value.")
   }
@@ -150,6 +152,31 @@ check_tef_data <- function(trophic_enrichment_factor, isotope_data){
          paste(colnames(isotope_data)[-1], collapse = ", "), "\") in the isotopic data.")
   }
 }
+
+#' Check the literature_prior argument
+#' 
+#' @param literature_prior the entered literature prior argument
+#' 
+#' @keywords internal
+#' @noRd
+
+check_literature_prior <- function(literature_prior){
+  
+  # Check that this is a logical vector
+  if (!is.logical(literature_prior)){
+    stop("The literature_prior should be TRUE or FALSE, not anything else.")
+  }
+  
+  # Check that this is a vector of length one
+  if (length(literature_prior) != 1){
+    stop("The literature_prior should have only one element and not many.\n",
+         "  But here it is a vector of lenght ", length(literature_prior), ".\n",
+         "  Please do not enter a literature_prior argument or use either:", 
+         " \"literature_prior = TRUE\" or \"literature_prior = FALSE\".")
+  }
+  
+}
+
 
 #' Check that the literature diets matrix is in a correct format and print an error message if not.
 #' 
@@ -271,7 +298,6 @@ check_literature_pedigrees <- function(literature_pedigrees, isotope_data){
 
 #' Load and preprocess the data to feed the EcoDiet model
 #'
-#' @param stomach_data the table containing the stomachal data in a specific format
 #' @param isotope_data the table containing the isotopic data in the specific format
 #' @param trophic_enrichment_factor a vector containing the mean trophic enrichement factor 
 #' corresponding to each column of the isotope data table (except the group column)
@@ -280,20 +306,19 @@ check_literature_pedigrees <- function(literature_pedigrees, isotope_data){
 #' @param trophic_links a potential matrix entered by the user if she wants the model to 
 #' investigate additionnal trophic links (by default it is NULL and defined from the stomach
 #' data and the alpha priors if they are defined)
+#' @param stomach_data the table containing the stomachal data in a specific format
 #' 
 #' @return a list of preprocessed data, ready to be run by the EcoDiet model
 #'
 #' @export
 
-preprocess_data <- function(stomach_data, isotope_data, 
-                            trophic_enrichment_factor, literature_prior = FALSE,
-                            element_concentration = 1, trophic_links = NULL,
+preprocess_data <- function(isotope_data, trophic_enrichment_factor,
+                            literature_prior = FALSE,
+                            trophic_links = NULL,
+                            element_concentration = 1,
+                            stomach_data = NULL,
                             literature_diets = NULL, literature_pedigrees = NULL,
                             nb_literature = 10, literature_slope = 0.5){
-  
-  if (!is.logical(literature_prior)){
-    stop("The literature_prior should be TRUE or FALSE, not anything else.")
-  }
 
   # Rearrange the stomachal data
   if (colnames(stomach_data)[1] == "X"){
@@ -334,6 +359,8 @@ preprocess_data <- function(stomach_data, isotope_data,
   if (length(element_concentration) == 1){
     element_concentration <- matrix(element_concentration, nrow = nb_elem, ncol = nb_group)
   }
+  
+  check_literature_prior(literature_prior)
   
   if (literature_prior){
     # Check that the user entered a literature diets matrix
