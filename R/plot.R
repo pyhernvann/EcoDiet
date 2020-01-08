@@ -85,18 +85,19 @@ plot_data <- function(isotope_data, stomach_data = NULL, literature_diets = NULL
   
   if (!is.null(stomach_data)){
     
-    # re-arrange the stomachal data before plotting it
+    # Clean the stomach data similarly as in the preprocess_data function except for the commented parts
+    
     if (colnames(stomach_data)[1] == "X"){
-      stomach_data[-1] <- data.frame(lapply(stomach_data[-1], function(X) X/X[nrow(stomach_data)]))
       row.names(stomach_data) <- stomach_data[, 1]
       stomach_data[, 1] <- NULL
-    } else {
-      stomach_data <- data.frame(lapply(stomach_data, function(X) X/X[nrow(stomach_data)]))
     }
+    
+    # Divide the number of stomachs by the total number of full stomachs to obtain proportions
+    stomach_data[] <- lapply(stomach_data, function(X) X/X[nrow(stomach_data)])
+    # Remove the NA caused by division by zero for the trophic groups at the base of the ecosystem
     stomach_data[is.na(stomach_data)] <- 0
     
     stomach_data <- stomach_data[-nrow(stomach_data), ]
-    
     stomach_data <- stomach_data[, order(colnames(stomach_data))]
     stomach_data <- stomach_data[order(rownames(stomach_data)), ]
     
