@@ -11,9 +11,9 @@ vignette: >
 
 This vignette concerns the case in which you had warnings for the `run_model` function.
 
-* The 'adaptation incomplete' warning means that the samplers still aren't optimised for your model after the adaptation phase. It means that JAGS doesn't think that it has adapted them to the optimal state. This tends to happen in complex models.
+* The 'adaptation incomplete' warning means that the samplers aren't optimised for your model after the adaptation phase. It means that JAGS doesn't think that it has adapted them to the optimal state. This tends to happen in complex models.
 
-* The 'convergence problem' warning means that the Gelman-Rubin diagnostic stayed above 1.1 for at least one variable. We are using the Gelman-Rubin statistic (or potential scale reduction factor) to measure convergence for each variable. The full statistic is saved as `convergence_diagnostic`, and you can acess it using:
+* The 'convergence problem' warning means that the Gelman-Rubin diagnostic stayed above 1.1 for at least one variable. The Gelman-Rubin statistic is used to measure convergence for each variable. The full statistic is saved as `convergence_diagnostic`, and you can acess it using:
 ```{r, eval = FALSE}
 load("convergence_diagnostic.Rdata")
 View(gelman)
@@ -22,7 +22,7 @@ It will allow you to understand which variables has not converged properly (the 
 
 There are a few solutions that can be tried to eliminate the warnings.
 
-Of course before running the model, we neet to have preprocessed the data and written the model:
+Of course before running the model, you need to have preprocessed the data and written the model:
 
 ```{r}
 library(EcoDiet)
@@ -56,9 +56,9 @@ mcmc_output <- run_model(textConnection(model_string), data, nb_iter = 1e+06, nb
 
 ## Specify initial values for the model
 
-The next other thing that can be tried is to define starting points from which to run the MCMC chains. By default JAGS will use the prior distributions to randomly fix the starting points of the chains, which can cause problems. 
+The next step might be to define starting values from which to run the MCMC chains. By default JAGS will use the prior distributions to randomly fix the starting values of the chains, which can cause problems.
 
-You can try manually specifying better initial values, i.e., values that we know are close to the values we want the model to converge to. This way the model should be faster to converge because it is given a good start.
+You can manually specify better initial values, i.e., values that you know are close to the values you want the model to converge to. This way the model should be faster to converge because it is given a good start.
 
 ## Conclusions
 

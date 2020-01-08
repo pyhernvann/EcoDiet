@@ -24,7 +24,7 @@ There are two ways to use this package:
 
 * Use informative priors derived from a litterature survey. Informative priors will be combined with stomach contents and isotopic data. 
 
-In this vignette, we will explain how to run the default option (non informative prior).
+In this vignette, the default option (with uninformative prior) will be explained.
 
 
 ## Load the package
@@ -35,14 +35,13 @@ The first thing to do is to load the EcoDiet package.
 library(EcoDiet)
 ```
 
-If you have an error, please try to reinstall everything following [the instructions in the README](https://github.com/heloisethero/EcoDiet/blob/master/README.md)
+EcoDiet requires the installation of JAGS (see [the README](https://github.com/heloisethero/EcoDiet/blob/master/README.md) if you have an error).
 
 ## Check your data format
 
-Your data should be in a specific format to be treated by the package. 
+You can load your data by importing it from `.csv` files. Your data should be in a specific format to be treated by the package.
 
-
-* Here is the example isotopic data:
+* Isotopic data:
 
 ```{r}
 example_isotope_data_path <- system.file("extdata", "example_isotope_data.csv",
@@ -51,9 +50,9 @@ example_isotope_data <- read.csv(example_isotope_data_path)
 knitr::kable(example_isotope_data)
 ```
 
-Each line representes one isotope sample, the first column indicates to which group the individual belongs, and the other columns contain the isotopic measures (for isotopes 13C and 15N in our example).
+Each line represents one isotope sample, the first column indicates to which group the individual belongs, and the other columns contain the isotopic measures (for isotopes 13C and 15N in our example).
 
-* Here is the example stomachal data:
+* Stomachal data:
 
 ```{r}
 example_stomach_data_path <- system.file("extdata", "example_stomach_data.csv",
@@ -79,7 +78,9 @@ plot_data(isotope_data = example_isotope_data,
 
 ## Preprocess the data
 
-* You first need to have loaded your csv files as shown previously. If you have a specific CSV format, you can try to use the `sep` argument to load your data:
+* You first need to have loaded your `.csv` files as shown previously. 
+
+If you have your files in a `data` folder and in a specific `.csv` format (semicolon separated, and not coma separated), you should add the `data` folder in the path and use the `sep` argument to load your data:
 ```{r, eval = FALSE}
 example_stomach_data <- read.csv("my_stomach_data.csv", sep = ";")
 example_isotope_data <- read.csv("my_isotope_data.csv", sep = ";")
@@ -95,7 +96,7 @@ trophic_enrichment_factor = c(0.8, 3.4)
 literature_prior = FALSE
 ```
 
-* The `preprocess_data` function then check and rearrange the data in a specific format for the EcoDiet model to be able to run:
+* The `preprocess_data` function then checks and rearranges the data in a specific format so that the EcoDiet model can be run:
 ```{r}
 data <- preprocess_data(isotope_data = example_isotope_data,
                         trophic_enrichment_factor = c(0.8, 3.4),
@@ -107,23 +108,23 @@ If an error appears, it means your data is not in the correct format. Please rea
 
 ## Check the trophic links matrix
 
-The last message tells you to check the trophic links that will be investigated by the model. It is generally not possible to assume that all the trophic links are possible ( = a matrix filled with only ones), as it generally corresponds to an over-paramaterized model. The number of possible trophic link to be considered a priori must therefore be kept reasonnable (e.g., a whale cannot eat a shrimp). 
+The last message tells you to check the trophic links that will be investigated by the model. It is generally not wise to assume that all the trophic links are possible ( = a matrix filled with only ones), as the model will likely be over-paramaterized and have problems to converge. You therefore need to keep only the reasonnable trophic links (e.g., a shrimp cannot eat a whale). 
 
-First, a default topological matrix derived from the stomach content datais proposed by the `preprocess_data`. The by-default topological matrix can be displayed by the following instruction : 
+The matrix displayed by the `preprocess_data` function is based on the stomach content data. If you want to add another trophic link, you can modify directly the topological matrix. The by-default topological matrix can be defined by the following instruction : 
 
 ```{r}
 trophic_links <- 1 * (data$o > 0)
 print(trophic_links)
 ```
 
-Additional trophic links (= trophic links that do not appear in the stomach content data but that exist a priori in the trophic network) can be added by the user. For example, to specify that the "huge" animal can also eat "small" animals (even if none was found in the huge's stomachs), the topological matrix can be edited and modified as follows:  
+Additional trophic links (= trophic links that do not appear in the stomach content data but that you know to exist in the trophic network) can be added by hand. For example, to specify that the "huge" animal can also eat "small" animals (even if none was found in the huge's stomachs), you can do:  
 
 ```{r}
 trophic_links["small", "huge"] <- 1
 print(trophic_links)
 ```
 
-Now if I enter the new matrix as an argument of the `preprocess_data` function, I can see that the new trophic links matrix is the one being used:
+Now the new topological matrix can be entered as an argument of the `preprocess_data` function, and you can see that the new trophic links matrix will be investigated by the model:
 ```{r}
 data <- preprocess_data(isotope_data = example_isotope_data,
                         trophic_enrichment_factor = c(0.8, 3.4),
@@ -132,11 +133,9 @@ data <- preprocess_data(isotope_data = example_isotope_data,
                         stomach_data = example_stomach_data)
 ```
 
-Note that any additional link will make the trophic network more complex, then more difficult to estimate. 
-
 ## Write the model
 
-Then we need to write the model in the BUGS syntax with the `write_model` function. The option non informative priors / informative priors must be specified again at this level. 
+The `write_model` function writes the model in the BUGS syntax. The option non informative priors / informative priors must be specified again at this level. 
 
 ```{r}
 model_string <- write_model(literature_prior = FALSE)
@@ -144,7 +143,8 @@ model_string <- write_model(literature_prior = FALSE)
 
 ## Run the model
 
-The model will likely take a long time to run, so first we will do a little test by trying:
+Run the model is a long process. So first do this to run a quick test:
+
 ```{r}
 mcmc_output <- run_model(textConnection(model_string), data)
 ```
@@ -154,7 +154,7 @@ The test was done with only a thousand iterations (1000 = the number of MCMC ite
 mcmc_output <- run_model(textConnection(model_string), data, nb_iter = 1e+06)
 ```
 
-If you again see a warning message being printed, should look at the `model_warnings` vignette for solutions.
+If you see again a warning message being printed, you should look at the `model_warnings` vignette for solutions.
 
 ## Extract model's results
 
@@ -163,22 +163,22 @@ The model's results are automatically saved in a file named `mcmc_ouput` so you 
 load("mcmc_ouput.Rdata")
 ```
 
-Raw format of model output are MCMC draws of all model parameters, used to approximate Bayesian posterior distributions. By default, MCMC draws are stored for parameters coding for the trophic links between species (LAMBDA parameters) and the diet estimates of a prey for a predator (PI parameters). To summarize these distributions, we can use point estimates like the mean or the median.
+Raw format of model output are MCMC draws of all model parameters, used to approximate Bayesian posterior distributions. By default, MCMC draws are stored for parameters coding for the trophic links between species (eta parameters) and the diet estimates of a prey for a predator (PI parameters). To summarize these distributions, point estimates can be used like the mean or the quantiles.
 
-We can access the mean (and other statistics) of the variables with the `summary` function:
+The mean (and other statistics) of the variables can be accessed with the `summary` function:
 
 ```{r}
 mcmc_summary <- summary(mcmc_output)$statistics
 print(mcmc_summary)
 ```
-We can also extract the quantiles of the distributions. The by-default quantiles are the 2.5%, 25%, 50%, 75% and 97.5% quantiles.
+The quantiles of the distributions can also be extracted. The by-default quantiles are the 2.5%, 25%, 50%, 75% and 97.5% quantiles.
 
 ```{r}
 mcmc_quantiles <- summary(mcmc_output)$quantiles
 print(mcmc_quantiles)
 ```
 
-If needed, we can also change the by-default quantiles, for example to obtain the 5% and the 95% quantiles:
+The by-default quantiles cna be changed if needed. This is the instruction to obtain the 5% and the 95% quantiles:
 
 ```{r}
 mcmc_quantiles <- summary(mcmc_output, quantiles = c(0.05, 0.95))$quantiles
