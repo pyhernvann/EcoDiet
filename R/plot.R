@@ -118,3 +118,57 @@ plot_data <- function(isotope_data, stomach_data = NULL, literature_diets = NULL
   }
   
 }
+
+
+#' Extract the means of the posterior distribution for a specific variable (PI or eta) 
+#' in a matrix format (with the predators in the columns, and the preys in the rows)
+#' 
+#' @param mcmc_output the mcmc.list object outputed by the run_model() function
+#' @param variable_to_extract the variable to extract and compute the means (by default PIs are extracted)
+#' 
+#' @keywords internal
+#' @noRd
+
+extract_mean <- function(mcmc_output, variable_to_extract = "PI"){
+  
+  # keep only the means for the relevant variable
+  raw_means <- summary(mcmc_output)$statistics[, "Mean"]
+  raw_means <- raw_means[startsWith(names(raw_means), variable_to_extract)]
+  
+  # prepare an empty matrix with the correct format
+  matrix_mean <- matrix(0, ncol(data$o), ncol(data$o))
+  colnames(matrix_mean) <- rownames(matrix_mean) <- colnames(data$o)
+  
+  for (i in 1:length(raw_means)){
+    # extract the indices that are between the brackets: "PI[2, 4]" -> "2,4"
+    correct_indices <- regmatches(names(raw_means)[i], regexec("\\[(.*?)\\]", names(raw_means)[i]))[[1]][2]
+    # re-format the indices: "2,4" -> c(2L, 4L)
+    correct_indices <- as.integer(strsplit(correct_indices, ",")[[1]])
+    # use the indices to fill the matrix with the correct format
+    matrix_mean[correct_indices[1], correct_indices[2]] <- raw_means[i]
+  }
+  
+  matrix_mean <- as.data.frame(matrix_mean)
+  
+  return(matrix_mean)
+  
+}
+
+
+#' Plot the results of the EcoDiet model.
+#'
+#' @param mcmc_output the mcmc.list object outputed by the run_model() function
+#'
+#' @export
+
+plot_results <- function(mcmc_output){
+  
+  PI_mean <- extract_mean(mcmc_output, variable_to_extract = "PI")
+  plot_matrix(PI_mean, title = "Posterior diet propotions")
+  save(PI_mean, file ="PI_mean.Rdata")
+  
+  eta_mean <- extract_mean(mcmc_output, variable_to_extract = "eta")
+  plot_matrix(eta_mean, title = "Posterior trophic links probabilities")
+  save(eta_mean, file ="eta_mean.Rdata")
+  
+}

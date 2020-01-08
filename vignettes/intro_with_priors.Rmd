@@ -212,38 +212,46 @@ mcmc_output <- run_model(textConnection(model_string), data, nb_iter = 1e+06)
 
 If you see again a warning message being printed, you should look at the `model_warnings` vignette for solutions.
 
-## Save the model's mean results
+## Plot and save the model's main results
 
-The model's results are automatically saved in a file named `mcmc_ouput` so you can access them using:
+In Bayesian models, the parameters are represented by their probability distributions. So here the model's outputs are the approximated probability distributions for the diet propotions (PI) and the trophic links probabilities (eta). To summarize these distributions, we can use point estimates like the mean and visualize it with the `plot_results` function:
+
+```{r, fig2, fig.height = 4, fig.width = 6, fig.align = "center"}
+plot_results(mcmc_output)
+```
+
+The means are automatically saved when running this function so you can access them and save them as `.csv` tables:
+
+```{r, eval = FALSE}
+load("PI_mean.Rdata")
+write.table(PI_mean,  file = "PI_mean.csv",  sep = ",", col.names = NA)
+
+load("eta_mean.Rdata")
+write.table(eta_mean, file = "eta_mean.csv", sep = ",", col.names = NA)
+```
+
+## Save the model's finer results
+
+The model's full results are automatically saved in a file named `mcmc_ouput` so you can access them using:
 ```{r, eval = FALSE}
 load("mcmc_ouput.Rdata")
 ```
 
-Raw format of model output are MCMC draws of all model parameters, used to approximate Bayesian posterior distributions. By default, MCMC draws are stored for parameters coding for the trophic links between species (eta parameters) and the diet estimates of a prey for a predator (PI parameters). To summarize these distributions, point estimates can be used like the mean or the quantiles.
-
-The mean (and other statistics) of the variables can be accessed with the `summary` function:
+The mean and other statistics of the variables can be accessed with the `summary` function:
 
 ```{r}
 mcmc_summary <- summary(mcmc_output)$statistics
-print(mcmc_summary)
+knitr::kable(mcmc_summary)
 ```
-The quantiles of the distributions can also be extracted. The by-default quantiles are the 2.5%, 25%, 50%, 75% and 97.5% quantiles.
+
+The quantiles of the distributions can also be extracted. This is the instruction to obtain the 5%, 10%, 50%, 90% and 95% quantiles (different quantiles can be extracted by changing the `quantiles` argument).
 
 ```{r}
-mcmc_quantiles <- summary(mcmc_output)$quantiles
-print(mcmc_quantiles)
+mcmc_quantiles <- summary(mcmc_output, quantiles = c(0.05, 0.1, 0.5, 0.9, 0.95))$quantiles
+knitr::kable(mcmc_quantiles)
 ```
 
-The by-default quantiles cna be changed if needed. This is the instruction to obtain the 5% and the 95% quantiles:
-
-```{r}
-mcmc_quantiles <- summary(mcmc_output, quantiles = c(0.05, 0.95))$quantiles
-print(mcmc_quantiles)
-```
-
-## Save the model's distribution results
-
-MCMC summary and quantiles can be saved as a CSV:
+All these results can be saved as `.csv` tables:
 ```{r, eval = FALSE}
 write.table(mcmc_summary,   file = "mcmc_summary.csv",   sep = ",")
 write.table(mcmc_quantiles, file = "mcmc_quantiles.csv", sep = ",")
