@@ -217,7 +217,7 @@ If you see again a warning message being printed, you should look at the `model_
 In Bayesian models, the parameters are represented by their probability distributions. So here the model's outputs are the approximated probability distributions for the diet propotions (PI) and the trophic links probabilities (eta). To summarize these distributions, we can use point estimates like the mean and visualize it with the `plot_results` function:
 
 ```{r, fig2, fig.height = 4, fig.width = 6, fig.align = "center"}
-plot_results(mcmc_output)
+plot_results(mcmc_output, data)
 ```
 
 The means are automatically saved when running this function so you can access them and save them as `.csv` tables:

@@ -4,10 +4,12 @@
 \alias{plot_results}
 \title{Plot the results of the EcoDiet model.}
 \usage{
-plot_results(mcmc_output)
+plot_results(mcmc_output, data)
 }
 \arguments{
 \item{mcmc_output}{the mcmc.list object outputed by the run_model() function}
+
+\item{data}{the preprocessed data outputed by the preprocess_data() function}
 }
 \description{
 Plot the results of the EcoDiet model.
