@@ -230,7 +230,7 @@ load("eta_mean.Rdata")
 write.table(eta_mean, file = "eta_mean.csv", sep = ",", col.names = NA)
 ```
 
-## Plot and save the full results (the probability densities)
+## Plot the full results (the probability densities)
 
 You can also plot the full results by visualizing the probability densities for the `PI` and `eta` variables (each different figure corresponds to one predator):
 
@@ -238,29 +238,26 @@ You can also plot the full results by visualizing the probability densities for 
 plot_full_results(mcmc_output, data)
 ```
 
+## Save the full results
+
 The model's full results are automatically saved in a file named `mcmc_ouput` so you can access them using:
-```{r, eval = FALSE}
-load("mcmc_ouput.Rdata")
-```
-
-The mean and other statistics of the variables can be accessed with the `summary` function:
 
 ```{r}
-mcmc_summary <- summary(mcmc_output)$statistics
-knitr::kable(mcmc_summary)
+load("mcmc_output.Rdata")
+knitr::kable(head(mcmc_output))
 ```
 
-The quantiles of the distributions can also be extracted. This is the instruction to obtain the 5%, 10%, 50%, 90% and 95% quantiles (different quantiles can be extracted by changing the `quantiles` argument).
+You can now compute any summary statistics that you need, on top of the mean. For example if you want the median (thus the 50% quantile), and the 5% and the 95% quantiles of your distribution, you can use:
 
 ```{r}
-mcmc_quantiles <- summary(mcmc_output, quantiles = c(0.05, 0.1, 0.5, 0.9, 0.95))$quantiles
-knitr::kable(mcmc_quantiles)
+quantiles <- apply(mcmc_output, 2, function(X) quantile(X, probs = c(0.05, 0.5, 0.95)))
+quantiles <- signif(quantiles, digits = 2)
+knitr::kable(quantiles)
 ```
 
-All these results can be saved as `.csv` tables:
+The quantiles can finally be saved as `.csv` tables:
 ```{r, eval = FALSE}
-write.table(mcmc_summary,   file = "mcmc_summary.csv",   sep = ",")
-write.table(mcmc_quantiles, file = "mcmc_quantiles.csv", sep = ",")
+write.table(quantiles, file = "quantiles.csv", sep = ",", col.names = NA)
 ```
 
 ## Environment on which this vignette has been run
@@ -268,4 +265,3 @@ write.table(mcmc_quantiles, file = "mcmc_quantiles.csv", sep = ",")
 ```{r}
 devtools::session_info()
 ```
-

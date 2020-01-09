@@ -134,7 +134,7 @@ plot_data <- function(isotope_data, stomach_data = NULL, literature_diets = NULL
 extract_mean <- function(mcmc_output, data, variable_to_extract = "PI"){
   
   # keep only the means for the relevant variable
-  raw_means <- summary(mcmc_output)$statistics[, "Mean"]
+  raw_means <- colMeans(mcmc_output)
   raw_means <- raw_means[startsWith(names(raw_means), variable_to_extract)]
   
   # prepare an empty matrix with the correct format
@@ -156,6 +156,25 @@ extract_mean <- function(mcmc_output, data, variable_to_extract = "PI"){
   
 }
 
+#' Plot the main results of the EcoDiet model (the means of each variable)
+#'
+#' @param mcmc_output the mcmc.list object outputed by the run_model() function
+#' @param data the preprocessed data outputed by the preprocess_data() function
+#'
+#' @export
+
+plot_results <- function(mcmc_output, data){
+  
+  PI_mean <- extract_mean(mcmc_output, data, variable_to_extract = "PI")
+  plot_matrix(PI_mean, title = "Posterior diet propotions")
+  save(PI_mean, file ="PI_mean.Rdata")
+  
+  eta_mean <- extract_mean(mcmc_output, data, variable_to_extract = "eta")
+  plot_matrix(eta_mean, title = "Posterior trophic links probabilities")
+  save(eta_mean, file ="eta_mean.Rdata")
+  
+}
+
 #' Plot the probability densities for a given variable
 #' 
 #' @param mcmc_output the mcmc.list object outputed by the run_model() function
@@ -170,8 +189,7 @@ extract_mean <- function(mcmc_output, data, variable_to_extract = "PI"){
 
 plot_probability_densities <- function(mcmc_output, data, variable_to_extract = "PI", 
                                        title = "Posterior diet proportions"){
-  # Re-format the mcmc.list as a matrix to align the different chains
-  mcmc_output <- as.matrix(mcmc_output)
+  
   # Keep only the variable of interest
   mcmc_output <- mcmc_output[, startsWith(colnames(mcmc_output), variable_to_extract)]
   
@@ -213,25 +231,6 @@ plot_probability_densities <- function(mcmc_output, data, variable_to_extract = 
   }
 }
 
-
-#' Plot the main results of the EcoDiet model (the means of each variable)
-#'
-#' @param mcmc_output the mcmc.list object outputed by the run_model() function
-#' @param data the preprocessed data outputed by the preprocess_data() function
-#'
-#' @export
-
-plot_results <- function(mcmc_output, data){
-  
-  PI_mean <- extract_mean(mcmc_output, data, variable_to_extract = "PI")
-  plot_matrix(PI_mean, title = "Posterior diet propotions")
-  save(PI_mean, file ="PI_mean.Rdata")
-  
-  eta_mean <- extract_mean(mcmc_output, data, variable_to_extract = "eta")
-  plot_matrix(eta_mean, title = "Posterior trophic links probabilities")
-  save(eta_mean, file ="eta_mean.Rdata")
-  
-}
 
 
 #' Plot the main results of the EcoDiet model (the means of each variable)

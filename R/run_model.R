@@ -76,12 +76,14 @@ run_model <- function(model_file, data, inits = NULL,
     n.iter = (nb_iter - nb_burnin),
     thin = nb_thin)
   
-  save(mcmc_output, file ="mcmc_output.Rdata")
-  
   duration_run <- Sys.time() - start_run
   message("The model took ", round(unclass(duration_run), 1), " ", attr(duration_run, "units"), " to run.\n")
   
   print_convergence_diagnostic(mcmc_output)
+  
+  mcmc_output <- as.matrix(mcmc_output)
+  mcmc_output[] <- signif(mcmc_output, digits = 2)
+  save(mcmc_output, file ="mcmc_output.Rdata")
   
   return(mcmc_output)
 }
