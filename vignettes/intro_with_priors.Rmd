@@ -212,7 +212,7 @@ mcmc_output <- run_model(textConnection(model_string), data, nb_iter = 1e+06)
 
 If you see again a warning message being printed, you should look at the `model_warnings` vignette for solutions.
 
-## Plot and save the model's main results
+## Plot and save the model's mean results
 
 In Bayesian models, the parameters are represented by their probability distributions. So here the model's outputs are the approximated probability distributions for the diet propotions (PI) and the trophic links probabilities (eta). To summarize these distributions, we can use point estimates like the mean and visualize it with the `plot_results` function:
 
@@ -230,7 +230,13 @@ load("eta_mean.Rdata")
 write.table(eta_mean, file = "eta_mean.csv", sep = ",", col.names = NA)
 ```
 
-## Save the model's finer results
+## Plot and save the full results (the probability densities)
+
+You can also plot the full results by visualizing the probability densities for the `PI` and `eta` variables (each different figure corresponds to one predator):
+
+```{r, fig3, fig.height = 4, fig.width = 6, fig.align = "center"}
+plot_full_results(mcmc_output, data)
+```
 
 The model's full results are automatically saved in a file named `mcmc_ouput` so you can access them using:
 ```{r, eval = FALSE}
