@@ -307,6 +307,10 @@ check_literature_pedigrees <- function(literature_pedigrees, isotope_data){
 #' investigate additionnal trophic links (by default it is NULL and defined from the stomach
 #' data and the alpha priors if they are defined)
 #' @param stomach_data the table containing the stomachal data in a specific format
+#' @param literature_diets the diet proportions and their associated pedigrees found in the literature
+#' @param nb_literature the equivalent number of stomach for the literature priors
+#' @param literature_slope the slope of the linear relationship between the pedigrees 
+#' and the PIs' coefficients of variation (CVs)
 #' 
 #' @return a list of preprocessed data, ready to be run by the EcoDiet model
 #'
@@ -318,7 +322,7 @@ preprocess_data <- function(isotope_data, trophic_enrichment_factor,
                             element_concentration = 1,
                             stomach_data = NULL,
                             literature_diets = NULL, literature_pedigrees = NULL,
-                            nb_literature = 10, literature_slope = 0.5){
+                            nb_literature, literature_slope){
 
   # Rearrange the stomachal data
   if (colnames(stomach_data)[1] == "X"){
