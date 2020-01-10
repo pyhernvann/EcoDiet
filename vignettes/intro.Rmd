@@ -143,18 +143,19 @@ model_string <- write_model(literature_prior = FALSE)
 
 ## Run the model
 
-Run the model is a long process. So first do this to run a quick test:
+Now that the model is defined, you can use the function `run_model` to run the model. By default the number of MCMC iterations is very low (1,000), it allows you to test if your model is compiling properly. In most of the cases, this low number of iterations is not sufficient to achieve a satisfactory model convergence (as you can see from the warning message):
 
 ```{r}
 mcmc_output <- run_model(textConnection(model_string), data)
 ```
 
-The test was done with only a thousand iterations (1000 = the number of MCMC iterations by default), which was not enough for the model to converge (as you can see from the warning message). So you should re-run your model with a higher number of iterations:
+We advise you to increase the number of iterations until you have met the convergence threshold:
+
 ```{r, eval = FALSE}
 mcmc_output <- run_model(textConnection(model_string), data, nb_iter = 1e+06)
 ```
 
-If you see again a warning message being printed, you should look at the `model_warnings` vignette for solutions.
+If you see again a warning message being printed, you should follow the advices of the corresponding vignette: `vignette("model_warnings")`.
 
 ## Plot and save the model's mean results
 
