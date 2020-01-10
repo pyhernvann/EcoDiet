@@ -1,6 +1,6 @@
 # EcoDiet <img src="man/figures/logo.PNG" align="right" width="120" />
 
-*This is a work in progress!*
+*This is a work in progress!* sacre progress
 
 ## R installation
 
