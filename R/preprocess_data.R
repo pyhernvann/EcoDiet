@@ -295,6 +295,28 @@ check_literature_pedigrees <- function(literature_pedigrees, isotope_data){
   }
 }
 
+#' Check that the numeric parameter entered has the correct format
+#' 
+#' @param numeric_parameter the numeric parameter to check
+#' @param parameter_name its name
+#' 
+#' @keywords internal
+#' @noRd
+
+check_numeric_parameter <- function(numeric_parameter, parameter_name){
+
+  if (!(is.double(numeric_parameter) | is.integer(numeric_parameter))){
+    stop("You need to enter a number for the \"", parameter_name, "\" parameter, and not a text or anything else",
+         ".\n  Please change it.")
+  }
+  
+  if (length(numeric_parameter) != 1){
+    stop("You can enter only one number for the \"", parameter_name, "\" parameter.\n",
+         "  Please put only one value for this parameter.")
+  }
+  
+}
+
 
 #' Load and preprocess the data to feed the EcoDiet model
 #'
@@ -446,6 +468,9 @@ preprocess_data <- function(isotope_data, trophic_enrichment_factor,
       literature_pedigrees <- as.vector(literature_pedigrees)
     }
     
+    check_numeric_parameter(nb_literature, "nb_literature")
+    
+    check_numeric_parameter(literature_slope, "literature_slope")
     # Create the coefficients of variation from the literature pedigree and the slope parameter
     CVs_literature <- 1 - literature_pedigrees * literature_slope
     
