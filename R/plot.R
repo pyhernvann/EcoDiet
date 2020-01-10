@@ -52,6 +52,7 @@ plot_matrix <- function(matrix, title){
   figure <- ggplot(df, aes(x = pred, y = prey, fill = value)) + geom_raster() + theme_bw() +
     scale_x_continuous(labels = colnames(matrix), breaks = seq(1, ncol(matrix))) +
     scale_y_continuous(labels = rev(rownames(matrix)), breaks = seq(1, nrow(matrix))) +
+    scale_fill_gradient(low = "white", high = "midnightblue", limit = c(0, 1)) +
     geom_text(aes(label = round(value, 2))) +
     ggtitle(title) +
     ylab("Preys") +
