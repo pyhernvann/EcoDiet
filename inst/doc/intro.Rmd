@@ -1,0 +1,212 @@
+---
+title: "How to use EcoDiet with stomachal and isotopic data"
+author: "Heloise Thero"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{How to use EcoDiet with stomachal and isotopic data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+The goal of EcoDiet is to combine isotopic and stomach content data with priors based on the litterature to make inferences on the trophic links and diet matrix.
+
+There are two ways to use this package:
+
+* Default option - Only stomach content and isotopic data will be used and non informative priors will be used by default ;
+
+* Use informative priors derived from a litterature survey. Informative priors will be combined with stomach contents and isotopic data. 
+
+In this vignette, the default option (with uninformative prior) will be explained.
+
+
+## Load the package
+
+The first thing to do is to load the EcoDiet package.
+
+```{r}
+library(EcoDiet)
+```
+
+EcoDiet requires the installation of JAGS (see [the README](https://github.com/heloisethero/EcoDiet/blob/master/README.md) if you have an error).
+
+## Check your data format
+
+You can load your data by importing it from `.csv` files. Your data should be in a specific format to be treated by the package.
+
+* Isotopic data:
+
+```{r}
+example_isotope_data_path <- system.file("extdata", "example_isotope_data.csv",
+                                    package = "EcoDiet")
+example_isotope_data <- read.csv(example_isotope_data_path)
+knitr::kable(example_isotope_data)
+```
+
+Each line represents one isotope sample, the first column indicates to which group the individual belongs, and the other columns contain the isotopic measures (for isotopes 13C and 15N in our example).
+
+* Stomachal data:
+
+```{r}
+example_stomach_data_path <- system.file("extdata", "example_stomach_data.csv",
+                                    package = "EcoDiet")
+example_stomach_data <- read.csv(example_stomach_data_path)
+knitr::kable(example_stomach_data)
+```
+
+As you can see, the stomach content data should have the predator names as the column headers, and the first column should contain the prey names. The number represents the number of predator stomachs in which this prey was found. In this example, for the "huge" animals, 19 full stomachs were analyzed. "Large" animals' dead bodies were found in 17 of these stomachs, and "medium" animals' dead bodies were found in 12 of these stomachs.
+
+The last row contains the number of full stomachs analyzed for each predator.
+
+Note that you should enter the stomach content data for **all** trophic groups, even the groups at the base of your trophic network for which you did not analyze the stomachs. In that case, the column will be filled with zeros (as with the "small" animals in the example).
+
+## Plot the data
+
+You can visualize your data with the `plot_data` function:
+
+```{r, fig1, fig.height = 4, fig.width = 6, fig.align = "center"}
+plot_data(isotope_data = example_isotope_data,
+          stomach_data = example_stomach_data)
+```
+
+## Preprocess the data
+
+* You first need to have loaded your `.csv` files as shown previously. 
+
+If you have your files in a `data` folder and in a specific `.csv` format (semicolon separated, and not coma separated), you should add the `data` folder in the path and use the `sep` argument to load your data:
+```{r, eval = FALSE}
+example_stomach_data <- read.csv("my_stomach_data.csv", sep = ";")
+example_isotope_data <- read.csv("my_isotope_data.csv", sep = ";")
+```
+
+* You need to define the trophic enrichment factors that corresponds to your isotopic data. If your isotopic data files contains d13C and d15N data as in the example, then you should enter the trophic enrichment factors for the d13C and d15N isotopes (in that order):
+```{r, eval = FALSE}
+trophic_enrichment_factor = c(0.8, 3.4)
+```
+
+* You also need to precise that you won't use priors from the literature in the model:
+```{r, eval = FALSE}
+literature_prior = FALSE
+```
+
+* The `preprocess_data` function then checks and rearranges the data in a specific format so that the EcoDiet model can be run:
+```{r}
+data <- preprocess_data(isotope_data = example_isotope_data,
+                        trophic_enrichment_factor = c(0.8, 3.4),
+                        literature_prior = FALSE,
+                        stomach_data = example_stomach_data)
+```
+
+If an error appears, it means your data is not in the correct format. Please read the error message and try to rearrange the data in the suitable format as in the example.
+
+## Check the trophic links matrix
+
+The last message tells you to check the trophic links that will be investigated by the model. It is generally not wise to assume that all the trophic links are possible ( = a matrix filled with only ones), as the model will likely be over-paramaterized and have problems to converge. You therefore need to keep only the reasonnable trophic links (e.g., a shrimp cannot eat a whale). 
+
+The matrix displayed by the `preprocess_data` function is based on the stomach content data. If you want to add another trophic link, you can modify directly the topological matrix. The by-default topological matrix can be defined by the following instruction : 
+
+```{r}
+trophic_links <- 1 * (data$o > 0)
+print(trophic_links)
+```
+
+Additional trophic links (= trophic links that do not appear in the stomach content data but that you know to exist in the trophic network) can be added by hand. For example, to specify that the "huge" animal can also eat "small" animals (even if none was found in the huge's stomachs), you can do:  
+
+```{r}
+trophic_links["small", "huge"] <- 1
+print(trophic_links)
+```
+
+Now the new topological matrix can be entered as an argument of the `preprocess_data` function, and you can see that the new trophic links matrix will be investigated by the model:
+```{r}
+data <- preprocess_data(isotope_data = example_isotope_data,
+                        trophic_enrichment_factor = c(0.8, 3.4),
+                        literature_prior = FALSE,
+                        trophic_links = trophic_links,
+                        stomach_data = example_stomach_data)
+```
+
+## Write the model
+
+The `write_model` function writes the model in the BUGS syntax. The option non informative priors / informative priors must be specified again at this level. 
+
+```{r}
+model_string <- write_model(literature_prior = FALSE)
+```
+
+## Run the model
+
+Run the model is a long process. So first do this to run a quick test:
+
+```{r}
+mcmc_output <- run_model(textConnection(model_string), data)
+```
+
+The test was done with only a thousand iterations (1000 = the number of MCMC iterations by default), which was not enough for the model to converge (as you can see from the warning message). So you should re-run your model with a higher number of iterations:
+```{r, eval = FALSE}
+mcmc_output <- run_model(textConnection(model_string), data, nb_iter = 1e+06)
+```
+
+If you see again a warning message being printed, you should look at the `model_warnings` vignette for solutions.
+
+## Plot and save the model's mean results
+
+In Bayesian models, the parameters are represented by their probability distributions. So here the model's outputs are the approximated probability distributions for the diet propotions (PI) and the trophic links probabilities (eta). To summarize these distributions, we can use point estimates like the mean and visualize it with the `plot_results` function:
+
+```{r, fig2, fig.height = 4, fig.width = 6, fig.align = "center"}
+plot_results(mcmc_output, data)
+```
+
+The means are automatically saved when running this function so you can access them and save them as `.csv` tables:
+
+```{r, eval = FALSE}
+load("PI_mean.Rdata")
+write.table(PI_mean,  file = "PI_mean.csv",  sep = ",", col.names = NA)
+
+load("eta_mean.Rdata")
+write.table(eta_mean, file = "eta_mean.csv", sep = ",", col.names = NA)
+```
+
+## Plot the full results (the probability densities)
+
+You can also plot the full results by visualizing the probability densities for the `PI` and `eta` variables (each different figure corresponds to one predator):
+
+```{r, fig3, fig.height = 4, fig.width = 6, fig.align = "center"}
+plot_full_results(mcmc_output, data)
+```
+
+## Save the full results
+
+The model's full results are automatically saved in a file named `mcmc_ouput` so you can access them using:
+
+```{r}
+load("mcmc_output.Rdata")
+knitr::kable(head(mcmc_output))
+```
+
+You can now compute any summary statistics that you need, on top of the mean. For example if you want the median (thus the 50% quantile), and the 5% and the 95% quantiles of your distribution, you can use:
+
+```{r}
+quantiles <- apply(mcmc_output, 2, function(X) quantile(X, probs = c(0.05, 0.5, 0.95)))
+quantiles <- signif(quantiles, digits = 2)
+knitr::kable(quantiles)
+```
+
+The quantiles can finally be saved as `.csv` tables:
+```{r, eval = FALSE}
+write.table(quantiles, file = "quantiles.csv", sep = ",", col.names = NA)
+```
+
+## Environment on which this vignette has been run
+
+```{r}
+devtools::session_info()
+```
+
