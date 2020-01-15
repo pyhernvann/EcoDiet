@@ -373,7 +373,7 @@ preprocess_data <- function(isotope_data, trophic_enrichment_factor,
   nb_elem <- ncol(isotope_data) - 1
   nb_y <- as.vector(table(isotope_data$group))
 
-  y <- array(NA, dim = c(nb_group, max(nb_y) + 1, nb_elem))
+  y <- array(NA, dim = c(nb_group, max(nb_y), nb_elem))
   rownames(y) <- colnames(stomach_data)
   for (el in 1:nb_elem){
     for (grp in 1:nb_group){
