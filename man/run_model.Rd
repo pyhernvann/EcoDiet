@@ -10,7 +10,8 @@ run_model(
   inits = NULL,
   nb_iter = 1000,
   nb_adapt = 1000,
-  nb_burnin = floor(nb_iter/2)
+  nb_burnin = floor(nb_iter/2),
+  variables_to_save = c("eta", "PI")
 )
 }
 \arguments{
