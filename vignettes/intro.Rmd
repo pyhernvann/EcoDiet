@@ -16,16 +16,19 @@ knitr::opts_chunk$set(
 )
 ```
 
-The goal of EcoDiet is to combine isotopic and stomach content data with priors based on the litterature to make inferences on the trophic links and diet matrix.
+The goal of EcoDiet is to combine biotracers and stomach content analyses together with *a priori* knowledge from the literature to simulataneously identify who eats whom in the food web (**topology matrix**), and in which proportions (**diet matrix**). 
 
-There are two ways to use this package:
+More specifically, EcoDiet is an integrated Bayesian model that uses *(i)* stomach content analyses and priors from studies found in the literature to estimate the probability that any trophic link exists *(ii)* biotracers analyses and priors from studies found in the literature to estimate the dietary proportions of each consumer in the food web conditionnally to the trophic links identified.
 
-* Default option - Only stomach content and isotopic data will be used and non informative priors will be used by default ;
+There are two ways of using this package:
 
-* Use informative priors derived from a litterature survey. Informative priors will be combined with stomach contents and isotopic data. 
+* *Default option* - Only stomach content and biotracers data are integrated, and non informative priors will be used;
 
-In this vignette, the default option (with uninformative prior) will be explained.
+* Stomach content and biotracers data are integrated and results from a literature search are used to formulate informative priors. 
 
+In this vignette, we present and detail the first and default option.
+
+Note that biotracers data will be here illustrated by bulk stable isotope only, but EcoDiet could be used to treat other analyses such as fatty acids or specific-compounds stable isotopes.
 
 ## Load the package
 
@@ -37,9 +40,9 @@ library(EcoDiet)
 
 EcoDiet requires the installation of JAGS (see [the README](https://github.com/heloisethero/EcoDiet/blob/master/README.md) if you have an error).
 
-## Check your data format
+## Load and check your data
 
-You can load your data by importing it from `.csv` files. Your data should be in a specific format to be treated by the package.
+Then, you need to load the data you want to be analyzed by EcoDiet. You can load your data by importing it from `.csv` files. To be treated by the package, your data should be in specific formats, similar to those of following examples.
 
 * Isotopic data:
 
@@ -50,7 +53,7 @@ example_isotope_data <- read.csv(example_isotope_data_path)
 knitr::kable(example_isotope_data)
 ```
 
-Each line represents one single individual sampled, the first column indicates to which trophic group it belongs, and the other columns contain the isotopic measurements (isotopes 13C and 15N in our example).
+Each line of the table represents one individual on which were conducted stable isotope analyses. For a given individual, stable isotope analyses can be realized for various elements (carbon and nitrogen in this example). The first column of the table indicates to which trophic group the individual belongs and the others contain the isotopic measurements.
 
 * Stomachal data:
 
@@ -61,11 +64,11 @@ example_stomach_data <- read.csv(example_stomach_data_path)
 knitr::kable(example_stomach_data)
 ```
 
-As you can see, the stomach content data should display the predator names as the column headers, and the first column should contain the prey names. The number represents the number of predator stomachs in which this prey was found. In this example, for the "huge" animals, 19 full stomachs were analyzed. "Large" animals' remaining pieces were found in 17 of these stomachs, and "medium" animals' remaining pieces were found in 12 of these stomachs.
+The stomach content table gathers the sum of occurrences of each prey type in the stomachs of trophic groups. The first column of the table contains the names of the prey and the headers of the following columns contain the names of **all** trophic groups with or without stomach content analyses available: in the case where no analyses were available, as for groups at the base of the trophic network, a column filled with zeros must be provided. 
 
-The last row contains the number of non-empty stomachs analyzed for each predator.
+The last row of the table indicates how many (non-empty) stomachs have been analyzed for each trophic group.
 
-Note that you should enter the stomach content data for **all** trophic groups, even the groups at the base of the food-web for which no stomach analysis was conducted. In that case, the column will be filled with zeros (as with the "small" animals in the example).
+In this example, for the "huge" animals, 19 stomachs were analyzed and contained remainings. Among these stomachs, 17 contain "Large" animal remainings and 12 contain "medium" animal remainings.
 
 ## Plot the data
 
@@ -110,7 +113,7 @@ If any error appears, it means your data is not in the correct format. Please re
 
 The last message tells you to check the trophic links that will be investigated by the model. It is generally not wise to assume that all the trophic links are possible ( = a matrix filled with only ones), as the model will likely be over-paramaterized and have problems to converge. You therefore need to keep only the reasonnable trophic links (e.g., a shrimp cannot eat a whale). 
 
-The matrix displayed by the `preprocess_data` function is based on the stomach content data. If you want to add another trophic link, you can modify directly the topological matrix. The by-default topological matrix can be defined by the following instruction : 
+The matrix displayed by the `preprocess_data` function is based on the stomach content data: by-default, EcoDiet will investigate trophic links only based on what you have found in stomachs analyses. If you want to add another trophic link, you can modify directly the topological matrix. The by-default topological matrix can be defined by the following instruction : 
 
 ```{r}
 trophic_links <- 1 * (data$o > 0)
