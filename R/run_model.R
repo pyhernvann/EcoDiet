@@ -83,7 +83,7 @@ run_model <- function(model_file, data, inits = NULL,
   print_convergence_diagnostic(mcmc_output)
   
   mcmc_output <- as.matrix(mcmc_output)
-  mcmc_output[] <- signif(mcmc_output, digits = 2)
+  # mcmc_output[] <- signif(mcmc_output, digits = 2)
   save(mcmc_output, file ="mcmc_output.Rdata")
   
   return(mcmc_output)

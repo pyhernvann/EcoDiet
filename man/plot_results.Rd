@@ -4,7 +4,13 @@
 \alias{plot_results}
 \title{Plot the main results of the EcoDiet model (the means of each variable)}
 \usage{
-plot_results(mcmc_output, data)
+plot_results(
+  mcmc_output,
+  data,
+  pred = NULL,
+  prey = NULL,
+  variables = c("PI", "eta")
+)
 }
 \arguments{
 \item{mcmc_output}{the mcmc.list object outputed by the run_model() function}

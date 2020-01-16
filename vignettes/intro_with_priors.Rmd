@@ -50,7 +50,7 @@ example_isotope_data <- read.csv(example_isotope_data_path)
 knitr::kable(example_isotope_data)
 ```
 
-Each line represents one isotope sample, the first column indicates to which group the individual belongs, and the other columns contain the isotopic measures (for isotopes 13C and 15N in our example).
+Each line represents one single individual sampled, the first column indicates to which trophic group it belongs, and the other columns contain the isotopic measurements (isotopes 13C and 15N in our example).
 
 * Stomachal data:
 
@@ -61,11 +61,11 @@ example_stomach_data <- read.csv(example_stomach_data_path)
 knitr::kable(example_stomach_data)
 ```
 
-As you can see, the stomach content data should have the predator names as the column headers, and the first column should contain the prey names. The number represents the number of predator stomachs in which this prey was found. In this example, for the "huge" animals, 19 full stomachs were analyzed. "Large" animals' dead bodies were found in 17 of these stomachs, and "medium" animals' dead bodies were found in 12 of these stomachs.
+As you can see, the stomach content data should display the predator names as the column headers, and the first column should contain the prey names. The number represents the number of predator stomachs in which this prey was found. In this example, for the "huge" animals, 19 full stomachs were analyzed. "Large" animals' remaining pieces were found in 17 of these stomachs, and "medium" animals' remaining pieces were found in 12 of these stomachs.
 
-The last row contains the number of full stomachs analyzed for each predator.
+The last row contains the number of non-empty stomachs analyzed for each predator.
 
-Note that you should enter the stomach content data for **all** trophic groups, even the groups at the base of your trophic network for which you did not analyze the stomachs. In that case, the column will be filled with zeros (as with the "small" animals in the example).
+Note that you should enter the stomach content data for **all** trophic groups, even the groups at the base of the food-web for which no stomach analysis was conducted. In that case, the column will be filled with zeros (as with the "small" animals in the example).
 
 * Diet matrix from the literature:
 
@@ -126,7 +126,7 @@ data <- preprocess_data(isotope_data = example_isotope_data,
                         literature_diets = example_literature_diets)
 ```
 
-If an error appears, it means your data is not in the correct format. Please read the error message and try to rearrange the data in the suitable format as in the example.
+If any error appears, it means your data is not in the correct format. Please read the error message and try to rearrange the data in the correct format.
 
 ## Check the trophic links matrix
 
@@ -142,8 +142,8 @@ example_literature_diets[4, 2] <- 0.49
 knitr::kable(example_literature_diets)
 ```
 
-So now you can see that the trophic links matrix will be modified to take into account "huge" animals eating "small" animals:
-```{r, eval = FALSE}
+Now you can see that the new trophic links matrix will be investigated by the model:
+```{r}
 data <- preprocess_data(isotope_data = example_isotope_data,
                         trophic_enrichment_factor = c(0.8, 3.4),
                         literature_prior = TRUE,
@@ -153,7 +153,7 @@ data <- preprocess_data(isotope_data = example_isotope_data,
 
 ## Other possible parameters impacting the prior distributions
 
-The literature diets matrix is a crucial input to use the model with priors, as it used to set a prior on both the trophic link probabilities (eta variables) and the diet proportions (PI variables). 
+The literature diets matrix is a crucial input to use the model with priors, as it used to set a prior on both the trophic link probabilities ("eta" variable) and the diet proportions ("PI" variable). 
 
 But other parameters allow you to weight the influence of the prior relative to the data. To do so, three additional variables can be modified by the user:
 
@@ -213,7 +213,7 @@ mcmc_output <- run_model(textConnection(model_string), data)
 We advise you to increase the number of iterations until you have met the convergence threshold:
 
 ```{r, eval = FALSE}
-mcmc_output <- run_model(textConnection(model_string), data, nb_iter = 1e+06)
+mcmc_output <- run_model(textConnection(model_string), data, nb_iter = 1e6)
 ```
 
 If you see again a warning message being printed, you should follow the advices of the corresponding vignette: `vignette("model_warnings")`.
@@ -236,12 +236,18 @@ load("eta_mean.Rdata")
 write.table(eta_mean, file = "eta_mean.csv", sep = ",", col.names = NA)
 ```
 
-## Plot the full results (the probability densities)
+## Plot the probability densities
 
-You can also plot the full results by visualizing the probability densities for the `PI` and `eta` variables (each different figure corresponds to one predator):
+You can also plot the probability densities for the `PI` variable and for one predator:
 
 ```{r, fig3, fig.height = 4, fig.width = 6, fig.align = "center"}
-plot_full_results(mcmc_output, data)
+plot_results(mcmc_output, data, variables = "PI", pred = "huge")
+```
+
+If you find the plot to contain too much information, you can also precise for which predator you want to see the probability density:
+
+```{r, fig4, fig.height = 4, fig.width = 6, fig.align = "center"}
+plot_results(mcmc_output, data, variables = "PI", pred = "huge", prey = "large")
 ```
 
 ## Save the full results
@@ -250,6 +256,7 @@ The model's full results are automatically saved in a file named `mcmc_ouput` so
 
 ```{r}
 load("mcmc_output.Rdata")
+mcmc_output <- signif(mcmc_output, digits = 2)
 knitr::kable(head(mcmc_output))
 ```
 
@@ -264,6 +271,21 @@ knitr::kable(quantiles)
 The quantiles can finally be saved as `.csv` tables:
 ```{r, eval = FALSE}
 write.table(quantiles, file = "quantiles.csv", sep = ",", col.names = NA)
+```
+
+## Plot the prior distributions
+
+You can also plot the prior distributions by running the model with empty data. To do so, you can use the following instructions:
+
+```{r, fig5, fig.height = 4, fig.width = 6, fig.align = "center"}
+data$o[] <- NA
+data$y[] <- NA
+data$nb_y[] <- 0
+
+mcmc_priors <- run_model(textConnection(model_string), data,
+                         nb_adapt = 1e2, nb_burnin = 1, nb_iter = 1e5)
+
+plot_results(mcmc_priors, data, variables = "PI", pred = "huge")
 ```
 
 ## Save another variable than PI and eta

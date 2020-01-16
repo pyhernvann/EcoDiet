@@ -181,19 +181,30 @@ extract_mean <- function(mcmc_output, data, variable_to_extract = "PI"){
 #'
 #' @export
 
-plot_results <- function(mcmc_output, data){
+plot_results <- function(mcmc_output, data, pred = NULL, prey = NULL, variables = c("PI", "eta")){
   
-  PI_mean <- extract_mean(mcmc_output, data, variable_to_extract = "PI")
-  plot_matrix(PI_mean, title = "Posterior diet propotions")
-  save(PI_mean, file ="PI_mean.Rdata")
-  
-  eta_mean <- extract_mean(mcmc_output, data, variable_to_extract = "eta")
-  plot_matrix(eta_mean, title = "Posterior trophic links probabilities")
-  save(eta_mean, file ="eta_mean.Rdata")
-  
+  for (variable in variables){
+    
+    title <- switch(variable, 
+                    PI = "Posterior diet proportions", 
+                    eta = "Posterior trophic links probabilities")
+    
+    if (is.null(pred) & is.null(prey)){
+      
+      mean <- extract_mean(mcmc_output, data, variable_to_extract = variable)
+      plot_matrix(mean, title = title)
+      save(mean, file = paste0(variable, "_mean.Rdata"))
+      
+    } else {
+      
+      plot_probability_density(mcmc_output, data, pred, prey,
+                               variable_to_extract = variable, title = title)
+    }
+  }
+
 }
 
-#' Plot the probability densities for a given variable
+#' Plot the probability density(ies) for a given variable
 #' 
 #' @param mcmc_output the mcmc.list object outputed by the run_model() function
 #' @param data the preprocessed data outputed by the preprocess_data() function
@@ -205,10 +216,28 @@ plot_results <- function(mcmc_output, data){
 #' @keywords internal
 #' @noRd
 
-plot_probability_densities <- function(mcmc_output, data, variable_to_extract = "PI", 
-                                       title = "Posterior diet proportions"){
+plot_probability_density <- function(mcmc_output, data, pred, prey,
+                                       variable_to_extract, title){
   
-  # Keep only the variable of interest
+  pred_index <- which(colnames(data$o) == pred)
+  if (length(pred_index) == 0){
+    stop("You did not put a correct predator name in the `pred` argument.\n",
+         "  You entered the name \"", pred,"\", while the predator names are actually: \"",
+         paste(colnames(data$o), collapse = "\", \""), "\".\n",
+         "  Please use one of the above names in the `pred` argument.")
+  }
+  
+  if (!is.null(prey)){ 
+    prey_index <- which(colnames(data$o) == prey)
+    if (length(prey_index) == 0){
+      stop("You did not put a correct prey name in the `prey` argument.\n",
+           "  You entered the name \"", prey,"\", while the prey names are actually: \"",
+           paste(colnames(data$o), collapse = "\", \""), "\".\n",
+           "  Please use one of the above names in the `prey` argument.")
+    }
+  }
+  
+  # Keep only the variable of interest (all the "PI" or all the "eta")
   mcmc_output <- mcmc_output[, startsWith(colnames(mcmc_output), variable_to_extract)]
   
   # Create a lookup table between the model output's names and the prey's and predator's indices:
@@ -217,53 +246,37 @@ plot_probability_densities <- function(mcmc_output, data, variable_to_extract = 
   #     2 PI[3,1]    3    1
   #     3 PI[3,2]    3    2
   lookup <- sapply(colnames(mcmc_output), function(X) regmatches(X, regexec("\\[(.*?)\\]", X))[[1]][2])
-  lookup_table <- data.frame(names = colnames(mcmc_output), 
-                             prey = as.integer(substr(lookup, 1, 1)), 
+  lookup_table <- data.frame(names = colnames(mcmc_output),
+                             prey = as.integer(substr(lookup, 1, 1)),
                              pred = as.integer(substr(lookup, 3, 3)),
                              stringsAsFactors = FALSE)
   
-  # Create one plot for each predator
-  for (pred_index in which(data$nb_prey > ifelse(variable_to_extract == "PI", 1, 0))){
-    
-    # Prepare a data frame with the values for the diet proportions for one predator's preys
-    values_to_extract <- mcmc_output[, lookup_table[lookup_table$pred == pred_index, ]$names]
-    prey_names <- colnames(data$o)[lookup_table[lookup_table$pred == pred_index, ]$prey]
-    
-    df_to_plot <- data.frame(Prey = rep(prey_names, each = dim(mcmc_output)[1]),
-                             variable_to_plot = c(values_to_extract))
-    
-    # Plot these values to represent the approximated probability densities for the diet proportions
-    figure <- ggplot(df_to_plot) +
-      geom_density(aes(x = variable_to_plot, y=..scaled.., fill = Prey), alpha = .3) +
-      geom_density(aes(x = variable_to_plot, y=..scaled.., color = Prey), size = 1.25) +
-      ggtitle(paste(title, "\nfor the", colnames(data$o)[pred_index], "predator")) +
-      ylab("Density") +
-      scale_shape_manual(values = c(seq(1:10))) +
-      guides(colour = guide_legend(byrow = 1, ncol = 1), shape = guide_legend(byrow = 1, ncol = 1)) +
-      xlim(0, 1) +
-      theme_bw() +
-      theme(axis.title.x = element_blank(),
-            plot.title = element_text(hjust = 0.5))
-    
-    plot(figure)
+  # Prepare a data frame with the values for the diet proportions for one predator's preys
+  if (is.null(prey)){
+    variables_to_extract <- lookup_table[lookup_table$pred == pred_index, ]$names
+    prey <- colnames(data$o)[lookup_table[lookup_table$pred == pred_index, ]$prey]
+  } else {
+    variables_to_extract <- lookup_table[(lookup_table$pred == pred_index &
+                                            lookup_table$prey == prey_index), ]$names
   }
+  values_to_extract <- mcmc_output[, variables_to_extract]
+  
+  df_to_plot <- data.frame(Prey = rep(prey, each = dim(mcmc_output)[1]),
+                           variable_to_plot = c(values_to_extract))
+  
+  # Plot these values to represent the approximated probability densities for the diet proportions
+  figure <- ggplot(df_to_plot) +
+    geom_density(aes(x = variable_to_plot, y=..scaled.., fill = Prey), alpha = .3) +
+    geom_density(aes(x = variable_to_plot, y=..scaled.., color = Prey), size = 1.25) +
+    ggtitle(paste(title, "\nfor the", colnames(data$o)[pred_index], "predator")) +
+    ylab("Density") +
+    scale_shape_manual(values = c(seq(1:10))) +
+    guides(colour = guide_legend(byrow = 1, ncol = 1), shape = guide_legend(byrow = 1, ncol = 1)) +
+    xlim(0, 1) +
+    theme_bw() +
+    theme(axis.title.x = element_blank(),
+          plot.title = element_text(hjust = 0.5))
+  
+  plot(figure)
 }
 
-
-
-#' Plot the main results of the EcoDiet model (the means of each variable)
-#'
-#' @param mcmc_output the mcmc.list object outputed by the run_model() function
-#' @param data the preprocessed data outputed by the preprocess_data() function
-#'
-#' @export
-
-plot_full_results <- function(mcmc_output, data){
-  
-  plot_probability_densities(mcmc_output, data, variable_to_extract = "PI", 
-                             title = "Posterior diet proportions")
-  
-  plot_probability_densities(mcmc_output, data, variable_to_extract = "eta",
-                             title = "Posterior trophic links probabilities")
-
-}
