@@ -13,8 +13,8 @@ preprocess_data(
   stomach_data = NULL,
   literature_diets = NULL,
   literature_pedigrees = NULL,
-  nb_literature = 10,
-  literature_slope = 0.5
+  nb_literature,
+  literature_slope
 )
 }
 \arguments{
@@ -31,6 +31,13 @@ investigate additionnal trophic links (by default it is NULL and defined from th
 data and the alpha priors if they are defined)}
 
 \item{stomach_data}{the table containing the stomachal data in a specific format}
+
+\item{literature_diets}{the diet proportions and their associated pedigrees found in the literature}
+
+\item{nb_literature}{the equivalent number of stomach for the literature priors}
+
+\item{literature_slope}{the slope of the linear relationship between the pedigrees 
+and the PIs' coefficients of variation (CVs)}
 }
 \value{
 a list of preprocessed data, ready to be run by the EcoDiet model

@@ -295,6 +295,28 @@ check_literature_pedigrees <- function(literature_pedigrees, isotope_data){
   }
 }
 
+#' Check that the numeric parameter entered has the correct format
+#' 
+#' @param numeric_parameter the numeric parameter to check
+#' @param parameter_name its name
+#' 
+#' @keywords internal
+#' @noRd
+
+check_numeric_parameter <- function(numeric_parameter, parameter_name){
+
+  if (!(is.double(numeric_parameter) | is.integer(numeric_parameter))){
+    stop("You need to enter a number for the \"", parameter_name, "\" parameter, and not a text or anything else",
+         ".\n  Please change it.")
+  }
+  
+  if (length(numeric_parameter) != 1){
+    stop("You can enter only one number for the \"", parameter_name, "\" parameter.\n",
+         "  Please put only one value for this parameter.")
+  }
+  
+}
+
 
 #' Load and preprocess the data to feed the EcoDiet model
 #'
@@ -307,6 +329,10 @@ check_literature_pedigrees <- function(literature_pedigrees, isotope_data){
 #' investigate additionnal trophic links (by default it is NULL and defined from the stomach
 #' data and the alpha priors if they are defined)
 #' @param stomach_data the table containing the stomachal data in a specific format
+#' @param literature_diets the diet proportions and their associated pedigrees found in the literature
+#' @param nb_literature the equivalent number of stomach for the literature priors
+#' @param literature_slope the slope of the linear relationship between the pedigrees 
+#' and the PIs' coefficients of variation (CVs)
 #' 
 #' @return a list of preprocessed data, ready to be run by the EcoDiet model
 #'
@@ -318,7 +344,7 @@ preprocess_data <- function(isotope_data, trophic_enrichment_factor,
                             element_concentration = 1,
                             stomach_data = NULL,
                             literature_diets = NULL, literature_pedigrees = NULL,
-                            nb_literature = 10, literature_slope = 0.5){
+                            nb_literature, literature_slope){
 
   # Rearrange the stomachal data
   if (colnames(stomach_data)[1] == "X"){
@@ -347,7 +373,7 @@ preprocess_data <- function(isotope_data, trophic_enrichment_factor,
   nb_elem <- ncol(isotope_data) - 1
   nb_y <- as.vector(table(isotope_data$group))
 
-  y <- array(NA, dim = c(nb_group, max(nb_y) + 1, nb_elem))
+  y <- array(NA, dim = c(nb_group, max(nb_y), nb_elem))
   rownames(y) <- colnames(stomach_data)
   for (el in 1:nb_elem){
     for (grp in 1:nb_group){
@@ -442,6 +468,9 @@ preprocess_data <- function(isotope_data, trophic_enrichment_factor,
       literature_pedigrees <- as.vector(literature_pedigrees)
     }
     
+    check_numeric_parameter(nb_literature, "nb_literature")
+    
+    check_numeric_parameter(literature_slope, "literature_slope")
     # Create the coefficients of variation from the literature pedigree and the slope parameter
     CVs_literature <- 1 - literature_pedigrees * literature_slope
     

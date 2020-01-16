@@ -1,10 +1,10 @@
 ---
-title: "How to deal with convergence problems"
+title: "Solutions to make your model run well"
 author: "Heloise Thero"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{How to deal with convergence problem}
+  %\VignetteIndexEntry{Solutions to make your model run well}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

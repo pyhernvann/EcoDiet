@@ -1,4 +1,4 @@
-#' Plot the isotopic data with a biplot
+#' Plot the isotopic data with one biplot for each combination of 2 isotopes
 #' 
 #' @param isotope_data the raw isotopic data
 #' 
@@ -9,25 +9,42 @@
 
 plot_isotope_data <- function(isotope_data){
   
-  figure <- ggplot(isotope_data,
-                   aes(x = isotope_data[, 2],
-                       y = isotope_data[, 3],
-                       colour = group)) +
-    ggtitle("Isotopic measurements") + 
-    xlab(names(isotope_data)[2]) + 
-    ylab(names(isotope_data)[3]) +
-    geom_point(size = 3) +
-    scale_colour_brewer(palette = "Paired") +
-    guides(colour = guide_legend(byrow = 1, ncol = 1)) +
-    theme_bw() +
-    theme(panel.grid.major = element_line(colour = "grey"),
-          panel.grid.minor = element_blank(),
-          axis.title = element_text(size = 15),
-          axis.text.y = element_text(size = 12),
-          axis.text.x = element_text(margin = margin(3, 0, 0, 0), size = 12),
-          plot.title = element_text(hjust = 0.5))
+  # If the isotopic data contains 3 elements called d13C, d15N and d125I, then we will plot 3 figures, 
+  # because there are 3 ways to choose an unordered subset of 2 elements from a fixed set of 3 elements:
+  #          d13C vs. d15N, 
+  #          d13C vs. d125I and 
+  #          d15N vs. d125I.
+  # 
+  # With the following code, we select all the possible combinations without repetition:
   
-  plot(figure)
+  nb_element <- ncol(isotope_data) - 1
+  
+  for (element1 in 1:nb_element){
+    for (element2 in 1:nb_element){
+      
+      if (element2 > element1){
+        figure <- ggplot(isotope_data,
+                         aes(x = isotope_data[, element1 + 1],
+                             y = isotope_data[, element2 + 1],
+                             colour = group)) +
+          ggtitle("Isotopic measurements") + 
+          xlab(names(isotope_data)[element1 + 1]) + 
+          ylab(names(isotope_data)[element2 + 1]) +
+          geom_point(size = 3) +
+          scale_colour_brewer(palette = "Paired") +
+          guides(colour = guide_legend(byrow = 1, ncol = 1)) +
+          theme_bw() +
+          theme(panel.grid.major = element_line(colour = "grey"),
+                panel.grid.minor = element_blank(),
+                axis.title = element_text(size = 15),
+                axis.text.y = element_text(size = 12),
+                axis.text.x = element_text(margin = margin(3, 0, 0, 0), size = 12),
+                plot.title = element_text(hjust = 0.5))
+        
+        plot(figure)
+      }
+    }
+  }
 
 }
 
@@ -52,6 +69,7 @@ plot_matrix <- function(matrix, title){
   figure <- ggplot(df, aes(x = pred, y = prey, fill = value)) + geom_raster() + theme_bw() +
     scale_x_continuous(labels = colnames(matrix), breaks = seq(1, ncol(matrix))) +
     scale_y_continuous(labels = rev(rownames(matrix)), breaks = seq(1, nrow(matrix))) +
+    scale_fill_gradient(low = "white", high = "midnightblue", limit = c(0, 1)) +
     geom_text(aes(label = round(value, 2))) +
     ggtitle(title) +
     ylab("Preys") +

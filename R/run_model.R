@@ -48,7 +48,8 @@ print_convergence_diagnostic <- function(mcmc_output){
 #' @export
 
 run_model <- function(model_file, data, inits = NULL, 
-                      nb_iter = 1e+03, nb_adapt = 1e+03, nb_burnin = floor(nb_iter/2)){
+                      nb_iter = 1e+03, nb_adapt = 1e+03, nb_burnin = floor(nb_iter/2),
+                      variables_to_save = c("eta", "PI")){
   
   if (nb_burnin >= nb_iter){
     stop("The number of burnin (\"nb_burnin\") needs to be inferior ",
@@ -72,7 +73,7 @@ run_model <- function(model_file, data, inits = NULL,
   cat("\nSampling finally the MCMC chains...\n\n")
   mcmc_output <- rjags::coda.samples(
     model = jags_model,
-    variable.name = c("eta", "PI"),
+    variable.name = variables_to_save,
     n.iter = (nb_iter - nb_burnin),
     thin = nb_thin)
   
