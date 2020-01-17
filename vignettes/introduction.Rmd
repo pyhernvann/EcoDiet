@@ -1,10 +1,10 @@
 ---
-title: "How to use EcoDiet with stomachal and isotopic data"
+title: "Introduction - How to use EcoDiet"
 author: "Heloise Thero"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{How to use EcoDiet with stomachal and isotopic data}
+  %\VignetteIndexEntry{Introduction - How to use EcoDiet}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -24,11 +24,12 @@ There are two ways of using this package:
 
 * *Default option* - Only stomach content and biotracers data are integrated, and non informative priors will be used;
 
-* Stomach content and biotracers data are integrated and results from a literature search are used to formulate informative priors. 
+* *Literature option* - Stomach content and biotracers data are integrated and results from a literature search are used to formulate informative priors. 
 
-In this vignette, we present and detail the first and default option.
+We will explain the two possibilities in this vignette.
 
 Note that biotracers data will be here illustrated by bulk stable isotope only, but EcoDiet could be used to treat other analyses such as fatty acids or specific-compounds stable isotopes.
+
 
 ## Load the package
 
@@ -55,6 +56,11 @@ knitr::kable(example_isotope_data)
 
 Each line of the table represents one individual on which were conducted stable isotope analyses. For a given individual, stable isotope analyses can be realized for various elements (carbon and nitrogen in this example). The first column of the table indicates to which trophic group the individual belongs and the others contain the isotopic measurements.
 
+You will also need to define the trophic enrichment factors that corresponds to your isotopic data. If your isotopic data files contains d13C and d15N data as in the example, then you should enter the trophic enrichment factors for the d13C and d15N isotopes (in that order):
+```{r, eval = FALSE}
+trophic_enrichment_factor = c(0.8, 3.4)
+```
+
 * Stomachal data:
 
 ```{r}
@@ -66,8 +72,7 @@ knitr::kable(example_stomach_data)
 
 The stomach content table gathers the sum of occurrences of each prey type in the stomachs of trophic groups. The first column of the table contains the names of the prey and the headers of the following columns contain the names of **all** trophic groups with or without stomach content analyses available: in the case where no analyses were available, as for groups at the base of the trophic network, a column filled with zeros must be provided. 
 
-The last row of the table indicates how many (non-empty) stomachs have been analyzed for each trophic group.
-
+The last row of the table indicates how many (non-empty) stomachs have been analyzed for each trophic group. 
 In this example, for the "huge" animals, 19 stomachs were analyzed and contained remainings. Among these stomachs, 17 contain "Large" animal remainings and 12 contain "medium" animal remainings.
 
 ## Plot the data
@@ -79,7 +84,7 @@ plot_data(isotope_data = example_isotope_data,
           stomach_data = example_stomach_data)
 ```
 
-## Preprocess the data
+## Preprocess your data without prior (*Default option*)
 
 * You first need to have loaded your `.csv` files as shown previously. 
 
@@ -89,22 +94,84 @@ example_stomach_data <- read.csv("./data/my_stomach_data.csv",     sep = ";")
 example_isotope_data <- read.csv("./data/my_isotope_data.csv",     sep = ";")
 ```
 
-* You need to define the trophic enrichment factors that corresponds to your isotopic data. If your isotopic data files contains d13C and d15N data as in the example, then you should enter the trophic enrichment factors for the d13C and d15N isotopes (in that order):
-```{r, eval = FALSE}
-trophic_enrichment_factor = c(0.8, 3.4)
+* The `preprocess_data` function then checks and rearranges the data in a specific format so that the EcoDiet model can be run:
+```{r}
+literature_prior <- FALSE
+
+data <- preprocess_data(isotope_data = example_isotope_data,
+                        trophic_enrichment_factor = c(0.8, 3.4),
+                        literature_prior = literature_prior,
+                        stomach_data = example_stomach_data)
 ```
 
-* You also need to precise that you won't use priors from the literature in the model:
+If any error appears, it means your data is not in the correct format. Please read the error message and try to rearrange the data in the correct format.
+
+## Define your prior (*Literature option*)
+
+**Skip this part if your want to use EcoDiet without prior from the literature.**
+
+The calculation of the priors for the variables "eta" and "PI" from the literature values and the Pedigree scrore also involves to import a litterature diet matrix, and two additional parameters allowing to modulate the relationship between the Pedigree value and the priors' precision.
+
+* Diet matrix from the literature:
+
+```{r}
+example_literature_diets_path <- system.file("extdata", "example_literature_diets.csv",
+                                    package = "EcoDiet")
+example_literature_diets <- read.csv(example_literature_diets_path)
+knitr::kable(example_literature_diets)
+```
+
+This table is a diet matrix built from a literature search. As for the stomach contents table, all trophic groups must be included and there should be as many columns as rows as number of trophic groups. The matrix coefficients are the contributions (in decimals) of the corresponding row-group to the diet of the corresponding column-group averaged over the selected studies. The coefficients within a given column must sum to 1, except if the column corresponds to a group at the base of the trophic network.  In this example, the selected studies identified that "huge" animals eat equally "large" and "medium" animals (thus the 0.5 and 0.5 numbers in the first column). The "small" animals are at the base of the ecosystem and their prey are not considered in the food-web representation.
+
+These priors will be used to formulate:
+
+1. The priors on the probabilities that links exist. Whether they are null or strictly positive, the coefficients of the diet matrix from the literature are used to respectively shift toward 0 or 1 the Beta distributions used as priors on the varaibles "eta".
+
+2. The priors on dietary proportions. The coefficients of the diet matrix from the literature are entered as the hyperparameters "alpha" of the Dirichlet distributions for the priors on the variables "PI".
+
+Finally, the last row of the matrix corresponds to the *literature pedigrees*. Because the relevance of the literature information is variable, you could be willing to modulate the precision of the derived priors on "eta" and "PI" according to the reliability of this information. To do so, you need to enter a Pedigree score for each consumer. This Pedigree score ranks from 0 to 1 and quantifies the relevance of the information found about a given consumer. Ideally the information on the diets is extracted from studies recently conducted in the same area. But when local and recent data information is missing, it can also come from foreign areas or older periods with eventually different ecosystem structure and functioning, hence less pertinent regarding the case-study. You can down-weight the importance of these priors by setting a low pedigree score for this predator. You need to enter a pedigree score (a number between 0 to 1) for each predator. If you want to give each study an equal importance, you can see all the pedigrees to 1 by default.
+
+Here the dietary proportions from the literature are estimated very reliable for the "huge" animals, so the pedigree score associated is high (0.9). On the contrary, the diet proportions for the "medium" animals come from an old article focusing on a very different ecosystem so the pedigree score associated is low (0.2). Because the "small" animals are at the base of the ecosystem and its diet proportions won't be estimated, its pedigree score will not be used so we have put the by-default value, which is 1. The Pedigree score is used to calculate the hyperparameters of the probability distributions used to formulate "eta" and "PI" priors.
+
+* the `nb_literature` parameter. This parameter is used to formulate the prior on the "eta" parameters and is set by the user according to its study case. `nb_literature` is an integer equivalent to a number of stomachs sampled and, in a way, represents the number of stomachs that the user judges ideal to infer on a species' diet; in other words the number of stomachs that would be equivalent to a quantitative dietary study from the literature both locally and recently conducted following a good sampling scheme (i.e., of Pedigree 1).
+
+For a given consumer, the ratio between the product `nb_literature * literature_pedigrees` and the number of stomachs determines the influence of the literature relative to data. Thus, the higher the `nb_literature` is, the stronger will be the weight of the literature in the final inferences. In practice, due to the inherent emptiness of stomachs when analyzing them, `nb_literature` should be set at a lower value in order to not put too much weight to the literature. . Setting this parameter to 10 is like saying that the prior from the literature will weight as much as additional data from 10 stomachs. There are no rules for attributing a value to `nb_literature`, but a good start can be the mean number of stomachs analyzed per species in the data.
+
+```{r}
+nb_literature = 10
+```
+
+* the `literature_slope` parameter. This parameter is a number between 0 and 1 (excluding 0) used to calculate the hyperparameters of the Dirichlet priors for the PI parameter. To represent the greater uncertainty around dietary proportions from the literature when they come from a less relevant study, we fixed the hyperparameters so that their mean coefficient of variation increases with decreasing `literature_pedigrees`. This linear relationship is defined by an intercept giving a coefficient of variation of 1 for a null `literature_pedigrees`, and by a slope equal to `literature_slope`. Thus, increasing the`literature_slope` value tends to make the literature prior on dietary proportions stronger. This value is set by the user to adapt to specific cases, e.g. the number of biotracers used in the study etc. By default it is equal to 0.5.
+
+```{r}
+literature_slope = 0.5
+```
+
+## Preprocess the data and prior (*Literature option*)
+
+**Skip this part if your want to use EcoDiet without prior from the literature.**
+
+* You first need to have loaded your `.csv` files as shown previously. 
+
+If you have your files in a `data` folder and in a specific `.csv` format (semicolon separated, and not coma separated), you should add the `data` folder in the path and use the `sep` argument to load your data:
 ```{r, eval = FALSE}
-literature_prior = FALSE
+example_stomach_data     <- read.csv("./data/my_stomach_data.csv",     sep = ";")
+example_isotope_data     <- read.csv("./data/my_isotope_data.csv",     sep = ";")
+example_literature_diets <- read.csv("./data/my_literature_diets.csv", sep = ";")
 ```
 
 * The `preprocess_data` function then checks and rearranges the data in a specific format so that the EcoDiet model can be run:
+
 ```{r}
+literature_prior <- TRUE
+
 data <- preprocess_data(isotope_data = example_isotope_data,
                         trophic_enrichment_factor = c(0.8, 3.4),
-                        literature_prior = FALSE,
-                        stomach_data = example_stomach_data)
+                        literature_prior = literature_prior,
+                        stomach_data = example_stomach_data,
+                        literature_diets = example_literature_diets,
+                        nb_literature = 10,
+                        literature_slope = 0.5)
 ```
 
 If any error appears, it means your data is not in the correct format. Please read the error message and try to rearrange the data in the correct format.
@@ -113,10 +180,18 @@ If any error appears, it means your data is not in the correct format. Please re
 
 The last message tells you to check the trophic links that will be investigated by the model. It is generally not wise to assume that all the trophic links are possible ( = a matrix filled with only ones), as the model will likely be over-paramaterized and have problems to converge. You therefore need to keep only the reasonnable trophic links (e.g., a shrimp cannot eat a whale). 
 
-The matrix displayed by the `preprocess_data` function is based on the stomach content data: by-default, EcoDiet will investigate trophic links only based on what you have found in stomachs analyses. If you want to add another trophic link, you can modify directly the topological matrix. The by-default topological matrix can be defined by the following instruction : 
+The matrix displayed by the `preprocess_data` function is based:
+* on the stomach content data, so by-default, EcoDiet will investigate trophic links only based on what you have found in stomachs analyses, and
+* on the literature diets matrix if you have defined priors, so by-default, EcoDiet will also investigate trophic links only if you have identified them as plausible regarding your literature search.
+
+If you want to add another trophic link, you can modify directly the topological matrix. The by-default topological matrix can be defined by the following instruction : 
 
 ```{r}
-trophic_links <- 1 * (data$o > 0)
+if (literature_prior){
+  trophic_links <- 1 * ((data$o > 0) | (data$alpha_lit > 0))
+} else {
+  trophic_links <- 1 * (data$o > 0)
+}
 print(trophic_links)
 ```
 
@@ -131,9 +206,12 @@ Now the new topological matrix can be entered as an argument of the `preprocess_
 ```{r}
 data <- preprocess_data(isotope_data = example_isotope_data,
                         trophic_enrichment_factor = c(0.8, 3.4),
-                        literature_prior = FALSE,
+                        literature_prior = literature_prior,
                         trophic_links = trophic_links,
-                        stomach_data = example_stomach_data)
+                        stomach_data = example_stomach_data,
+                        literature_diets = example_literature_diets,
+                        nb_literature = 10,
+                        literature_slope = 0.5)
 ```
 
 ## Write the model
@@ -141,7 +219,7 @@ data <- preprocess_data(isotope_data = example_isotope_data,
 The `write_model` function writes the model in the BUGS syntax. The option non informative priors / informative priors must be specified again at this level. 
 
 ```{r}
-model_string <- write_model(literature_prior = FALSE)
+model_string <- write_model(literature_prior = literature_prior)
 ```
 
 ## Run the model
@@ -155,7 +233,7 @@ mcmc_output <- run_model(textConnection(model_string), data)
 We advise you to increase the number of iterations until you have met the convergence threshold:
 
 ```{r, eval = FALSE}
-mcmc_output <- run_model(textConnection(model_string), data, nb_iter = 1e+06)
+mcmc_output <- run_model(textConnection(model_string), data, nb_iter = 1e6)
 ```
 
 If you see again a warning message being printed, you should follow the advices of the corresponding vignette: `vignette("model_warnings")`.
@@ -260,4 +338,3 @@ print(colMeans(mcmc_output))
 ```{r}
 devtools::session_info()
 ```
-
