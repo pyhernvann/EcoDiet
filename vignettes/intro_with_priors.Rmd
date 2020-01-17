@@ -87,19 +87,9 @@ These priors will be used to formulate:
 
 2. The priors on dietary proportions. The coefficients of the diet matrix from the literature are entered as the hyperparameters "alpha" of the Dirichlet distributions for the priors on the variables "PI".
 
+Finally, the last row of the matrix corresponds to the *literature pedigrees*. Because the relevance of the literature information is variable, you could be willing to modulate the precision of the derived priors on "eta" and "PI" according to the reliability of this information. To do so, you need to enter a Pedigree score for each consumer. This Pedigree score ranks from 0 to 1 and quantifies the relevance of the information found about a given consumer. Ideally the information on the diets is extracted from studies recently conducted in the same area. But when local and recent data information is missing, it can also come from foreign areas or older periods with eventually different ecosystem structure and functioning, hence less pertinent regarding the case-study. You can down-weight the importance of these priors by setting a low pedigree score for this predator. You need to enter a pedigree score (a number between 0 to 1) for each predator. If you want to give each study an equal importance, you can see all the pedigrees to 1 by default.
 
-* the `literature_pedigrees` parameters. Because the relevance of the literature information is variable, you could be willing to modulate the precision of the derived priors on "eta" and "PI" according to the reliability of this information. To do so, you need to enter a Pedigree score for each consumer. This Pedigree score ranks from 0 to 1 and quantifies the relevance of the information found about a given consumer. Ideally the information on the diets is extracted from studies recently conducted in the same area. But when local and recent data information is missing, it can also come from foreign areas or older periods with eventually different ecosystem structure and functioning, hence less pertinent regarding the case-study. You can down-weight the importance of these priors by setting a low pedigree score for this predator. You need to enter a pedigree score (a number between 0 to 1) for each predator. If you want to give each study an equal importance, you can see all the pedigrees to 1 by default.
-
-```{r}
-example_literature_pedigrees_path <- system.file("extdata", "example_literature_pedigrees.csv",
-                                    package = "EcoDiet")
-example_literature_pedigrees <- read.csv(example_literature_pedigrees_path)
-knitr::kable(example_literature_pedigrees)
-```
-
-Here the dietary proportions from the literature are estimated very reliable for the "huge" animals, so the pedigree score associated is high (0.9). On the contrary, the diet proportions for the "medium" animals come from an old article focusing on a very different ecosystem so the pedigree score associated is low (0.2). Because the "small" animals are at the base of the ecosystem and its diet proportions won't be estimated, its pedigree score will not be used so we have put the by-default value (1).
-
-The Pedigree score is used to calculate the hyperparameters of the probability distributions used to formulate "eta" and "PI" priors.
+Here the dietary proportions from the literature are estimated very reliable for the "huge" animals, so the pedigree score associated is high (0.9). On the contrary, the diet proportions for the "medium" animals come from an old article focusing on a very different ecosystem so the pedigree score associated is low (0.2). Because the "small" animals are at the base of the ecosystem and its diet proportions won't be estimated, its pedigree score will not be used so we have put the by-default value, which is 1. The Pedigree score is used to calculate the hyperparameters of the probability distributions used to formulate "eta" and "PI" priors.
 
 ## Plot the data
 
@@ -109,6 +99,25 @@ You can visualize your data with the `plot_data` function:
 plot_data(isotope_data = example_isotope_data,
           stomach_data = example_stomach_data,
           literature_diets = example_literature_diets)
+```
+
+## Define the relative influence of the literature information relative to data
+
+The calculation of the priors for the variables "eta" and "PI" from the literature values and the Pedigree scrore also involves two parameters allowing to modulate the relationship between the Pedigree value and the priors' precision.
+
+* the `nb_literature` parameter. This parameter is used to formulate the prior on the "eta" parameters and is set by the user according to its study case. `nb_literature` is an integer equivalent to a number of stomachs sampled and, in a way, represents the number of stomachs that the user judges ideal to infer on a species' diet; in other words the number of stomachs that would be equivalent to a quantitative dietary study from the literature both locally and recently conducted following a good sampling scheme (i.e., of Pedigree 1).
+
+For a given consumer, the ratio between the product `nb_literature * literature_pedigrees` and the number of stomachs determines the influence of the literature relative to data. Thus, the higher the `nb_literature` is, the stronger will be the weight of the literature in the final inferences. In practice, due to the inherent emptiness of stomachs when analyzing them, `nb_literature` should be set at a lower value in order to not put too much weight to the literature. . Setting this parameter to 10 is like saying that the prior from the literature will weight as much as additional data from 10 stomachs. There are no rules for attributing a value to `nb_literature`, but a good start can be the mean number of stomachs analyzed per species in the data.
+
+```{r}
+nb_literature = 10
+```
+
+
+* the `literature_slope` parameter. This parameter is a number between 0 and 1 (excluding 0) used to calculate the hyperparameters of the Dirichlet priors for the PI parameter. To represent the greater uncertainty around dietary proportions from the literature when they come from a less relevant study, we fixed the hyperparameters so that their mean coefficient of variation increases with decreasing `literature_pedigrees`. This linear relationship is defined by an intercept giving a coefficient of variation of 1 for a null `literature_pedigrees`, and by a slope equal to `literature_slope`. Thus, increasing the`literature_slope` value tends to make the literature prior on dietary proportions stronger. This value is set by the user to adapt to specific cases, e.g. the number of biotracers used in the study etc. By default it is equal to 0.5.
+
+```{r}
+literature_slope = 0.5
 ```
 
 ## Preprocess the data
@@ -133,13 +142,17 @@ literature_prior = TRUE
 ```
 
 * The `preprocess_data` function then checks and rearranges the data in a specific format so that the EcoDiet model can be run:
-```{r, eval = FALSE}
+
+```{r}
 data <- preprocess_data(isotope_data = example_isotope_data,
                         trophic_enrichment_factor = c(0.8, 3.4),
                         literature_prior = TRUE,
                         stomach_data = example_stomach_data,
-                        literature_diets = example_literature_diets)
+                        literature_diets = example_literature_diets,
+                        nb_literature = 10,
+                        literature_slope = 0.5)
 ```
+
 
 If any error appears, it means your data is not in the correct format. Please read the error message and try to rearrange the data in the correct format.
 
@@ -158,47 +171,15 @@ knitr::kable(example_literature_diets)
 ```
 
 Now you can see that the new trophic links matrix will be investigated by the model:
-```{r, eval = FALSE}
-data <- preprocess_data(isotope_data = example_isotope_data,
-                        trophic_enrichment_factor = c(0.8, 3.4),
-                        literature_prior = TRUE,
-                        stomach_data = example_stomach_data,
-                        literature_diets = example_literature_diets)
-```
-
-## Parameterizing the relative influence of the literature information relative to data
-
-The calculation of the priors for the variables "eta" and "PI" from the literature values and the Pedigree scrore also involved two parameters allowing to modulate the relationship between the Pedigree value and the priors' precision.
-
-* the `nb_literature` parameter. This parameter is used to formulate the prior on the "eta" parameters and is set by the user according to its study case. `nb_literature` is an integer equivalent to a number of stomachs sampled and, in a way, represents the number of stomachs that the user judges ideal to infer on a species' diet; in other words the number of stomachs that would be equivalent to a quantitative dietary study from the literature both locally and recently conducted following a good sampling scheme (i.e., of Pedigree 1).
-
-For a given consumer, the ratio between the product `nb_literature * literature_pedigrees` and the number of stomachs determines the influence of the literature relative to data. Thus, the higher the `nb_literature` is, the stronger will be the weight of the literature in the final inferences. In practice, due to the inherent emptiness of stomachs when analyzing them, `nb_literature` should be set at a lower value in order to not put too much weight to the literature. . Setting this parameter to 10 is like saying that the prior from the literature will weight as much as additional data from 10 stomachs. There are no rules for attributing a value to `nb_literature`, but a good start can be the mean number of stomachs analyzed per species in the data.
-
-```{r}
-nb_literature = 10
-```
-
-
-* the `literature_slope` parameter. This parameter is a number between 0 and 1 (excluding 0) used to calculate the hyperparameters of the Dirichlet priors for the PI parameter. To represent the greater uncertainty around dietary proportions from the literature when they come from a less relevant study, we fixed the hyperparameters so that their mean coefficient of variation increases with decreasing `literature_pedigrees`. This linear relationship is defined by an intercept giving a coefficient of variation of 1 for a null `literature_pedigrees`, and by a slope equal to `literature_slope`. Thus, increasing the`literature_slope` value tends to make the literature prior on dietary proportions stronger. This value is set by the user to adapt to specific cases, e.g. the number of biotracers used in the study etc. By default it is equal to 0.5.
-
-```{r}
-literature_slope = 0.5
-```
-
-
-You can set different values for these parameters with the `preprocess_data` function:
-
 ```{r}
 data <- preprocess_data(isotope_data = example_isotope_data,
                         trophic_enrichment_factor = c(0.8, 3.4),
                         literature_prior = TRUE,
                         stomach_data = example_stomach_data,
                         literature_diets = example_literature_diets,
-                        literature_pedigrees = example_literature_pedigrees,
                         nb_literature = 10,
                         literature_slope = 0.5)
 ```
-
 
 ## Write the model
 

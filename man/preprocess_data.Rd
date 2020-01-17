@@ -12,7 +12,6 @@ preprocess_data(
   element_concentration = 1,
   stomach_data = NULL,
   literature_diets = NULL,
-  literature_pedigrees = NULL,
   nb_literature,
   literature_slope
 )

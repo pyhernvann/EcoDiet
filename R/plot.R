@@ -130,6 +130,7 @@ plot_data <- function(isotope_data, stomach_data = NULL, literature_diets = NULL
       literature_diets[, 1] <- NULL
     }
 
+    literature_diets <- literature_diets[-nrow(literature_diets), ]
     literature_diets <- literature_diets[, order(colnames(literature_diets))]
     literature_diets <- literature_diets[order(rownames(literature_diets)), ]
     
