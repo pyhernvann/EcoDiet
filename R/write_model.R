@@ -24,37 +24,32 @@ write_model <- function(literature_prior = FALSE){
     s[i] <- sum(LAMBDA[list_prey[i, 1:nb_prey[i]], i])
     is_link_identified[i] <- ifelse(s[i] == 0, 0, 1)
     
-  }"
+  }
+  
+  for (i in list_pred){
+      
+    for (k in list_prey[i, 1:nb_prey[i]]){"
   
   if (literature_prior){
     model_string2 <- 
-"  for (i in list_pred){
-    
-    dzeta[i] <- nb_lit * ped[i]      
-    
-    for (k in list_prey[i, 1:nb_prey[i]]){
-    
+"
       eta_hyperparam_1[k, i] <- ifelse(alpha_lit[k,i] == 0, 1, (dzeta[i]))
       eta_hyperparam_2[k, i] <- dzeta[i] + 1 - eta_hyperparam_1[k, i]	
       
       eta[k, i] ~ dbeta(eta_hyperparam_1[k, i], eta_hyperparam_2[k, i])
-    
-      }
-    }"
+"
   } else {
     model_string2 <- 
-"  for (i in list_pred){
-    
-    for (k in list_prey[i, 1:nb_prey[i]]){
-    
+"
       eta[k, i] ~ dbeta(1, 1)
-
-    }
-  }"
+"
   }
   
   model_string3 <-  
-"  for (i in 1:nb_group){
+"    }
+  }
+ 
+  for (i in 1:nb_group){
   
     for (j in 1:nb_elem){
     

@@ -470,6 +470,9 @@ preprocess_data <- function(isotope_data, trophic_enrichment_factor,
     
     check_numeric_parameter(nb_literature, "nb_literature")
     
+    # Create the zdeta parameter from the literature pedigree and the literature number
+    dzeta <- nb_literature * literature_pedigrees
+
     check_numeric_parameter(literature_slope, "literature_slope")
     # Create the coefficients of variation from the literature pedigree and the slope parameter
     CVs_literature <- 1 - literature_pedigrees * literature_slope
@@ -477,9 +480,8 @@ preprocess_data <- function(isotope_data, trophic_enrichment_factor,
     # Supplement the data list in the case of priors from the literature
     data_list <- c(data_list, list(
       alpha_lit = literature_diets,
-      ped       = literature_pedigrees,
-      CVs       = CVs_literature,
-      nb_lit    = nb_literature
+      dzeta     = dzeta,
+      CVs       = CVs_literature
       ))
   }
   
