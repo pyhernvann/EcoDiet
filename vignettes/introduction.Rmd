@@ -30,6 +30,7 @@ We will explain the two possibilities in this vignette.
 
 Note that biotracers data will be here illustrated by bulk stable isotope only, but EcoDiet could be used to treat other analyses such as fatty acids or specific-compounds stable isotopes.
 
+Note that the example we will use in this vignette is a toy dataset, created to be simple to visualize and understand.
 
 ## Load the package
 
