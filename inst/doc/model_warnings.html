@@ -12,9 +12,9 @@
 
 <meta name="author" content="Heloise Thero" />
 
-<meta name="date" content="2020-01-10" />
+<meta name="date" content="2020-01-17" />
 
-<title>Solutions to make your model run well</title>
+<title>How to deal with convergence problems</title>
 
 
 
@@ -93,9 +93,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 
-<h1 class="title toc-ignore">Solutions to make your model run well</h1>
+<h1 class="title toc-ignore">How to deal with convergence problems</h1>
 <h4 class="author">Heloise Thero</h4>
-<h4 class="date">2020-01-10</h4>
+<h4 class="date">2020-01-17</h4>
 
 
 
@@ -160,63 +160,72 @@ data &lt;-<span class="st"> </span><span class="kw">preprocess_data</span>(<span
 ##  collate  French_France.1252          
 ##  ctype    French_France.1252          
 ##  tz       Europe/Paris                
-##  date     2020-01-10                  
+##  date     2020-01-17                  
 ## 
 ## - Packages -------------------------------------------------------------------
-##  package     * version   date       lib source        
-##  assertthat    0.2.1     2019-03-21 [1] CRAN (R 3.5.3)
-##  backports     1.1.5     2019-10-02 [1] CRAN (R 3.5.3)
-##  callr         3.3.2     2019-09-22 [1] CRAN (R 3.5.3)
-##  cli           2.0.0     2019-12-09 [1] CRAN (R 3.5.2)
-##  colorspace    1.4-1     2019-03-18 [1] CRAN (R 3.5.3)
-##  crayon        1.3.4     2017-09-16 [1] CRAN (R 3.5.3)
-##  desc          1.2.0     2018-05-01 [1] CRAN (R 3.5.3)
-##  devtools      2.2.1     2019-09-24 [1] CRAN (R 3.5.3)
-##  digest        0.6.23    2019-11-23 [1] CRAN (R 3.5.3)
-##  dplyr         0.8.3     2019-07-04 [1] CRAN (R 3.5.3)
-##  EcoDiet     * 0.0.0.910 2020-01-09 [1] local         
-##  ellipsis      0.3.0     2019-09-20 [1] CRAN (R 3.5.3)
-##  evaluate      0.14      2019-05-28 [1] CRAN (R 3.5.3)
-##  fansi         0.4.0     2018-10-05 [1] CRAN (R 3.5.3)
-##  fs            1.3.1     2019-05-06 [1] CRAN (R 3.5.3)
-##  ggplot2       3.2.1     2019-08-10 [1] CRAN (R 3.5.3)
-##  glue          1.3.1     2019-03-12 [1] CRAN (R 3.5.3)
-##  gtable        0.3.0     2019-03-25 [1] CRAN (R 3.5.3)
-##  htmltools     0.4.0     2019-10-04 [1] CRAN (R 3.5.3)
-##  knitr         1.26      2019-11-12 [1] CRAN (R 3.5.3)
-##  lazyeval      0.2.2     2019-03-15 [1] CRAN (R 3.5.3)
-##  lifecycle     0.1.0     2019-08-01 [1] CRAN (R 3.5.3)
-##  magrittr      1.5       2014-11-22 [1] CRAN (R 3.5.3)
-##  memoise       1.1.0     2017-04-21 [1] CRAN (R 3.5.3)
-##  munsell       0.5.0     2018-06-12 [1] CRAN (R 3.5.3)
-##  pillar        1.4.3     2019-12-20 [1] CRAN (R 3.5.2)
-##  pkgbuild      1.0.6     2019-10-09 [1] CRAN (R 3.5.3)
-##  pkgconfig     2.0.3     2019-09-22 [1] CRAN (R 3.5.3)
-##  pkgload       1.0.2     2018-10-29 [1] CRAN (R 3.5.3)
-##  prettyunits   1.0.2     2015-07-13 [1] CRAN (R 3.5.3)
-##  processx      3.4.1     2019-07-18 [1] CRAN (R 3.5.3)
-##  ps            1.3.0     2018-12-21 [1] CRAN (R 3.5.3)
-##  purrr         0.3.3     2019-10-18 [1] CRAN (R 3.5.3)
-##  R6            2.4.1     2019-11-12 [1] CRAN (R 3.5.3)
-##  Rcpp          1.0.3     2019-11-08 [1] CRAN (R 3.5.3)
-##  remotes       2.1.0     2019-06-24 [1] CRAN (R 3.5.3)
-##  rlang         0.4.2     2019-11-23 [1] CRAN (R 3.5.3)
-##  rmarkdown     1.18      2019-11-27 [1] CRAN (R 3.5.3)
-##  rprojroot     1.3-2     2018-01-03 [1] CRAN (R 3.5.3)
-##  scales        1.1.0     2019-11-18 [1] CRAN (R 3.5.3)
-##  sessioninfo   1.1.1     2018-11-05 [1] CRAN (R 3.5.3)
-##  stringi       1.4.3     2019-03-12 [1] CRAN (R 3.5.3)
-##  stringr       1.4.0     2019-02-10 [1] CRAN (R 3.5.3)
-##  testthat      2.3.1     2019-12-01 [1] CRAN (R 3.5.3)
-##  tibble        2.1.3     2019-06-06 [1] CRAN (R 3.5.3)
-##  tidyselect    0.2.5     2018-10-11 [1] CRAN (R 3.5.3)
-##  usethis       1.5.1     2019-07-04 [1] CRAN (R 3.5.3)
-##  withr         2.1.2     2018-03-15 [1] CRAN (R 3.5.3)
-##  xfun          0.11      2019-11-12 [1] CRAN (R 3.5.3)
-##  yaml          2.2.0     2018-07-25 [1] CRAN (R 3.5.3)
+##  package      * version   date       lib source        
+##  assertthat     0.2.1     2019-03-21 [2] CRAN (R 3.5.3)
+##  backports      1.1.5     2019-10-02 [2] CRAN (R 3.5.3)
+##  callr          3.3.2     2019-09-22 [2] CRAN (R 3.5.3)
+##  cli            2.0.0     2019-12-09 [2] CRAN (R 3.5.2)
+##  coda           0.19-3    2019-07-05 [2] CRAN (R 3.5.3)
+##  colorspace     1.4-1     2019-03-18 [2] CRAN (R 3.5.3)
+##  crayon         1.3.4     2017-09-16 [2] CRAN (R 3.5.3)
+##  desc           1.2.0     2018-05-01 [2] CRAN (R 3.5.3)
+##  devtools       2.2.1     2019-09-24 [2] CRAN (R 3.5.3)
+##  digest         0.6.23    2019-11-23 [2] CRAN (R 3.5.3)
+##  dplyr          0.8.3     2019-07-04 [2] CRAN (R 3.5.3)
+##  EcoDiet      * 0.0.0.910 2020-01-17 [1] local         
+##  ellipsis       0.3.0     2019-09-20 [2] CRAN (R 3.5.3)
+##  evaluate       0.14      2019-05-28 [2] CRAN (R 3.5.3)
+##  fansi          0.4.0     2018-10-05 [2] CRAN (R 3.5.3)
+##  farver         2.0.1     2019-11-13 [2] CRAN (R 3.5.3)
+##  fs             1.3.1     2019-05-06 [2] CRAN (R 3.5.3)
+##  ggplot2        3.2.1     2019-08-10 [2] CRAN (R 3.5.3)
+##  glue           1.3.1     2019-03-12 [2] CRAN (R 3.5.3)
+##  gtable         0.3.0     2019-03-25 [2] CRAN (R 3.5.3)
+##  highr          0.8       2019-03-20 [2] CRAN (R 3.5.3)
+##  htmltools      0.4.0     2019-10-04 [2] CRAN (R 3.5.3)
+##  knitr          1.26      2019-11-12 [2] CRAN (R 3.5.3)
+##  labeling       0.3       2014-08-23 [2] CRAN (R 3.5.2)
+##  lattice        0.20-38   2018-11-04 [3] CRAN (R 3.5.2)
+##  lazyeval       0.2.2     2019-03-15 [2] CRAN (R 3.5.3)
+##  lifecycle      0.1.0     2019-08-01 [2] CRAN (R 3.5.3)
+##  magrittr       1.5       2014-11-22 [2] CRAN (R 3.5.3)
+##  memoise        1.1.0     2017-04-21 [2] CRAN (R 3.5.3)
+##  munsell        0.5.0     2018-06-12 [2] CRAN (R 3.5.3)
+##  pillar         1.4.3     2019-12-20 [2] CRAN (R 3.5.2)
+##  pkgbuild       1.0.6     2019-10-09 [2] CRAN (R 3.5.3)
+##  pkgconfig      2.0.3     2019-09-22 [2] CRAN (R 3.5.3)
+##  pkgload        1.0.2     2018-10-29 [2] CRAN (R 3.5.3)
+##  prettyunits    1.0.2     2015-07-13 [2] CRAN (R 3.5.3)
+##  processx       3.4.1     2019-07-18 [2] CRAN (R 3.5.3)
+##  ps             1.3.0     2018-12-21 [2] CRAN (R 3.5.3)
+##  purrr          0.3.3     2019-10-18 [2] CRAN (R 3.5.3)
+##  R6             2.4.1     2019-11-12 [2] CRAN (R 3.5.3)
+##  RColorBrewer   1.1-2     2014-12-07 [2] CRAN (R 3.5.2)
+##  Rcpp           1.0.3     2019-11-08 [2] CRAN (R 3.5.3)
+##  remotes        2.1.0     2019-06-24 [2] CRAN (R 3.5.3)
+##  rjags          4-10      2019-11-06 [2] CRAN (R 3.5.3)
+##  rlang          0.4.2     2019-11-23 [2] CRAN (R 3.5.3)
+##  rmarkdown      1.18      2019-11-27 [2] CRAN (R 3.5.3)
+##  rprojroot      1.3-2     2018-01-03 [2] CRAN (R 3.5.3)
+##  rstudioapi     0.10      2019-03-19 [2] CRAN (R 3.5.3)
+##  scales         1.1.0     2019-11-18 [2] CRAN (R 3.5.3)
+##  sessioninfo    1.1.1     2018-11-05 [2] CRAN (R 3.5.3)
+##  stringi        1.4.3     2019-03-12 [2] CRAN (R 3.5.3)
+##  stringr        1.4.0     2019-02-10 [2] CRAN (R 3.5.3)
+##  testthat       2.3.1     2019-12-01 [2] CRAN (R 3.5.3)
+##  tibble         2.1.3     2019-06-06 [2] CRAN (R 3.5.3)
+##  tidyselect     0.2.5     2018-10-11 [2] CRAN (R 3.5.3)
+##  usethis        1.5.1     2019-07-04 [2] CRAN (R 3.5.3)
+##  withr          2.1.2     2018-03-15 [2] CRAN (R 3.5.3)
+##  xfun           0.11      2019-11-12 [2] CRAN (R 3.5.3)
+##  yaml           2.2.0     2018-07-25 [2] CRAN (R 3.5.3)
 ## 
-## [1] C:/Users/hthero/Documents/R/win-library/3.5
-## [2] C:/Program Files/R/R-3.5.2/library</code></pre>
+## [1] C:/Users/hthero/AppData/Local/Temp/RtmpEx28zX/temp_libpath24181add5804
+## [2] C:/Users/hthero/Documents/R/win-library/3.5
+## [3] C:/Program Files/R/R-3.5.2/library</code></pre>
 </div>
 
 

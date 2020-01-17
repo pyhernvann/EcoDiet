@@ -16,16 +16,19 @@ knitr::opts_chunk$set(
 )
 ```
 
-The goal of EcoDiet is to combine isotopic and stomach content data with priors based on the litterature to make inferences on the trophic links and diet matrix.
+The goal of EcoDiet is to combine biotracers and stomach content analyses together with *a priori* knowledge from the literature to simulataneously identify who eats whom in the food web (**topology matrix**), and in which proportions (**diet matrix**). 
 
-There are two ways to use this package:
+More specifically, EcoDiet is an integrated Bayesian model that uses *(i)* stomach content analyses and priors from studies found in the literature to estimate the probability that any trophic link exists *(ii)* biotracers analyses and priors from studies found in the literature to estimate the dietary proportions of each consumer in the food web conditionnally to the trophic links identified.
 
-* Default option - Only stomach content and isotopic data will be used and non informative priors will be used by default ;
+There are two ways of using this package:
 
-* Use informative priors derived from a litterature survey. Informative priors will be combined with stomach contents and isotopic data. 
+* *Default option* - Only stomach content and biotracers data are integrated, and non informative priors will be used;
 
-In this vignette, the default option (with uninformative prior) will be explained.
+* Stomach content and biotracers data are integrated and results from a literature search are used to formulate informative priors. 
 
+In this vignette, we present and detail the first and default option.
+
+Note that biotracers data will be here illustrated by bulk stable isotope only, but EcoDiet could be used to treat other analyses such as fatty acids or specific-compounds stable isotopes.
 
 ## Load the package
 
@@ -37,9 +40,9 @@ library(EcoDiet)
 
 EcoDiet requires the installation of JAGS (see [the README](https://github.com/heloisethero/EcoDiet/blob/master/README.md) if you have an error).
 
-## Check your data format
+## Load and check your data
 
-You can load your data by importing it from `.csv` files. Your data should be in a specific format to be treated by the package.
+Then, you need to load the data you want to be analyzed by EcoDiet. You can load your data by importing it from `.csv` files. To be treated by the package, your data should be in specific formats, similar to those of following examples.
 
 * Isotopic data:
 
@@ -50,7 +53,7 @@ example_isotope_data <- read.csv(example_isotope_data_path)
 knitr::kable(example_isotope_data)
 ```
 
-Each line represents one isotope sample, the first column indicates to which group the individual belongs, and the other columns contain the isotopic measures (for isotopes 13C and 15N in our example).
+Each line of the table represents one individual on which were conducted stable isotope analyses. For a given individual, stable isotope analyses can be realized for various elements (carbon and nitrogen in this example). The first column of the table indicates to which trophic group the individual belongs and the others contain the isotopic measurements.
 
 * Stomachal data:
 
@@ -61,11 +64,11 @@ example_stomach_data <- read.csv(example_stomach_data_path)
 knitr::kable(example_stomach_data)
 ```
 
-As you can see, the stomach content data should have the predator names as the column headers, and the first column should contain the prey names. The number represents the number of predator stomachs in which this prey was found. In this example, for the "huge" animals, 19 full stomachs were analyzed. "Large" animals' dead bodies were found in 17 of these stomachs, and "medium" animals' dead bodies were found in 12 of these stomachs.
+The stomach content table gathers the sum of occurrences of each prey type in the stomachs of trophic groups. The first column of the table contains the names of the prey and the headers of the following columns contain the names of **all** trophic groups with or without stomach content analyses available: in the case where no analyses were available, as for groups at the base of the trophic network, a column filled with zeros must be provided. 
 
-The last row contains the number of full stomachs analyzed for each predator.
+The last row of the table indicates how many (non-empty) stomachs have been analyzed for each trophic group.
 
-Note that you should enter the stomach content data for **all** trophic groups, even the groups at the base of your trophic network for which you did not analyze the stomachs. In that case, the column will be filled with zeros (as with the "small" animals in the example).
+In this example, for the "huge" animals, 19 stomachs were analyzed and contained remainings. Among these stomachs, 17 contain "Large" animal remainings and 12 contain "medium" animal remainings.
 
 ## Plot the data
 
@@ -82,8 +85,8 @@ plot_data(isotope_data = example_isotope_data,
 
 If you have your files in a `data` folder and in a specific `.csv` format (semicolon separated, and not coma separated), you should add the `data` folder in the path and use the `sep` argument to load your data:
 ```{r, eval = FALSE}
-example_stomach_data <- read.csv("my_stomach_data.csv", sep = ";")
-example_isotope_data <- read.csv("my_isotope_data.csv", sep = ";")
+example_stomach_data <- read.csv("./data/my_stomach_data.csv",     sep = ";")
+example_isotope_data <- read.csv("./data/my_isotope_data.csv",     sep = ";")
 ```
 
 * You need to define the trophic enrichment factors that corresponds to your isotopic data. If your isotopic data files contains d13C and d15N data as in the example, then you should enter the trophic enrichment factors for the d13C and d15N isotopes (in that order):
@@ -104,13 +107,13 @@ data <- preprocess_data(isotope_data = example_isotope_data,
                         stomach_data = example_stomach_data)
 ```
 
-If an error appears, it means your data is not in the correct format. Please read the error message and try to rearrange the data in the suitable format as in the example.
+If any error appears, it means your data is not in the correct format. Please read the error message and try to rearrange the data in the correct format.
 
 ## Check the trophic links matrix
 
 The last message tells you to check the trophic links that will be investigated by the model. It is generally not wise to assume that all the trophic links are possible ( = a matrix filled with only ones), as the model will likely be over-paramaterized and have problems to converge. You therefore need to keep only the reasonnable trophic links (e.g., a shrimp cannot eat a whale). 
 
-The matrix displayed by the `preprocess_data` function is based on the stomach content data. If you want to add another trophic link, you can modify directly the topological matrix. The by-default topological matrix can be defined by the following instruction : 
+The matrix displayed by the `preprocess_data` function is based on the stomach content data: by-default, EcoDiet will investigate trophic links only based on what you have found in stomachs analyses. If you want to add another trophic link, you can modify directly the topological matrix. The by-default topological matrix can be defined by the following instruction : 
 
 ```{r}
 trophic_links <- 1 * (data$o > 0)
@@ -143,18 +146,19 @@ model_string <- write_model(literature_prior = FALSE)
 
 ## Run the model
 
-Run the model is a long process. So first do this to run a quick test:
+Now that the model is defined, you can use the function `run_model` to run the model. By default the number of MCMC iterations is very low (1,000), it allows you to test if your model is compiling properly. In most of the cases, this low number of iterations is not sufficient to achieve a satisfactory model convergence (as you can see from the warning message):
 
 ```{r}
 mcmc_output <- run_model(textConnection(model_string), data)
 ```
 
-The test was done with only a thousand iterations (1000 = the number of MCMC iterations by default), which was not enough for the model to converge (as you can see from the warning message). So you should re-run your model with a higher number of iterations:
+We advise you to increase the number of iterations until you have met the convergence threshold:
+
 ```{r, eval = FALSE}
 mcmc_output <- run_model(textConnection(model_string), data, nb_iter = 1e+06)
 ```
 
-If you see again a warning message being printed, you should look at the `model_warnings` vignette for solutions.
+If you see again a warning message being printed, you should follow the advices of the corresponding vignette: `vignette("model_warnings")`.
 
 ## Plot and save the model's mean results
 
@@ -174,12 +178,18 @@ load("eta_mean.Rdata")
 write.table(eta_mean, file = "eta_mean.csv", sep = ",", col.names = NA)
 ```
 
-## Plot the full results (the probability densities)
+## Plot the probability densities
 
-You can also plot the full results by visualizing the probability densities for the `PI` and `eta` variables (each different figure corresponds to one predator):
+You can also plot the probability densities for the `PI` variable and for one predator:
 
 ```{r, fig3, fig.height = 4, fig.width = 6, fig.align = "center"}
-plot_full_results(mcmc_output, data)
+plot_results(mcmc_output, data, variables = "PI", pred = "huge")
+```
+
+If you find the plot to contain too much information, you can also precise for which predator you want to see the probability density:
+
+```{r, fig4, fig.height = 4, fig.width = 6, fig.align = "center"}
+plot_results(mcmc_output, data, variables = "PI", pred = "huge", prey = "large")
 ```
 
 ## Save the full results
@@ -188,6 +198,7 @@ The model's full results are automatically saved in a file named `mcmc_ouput` so
 
 ```{r}
 load("mcmc_output.Rdata")
+mcmc_output <- signif(mcmc_output, digits = 2)
 knitr::kable(head(mcmc_output))
 ```
 
@@ -202,6 +213,46 @@ knitr::kable(quantiles)
 The quantiles can finally be saved as `.csv` tables:
 ```{r, eval = FALSE}
 write.table(quantiles, file = "quantiles.csv", sep = ",", col.names = NA)
+```
+
+## Plot the prior distributions
+
+You can also plot the prior distributions by running the model with empty data. To do so, you can use the following instructions:
+
+```{r}
+data$o[] <- NA
+data$y[] <- NA
+data$nb_y[] <- 0
+
+mcmc_priors <- run_model(textConnection(model_string), data,
+                         nb_adapt = 1e2, nb_burnin = 1, nb_iter = 1e5)
+```
+
+You can now plot the prior distributions you are interested in:
+
+```{r, fig5, fig.height = 4, fig.width = 6, fig.align = "center"}
+plot_results(mcmc_priors, data, variables = "eta", pred = "large")
+```
+
+```{r, fig6, fig.height = 4, fig.width = 6, fig.align = "center"}
+plot_results(mcmc_priors, data, variables = "PI", pred = "huge")
+```
+
+## Save another variable than PI and eta
+
+You have the possibility to access to the model's other parameters if you wish.
+
+For example you may be interested by the variable `delta` that represents the trophic enrichment factor. In the EcoDiet model, a different trophic enrichment factor is used for each trophic group and for each element, allowing some differences between species. We can save these parameters using the `variables_to_save` argument:
+
+```{r}
+mcmc_output <- run_model(textConnection(model_string), data,
+                         variables_to_save = c("delta"))
+```
+
+And now you can access its mean value using:
+
+```{r}
+print(colMeans(mcmc_output))
 ```
 
 ## Environment on which this vignette has been run
