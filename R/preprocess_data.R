@@ -470,8 +470,18 @@ preprocess_data <- function(isotope_data, trophic_enrichment_factor,
     
     check_numeric_parameter(nb_literature, "nb_literature")
     
-    # Create the zdeta parameter from the literature pedigree and the literature number
+    # Compute the zdeta parameter from the literature pedigree and the literature number
     dzeta <- nb_literature * literature_pedigrees
+    
+    # Compute the eta hyperparameters from the zeta parameter and the trophic_links matrix
+    eta_hyperparam_1 <- matrix(data = NA, nrow = nb_group, ncol = nb_group)
+    eta_hyperparam_2 <- matrix(data = NA, nrow = nb_group, ncol = nb_group)
+    for (i in list_pred){
+      for (k in list_prey[i, 1:nb_prey[i]]){
+        eta_hyperparam_1[k, i] <- ifelse(literature_diets[k,i] == 0, 1, (dzeta[i]))
+        eta_hyperparam_2[k, i] <- dzeta[i] + 1 - eta_hyperparam_1[k, i]
+      }
+    }
 
     check_numeric_parameter(literature_slope, "literature_slope")
     # Create the coefficients of variation from the literature pedigree and the slope parameter
@@ -479,9 +489,10 @@ preprocess_data <- function(isotope_data, trophic_enrichment_factor,
     
     # Supplement the data list in the case of priors from the literature
     data_list <- c(data_list, list(
-      alpha_lit = literature_diets,
-      dzeta     = dzeta,
-      CVs       = CVs_literature
+      alpha_lit        = literature_diets,
+      eta_hyperparam_1 = eta_hyperparam_1,
+      eta_hyperparam_2 = eta_hyperparam_2,
+      CVs              = CVs_literature
       ))
   }
   

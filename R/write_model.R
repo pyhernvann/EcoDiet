@@ -32,17 +32,10 @@ write_model <- function(literature_prior = FALSE){
   
   if (literature_prior){
     model_string2 <- 
-"
-      eta_hyperparam_1[k, i] <- ifelse(alpha_lit[k,i] == 0, 1, (dzeta[i]))
-      eta_hyperparam_2[k, i] <- dzeta[i] + 1 - eta_hyperparam_1[k, i]	
-      
-      eta[k, i] ~ dbeta(eta_hyperparam_1[k, i], eta_hyperparam_2[k, i])
-"
+"      eta[k, i] ~ dbeta(eta_hyperparam_1[k, i], eta_hyperparam_2[k, i])"
   } else {
     model_string2 <- 
-"
-      eta[k, i] ~ dbeta(1, 1)
-"
+"      eta[k, i] ~ dbeta(1, 1)"
   }
   
   model_string3 <-  
