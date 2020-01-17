@@ -219,14 +219,22 @@ write.table(quantiles, file = "quantiles.csv", sep = ",", col.names = NA)
 
 You can also plot the prior distributions by running the model with empty data. To do so, you can use the following instructions:
 
-```{r, fig5, fig.height = 4, fig.width = 6, fig.align = "center"}
+```{r}
 data$o[] <- NA
 data$y[] <- NA
 data$nb_y[] <- 0
 
 mcmc_priors <- run_model(textConnection(model_string), data,
                          nb_adapt = 1e2, nb_burnin = 1, nb_iter = 1e5)
+```
 
+You can now plot the prior distributions you are interested in:
+
+```{r, fig5, fig.height = 4, fig.width = 6, fig.align = "center"}
+plot_results(mcmc_priors, data, variables = "eta", pred = "large")
+```
+
+```{r, fig6, fig.height = 4, fig.width = 6, fig.align = "center"}
 plot_results(mcmc_priors, data, variables = "PI", pred = "huge")
 ```
 
