@@ -8,10 +8,12 @@ example_stomach_data_path <- system.file("extdata", "example_stomach_data.csv",
                                     package = "EcoDiet")
 example_isotope_data_path <- system.file("extdata", "example_isotope_data.csv",
                                     package = "EcoDiet")
+
 data <- preprocess_data(isotope_data = read.csv(example_isotope_data_path),
                         trophic_enrichment_factor = c(0.8, 3.4),
                         literature_prior = FALSE,
                         stomach_data = read.csv(example_stomach_data_path))
+
 model_string <- write_model(literature_prior = FALSE)
 
 ## ---- eval = FALSE------------------------------------------------------------
