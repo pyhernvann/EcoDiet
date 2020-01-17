@@ -186,7 +186,7 @@ You can also plot the probability densities for the `PI` variable and for one pr
 plot_results(mcmc_output, data, variables = "PI", pred = "huge")
 ```
 
-If you find the plot to contain too much information, you can also precise for which predator you want to see the probability density:
+If you find the plot to contain too much information, you can also precise for which prey you want to see the probability density:
 
 ```{r, fig4, fig.height = 4, fig.width = 6, fig.align = "center"}
 plot_results(mcmc_output, data, variables = "PI", pred = "huge", prey = "large")

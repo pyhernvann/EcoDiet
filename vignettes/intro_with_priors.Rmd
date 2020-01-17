@@ -113,7 +113,6 @@ For a given consumer, the ratio between the product `nb_literature * literature_
 nb_literature = 10
 ```
 
-
 * the `literature_slope` parameter. This parameter is a number between 0 and 1 (excluding 0) used to calculate the hyperparameters of the Dirichlet priors for the PI parameter. To represent the greater uncertainty around dietary proportions from the literature when they come from a less relevant study, we fixed the hyperparameters so that their mean coefficient of variation increases with decreasing `literature_pedigrees`. This linear relationship is defined by an intercept giving a coefficient of variation of 1 for a null `literature_pedigrees`, and by a slope equal to `literature_slope`. Thus, increasing the`literature_slope` value tends to make the literature prior on dietary proportions stronger. This value is set by the user to adapt to specific cases, e.g. the number of biotracers used in the study etc. By default it is equal to 0.5.
 
 ```{r}
@@ -231,7 +230,7 @@ You can also plot the probability densities for the `PI` variable and for one pr
 plot_results(mcmc_output, data, variables = "PI", pred = "huge")
 ```
 
-If you find the plot to contain too much information, you can also precise for which predator you want to see the probability density:
+If you find the plot to contain too much information, you can also precise for which prey you want to see the probability density:
 
 ```{r, fig4, fig.height = 4, fig.width = 6, fig.align = "center"}
 plot_results(mcmc_output, data, variables = "PI", pred = "huge", prey = "large")
