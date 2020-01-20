@@ -236,7 +236,7 @@ plot_probability_density <- function(mcmc_output, data, pred, prey,
                              pred = as.integer(substr(lookup, 3, 3)),
                              stringsAsFactors = FALSE)
   
-  # Prepare a data frame with the values for the diet proportions for one predator's preys
+  # Prepare a data frame with the values for one predator's preys
   if (is.null(prey)){
     variables_to_extract <- lookup_table[lookup_table$pred == pred_index, ]$names
     prey <- colnames(data$o)[lookup_table[lookup_table$pred == pred_index, ]$prey]
@@ -249,10 +249,10 @@ plot_probability_density <- function(mcmc_output, data, pred, prey,
   df_to_plot <- data.frame(Prey = rep(prey, each = dim(mcmc_output)[1]),
                            variable_to_plot = c(values_to_extract))
   
-  # Plot these values to represent the approximated probability densities for the diet proportions
+  # Plot these values to represent the approximated probability densities
   figure <- ggplot(df_to_plot) +
-    geom_density(aes(x = variable_to_plot, y=..scaled.., fill = Prey), alpha = .3) +
-    geom_density(aes(x = variable_to_plot, y=..scaled.., color = Prey), size = 1.25) +
+    geom_density(aes(x = variable_to_plot, y=..scaled.., fill = Prey), alpha = .3, adjust = 1/5) +
+    geom_density(aes(x = variable_to_plot, y=..scaled.., color = Prey), size = 1.25, adjust = 1/5) +
     ggtitle(paste(title, "\nfor the", colnames(data$o)[pred_index], "predator")) +
     ylab("Density") +
     scale_shape_manual(values = c(seq(1:10))) +
