@@ -4,15 +4,12 @@
 \alias{plot_data}
 \title{Plot the raw data entered by the user.}
 \usage{
-plot_data(isotope_data, stomach_data = NULL, literature_diets = NULL)
+plot_data(isotope_data, stomach_data = NULL)
 }
 \arguments{
 \item{isotope_data}{the raw isotopic data}
 
 \item{stomach_data}{the raw stomachal data if the user has it. 
-By default this variable is set on NULL and is not ploted.}
-
-\item{literature_diets}{the diet priors from the literature if the user has it.
 By default this variable is set on NULL and is not ploted.}
 }
 \description{

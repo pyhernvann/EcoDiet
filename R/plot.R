@@ -92,12 +92,10 @@ plot_matrix <- function(matrix, title){
 #' @param isotope_data the raw isotopic data
 #' @param stomach_data the raw stomachal data if the user has it. 
 #' By default this variable is set on NULL and is not ploted.
-#' @param literature_diets the diet priors from the literature if the user has it.
-#' By default this variable is set on NULL and is not ploted.
 #'
 #' @export
 
-plot_data <- function(isotope_data, stomach_data = NULL, literature_diets = NULL){
+plot_data <- function(isotope_data, stomach_data = NULL){
   
   plot_isotope_data(isotope_data)
   
@@ -120,21 +118,6 @@ plot_data <- function(isotope_data, stomach_data = NULL, literature_diets = NULL
     stomach_data <- stomach_data[order(rownames(stomach_data)), ]
     
     plot_matrix(stomach_data, title = "Proportion of occurences in stomachs")
-  }
-  
-  if (!is.null(literature_diets)){
-    
-    # re-arrange the literature diets matrix before plotting it
-    if (colnames(literature_diets)[1] == "X"){
-      row.names(literature_diets) <- literature_diets[, 1]
-      literature_diets[, 1] <- NULL
-    }
-
-    literature_diets <- literature_diets[-nrow(literature_diets), ]
-    literature_diets <- literature_diets[, order(colnames(literature_diets))]
-    literature_diets <- literature_diets[order(rownames(literature_diets)), ]
-    
-    plot_matrix(literature_diets, title = "Diet proportions from the literature")
   }
   
 }
