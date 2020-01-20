@@ -107,6 +107,34 @@ data <- preprocess_data(isotope_data = example_isotope_data,
 
 If any error appears, it means your data is not in the correct format. Please read the error message and try to rearrange the data in the correct format.
 
+* You should now check the trophic links matrix.
+
+The last message should tell you to check the trophic links that will be investigated by the model. It is generally not wise to assume that all the trophic links are possible ( = a matrix filled with only ones), as the model will likely be over-paramaterized and have problems to converge. You therefore need to keep only the reasonnable trophic links (e.g., a shrimp cannot eat a whale). 
+
+The matrix displayed by the `preprocess_data` function is based on the stomach content data, so by-default EcoDiet will investigate trophic links only based on what you have found in stomachs analyses (`data$o`):
+
+```{r}
+trophic_links <- 1 * (data$o > 0)
+print(trophic_links)
+```
+
+If you want to add another trophic link, you can modify directly the topological matrix. For example, to specify that the "huge" animal can also eat "small" animals (even if none was found in the huge's stomachs), you can do:  
+
+```{r}
+trophic_links["small", "huge"] <- 1
+print(trophic_links)
+```
+
+Now the new topological matrix can be entered as an argument of the `preprocess_data` function, and you can see that the new trophic links matrix will be investigated by the model:
+```{r}
+data <- preprocess_data(isotope_data = example_isotope_data,
+                        trophic_enrichment_factor = c(0.8, 3.4),
+                        literature_prior = literature_prior,
+                        trophic_links = trophic_links,
+                        stomach_data = example_stomach_data)
+```
+
+
 ## Define your prior (*Literature option*)
 
 **Skip this part if your want to use EcoDiet without prior from the literature.**
@@ -177,26 +205,16 @@ data <- preprocess_data(isotope_data = example_isotope_data,
 
 If any error appears, it means your data is not in the correct format. Please read the error message and try to rearrange the data in the correct format.
 
-## Check the trophic links matrix
+* You should now check the trophic links matrix.
 
-The last message tells you to check the trophic links that will be investigated by the model. It is generally not wise to assume that all the trophic links are possible ( = a matrix filled with only ones), as the model will likely be over-paramaterized and have problems to converge. You therefore need to keep only the reasonnable trophic links (e.g., a shrimp cannot eat a whale). 
-
-The matrix displayed by the `preprocess_data` function is based:
-* on the stomach content data, so by-default, EcoDiet will investigate trophic links only based on what you have found in stomachs analyses, and
-* on the literature diets matrix if you have defined priors, so by-default, EcoDiet will also investigate trophic links only if you have identified them as plausible regarding your literature search.
-
-If you want to add another trophic link, you can modify directly the topological matrix. The by-default topological matrix can be defined by the following instruction : 
+These are the links that will be investigated by the model. The matrix displayed by the `preprocess_data` function is based by default on the stomach content data (`data$o`) and on the literature diets matrix (`data$alpha_lit`):
 
 ```{r}
-if (literature_prior){
-  trophic_links <- 1 * ((data$o > 0) | (data$alpha_lit > 0))
-} else {
-  trophic_links <- 1 * (data$o > 0)
-}
+trophic_links <- 1 * ((data$o > 0) | (data$alpha_lit > 0))
 print(trophic_links)
 ```
 
-Additional trophic links (= trophic links that do not appear in the stomach content data but that you know to exist in the trophic network) can be added by hand. For example, to specify that the "huge" animal can also eat "small" animals (even if none was found in the huge's stomachs), you can do:  
+If you want to add another trophic link, you can modify directly the topological matrix. For example, to specify that the "huge" animal can also eat "small" animals (even if none was found in the huge's stomachs), you can do:
 
 ```{r}
 trophic_links["small", "huge"] <- 1
