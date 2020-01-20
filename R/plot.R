@@ -62,7 +62,7 @@ plot_matrix <- function(matrix, title){
   df <- data.frame(rep(colnames(matrix), each=nrow(matrix)),
                    rep(rownames(matrix), nrow(matrix)),
                    unlist(matrix))
-  colnames(df) <- c("pred","prey","value")
+  colnames(df) <- c("pred", "prey", "value")
   df$pred <- as.numeric(df$pred)
   df$prey <- rev(as.numeric(df$prey))
   
@@ -212,12 +212,13 @@ plot_probability_density <- function(mcmc_output, data, pred, prey,
   }
   
   if (!is.null(prey)){ 
-    prey_index <- which(colnames(data$o) == prey)
-    if (length(prey_index) == 0){
-      stop("You did not put a correct prey name in the `prey` argument.\n",
-           "  You entered the name \"", prey,"\", while the prey names are actually: \"",
+    prey_index <- which(colnames(data$o) %in% prey)
+    if (length(prey) != length(prey_index)){
+      stop("You used an incorrect prey name in the `prey` argument.\n",
+           "  You have entered the names: \"", paste(prey, collapse = "\", \""),
+           "\".\n  But the prey names are actually: \"",
            paste(colnames(data$o), collapse = "\", \""), "\".\n",
-           "  Please use one of the above names in the `prey` argument.")
+           "  Please put correct names in the `prey` argument.")
     }
   }
   
@@ -241,7 +242,7 @@ plot_probability_density <- function(mcmc_output, data, pred, prey,
     prey <- colnames(data$o)[lookup_table[lookup_table$pred == pred_index, ]$prey]
   } else {
     variables_to_extract <- lookup_table[(lookup_table$pred == pred_index &
-                                            lookup_table$prey == prey_index), ]$names
+                                          lookup_table$prey %in% prey_index), ]$names
   }
   values_to_extract <- mcmc_output[, variables_to_extract]
   
