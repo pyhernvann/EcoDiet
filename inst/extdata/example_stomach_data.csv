@@ -1,6 +1,6 @@
-"X","small","medium","huge","large"
-"large","0","0","17","0"
-"huge","0","0","0","0"
-"small","0","12","0","22"
-"medium","0","0","12","4"
-"full","0","12","19","24"
+"X","huge","large","medium","small"
+"huge",0,0,0,0
+"large",11,0,0,0
+"medium",9,22,0,0
+"small",0,3,16,0
+"full",19,24,17,0
