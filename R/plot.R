@@ -59,7 +59,9 @@ plot_isotope_data <- function(isotope_data){
 
 plot_matrix <- function(matrix, title){
   
-  df <- data.frame(rep(colnames(matrix), each=nrow(matrix)),
+  matrix <- as.data.frame(matrix)
+  
+  df <- data.frame(rep(colnames(matrix), each = nrow(matrix)),
                    rep(rownames(matrix), nrow(matrix)),
                    unlist(matrix))
   colnames(df) <- c("pred", "prey", "value")
@@ -122,6 +124,60 @@ plot_data <- function(isotope_data, stomach_data = NULL){
   
 }
 
+#' Plot the prior distributions for the eta and/or PI parameters
+#'
+#' @param data the preprocessed data list outputed by the preprocess_data() function
+#' @param literature_prior a boolean (TRUE or FALSE) indicating whether the model will have 
+#' prior distributions defined by a study of the literature
+#' @param pred the predator name for which we want to plot the probability densities
+#' @param prey the prey(s) name for which we want to plot the probability densities
+#' @param variable the variable(s) for which we want to plot the probability densities
+#' 
+#' @export
+ 
+plot_prior <- function(data, literature_prior, pred = NULL, prey = NULL, variable = c("PI", "eta")){
+  
+  for (var in variable){
+    
+    title <- switch(var, 
+                    PI = "Prior mean diet proportions", 
+                    eta = "Prior mean trophic links probabilities")
+    
+    if (is.null(pred) & is.null(prey)){
+      
+      mean_prior <- matrix(0, ncol = data$nb_group, nrow = data$nb_group)
+      colnames(mean_prior) <- rownames(mean_prior) <- colnames(data$o)
+      
+      for (i in data$list_pred){
+        for (k in data$list_prey[i, 1:data$nb_prey[i]]){
+          if (var == "eta"){
+            if (literature_prior){
+              mean_prior[k, i] <- (data$eta_hyperparam_1[k, i]/
+                                     (data$eta_hyperparam_1[k, i] + data$eta_hyperparam_2[k, i]))
+            } else {
+                mean_prior[k, i] <- 1/2
+            }
+          } else if (var == "PI"){
+            if (literature_prior){
+              mean_prior[k, i] <- data$alpha_lit[k, i]/colSums(data$alpha_lit)[i]
+            } else {
+              mean_prior[k, i] <- 1/data$nb_prey[i]
+            }
+          }
+        }
+      }
+      
+      plot_matrix(mean_prior, title = title)
+      
+    } else {
+      
+      
+      
+    }
+  }
+  
+}
+
 
 #' Extract the means of the posterior distribution for a specific variable (PI or eta) 
 #' in a matrix format (with the predators in the columns, and the preys in the rows)
@@ -143,7 +199,7 @@ extract_mean <- function(mcmc_output, data, variable_to_extract = "PI"){
   matrix_mean <- matrix(0, data$nb_group, data$nb_group)
   colnames(matrix_mean) <- rownames(matrix_mean) <- colnames(data$o)
   
-  for (i in 1:length(raw_means)){
+  for (i in seq_along(raw_means)){
     # extract the indices that are between the brackets: "PI[2, 4]" -> "2,4"
     correct_indices <- regmatches(names(raw_means)[i], regexec("\\[(.*?)\\]", names(raw_means)[i]))[[1]][2]
     # re-format the indices: "2,4" -> c(2L, 4L)
@@ -151,9 +207,7 @@ extract_mean <- function(mcmc_output, data, variable_to_extract = "PI"){
     # use the indices to fill the matrix with the correct format
     matrix_mean[correct_indices[1], correct_indices[2]] <- raw_means[i]
   }
-  
-  matrix_mean <- as.data.frame(matrix_mean)
-  
+
   return(matrix_mean)
   
 }
@@ -162,27 +216,29 @@ extract_mean <- function(mcmc_output, data, variable_to_extract = "PI"){
 #'
 #' @param mcmc_output the mcmc.list object outputed by the run_model() function
 #' @param data the preprocessed data outputed by the preprocess_data() function
+#' @param pred the predator name for which we want to plot the probability densities
+#' @param prey the prey(s) name for which we want to plot the probability densities
+#' @param variable the variable(s) for which we want to plot the probability densities
 #'
 #' @export
 
-plot_results <- function(mcmc_output, data, pred = NULL, prey = NULL, variables = c("PI", "eta")){
+plot_results <- function(mcmc_output, data, pred = NULL, prey = NULL, variable = c("PI", "eta")){
   
-  for (variable in variables){
+  for (var in variable){
     
-    title <- switch(variable, 
-                    PI = "Posterior diet proportions", 
-                    eta = "Posterior trophic links probabilities")
+    title <- switch(var, 
+                    PI = "Posterior mean diet proportions", 
+                    eta = "Posterior mean trophic links probabilities")
     
     if (is.null(pred) & is.null(prey)){
       
-      mean <- extract_mean(mcmc_output, data, variable_to_extract = variable)
+      mean <- extract_mean(mcmc_output, data, variable_to_extract = var)
       plot_matrix(mean, title = title)
-      save(mean, file = paste0(variable, "_mean.Rdata"))
+      save(mean, file = paste0(var, "_mean.Rdata"))
       
     } else {
-      
       plot_probability_density(mcmc_output, data, pred, prey,
-                               variable_to_extract = variable, title = title)
+                               variable_to_extract = var, title = title)
     }
   }
 

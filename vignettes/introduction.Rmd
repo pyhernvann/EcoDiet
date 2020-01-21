@@ -200,7 +200,7 @@ data <- preprocess_data(isotope_data = example_isotope_data,
                         stomach_data = example_stomach_data,
                         literature_diets = example_literature_diets,
                         nb_literature = 10,
-                        literature_slope = 0.5)
+                        literature_slope = 0.6)
 ```
 
 If any error appears, it means your data is not in the correct format. Please read the error message and try to rearrange the data in the correct format.
@@ -230,8 +230,37 @@ data <- preprocess_data(isotope_data = example_isotope_data,
                         stomach_data = example_stomach_data,
                         literature_diets = example_literature_diets,
                         nb_literature = 10,
-                        literature_slope = 0.5)
+                        literature_slope = 0.6)
 ```
+
+## Plot the priors
+
+Whether they are informed by the literature, or non-informative, you can now plot the mean priors for the `eta` and `PI` variables:
+
+```{r, fig2, fig.height = 4, fig.width = 6, fig.align = "center"}
+plot_prior(data, literature_prior)
+```
+
+You can also see the prior distributions for one predator if you wish:
+
+```{r, eval = FALSE, fig3, fig.height = 4, fig.width = 6, fig.align = "center"}
+plot_prior(data, literature_prior, pred = "huge", variable = "PI")
+```
+
+This way, you can change the prior parameters and see how it affects the prior distributions (here, for example we have changed the `literature_slope` from 0.6 to 0.5:
+```{r, eval = FALSE, fig4, fig.height = 4, fig.width = 6, fig.align = "center"}
+data <- preprocess_data(isotope_data = example_isotope_data,
+                        trophic_enrichment_factor = c(0.8, 3.4),
+                        literature_prior = literature_prior,
+                        trophic_links = trophic_links,
+                        stomach_data = example_stomach_data,
+                        literature_diets = example_literature_diets,
+                        nb_literature = 10,
+                        literature_slope = 0.5)
+
+plot_prior(data, literature_prior, pred = "huge", variable = "PI")
+```
+
 
 ## Write the model
 
@@ -261,7 +290,7 @@ If you see again a warning message being printed, you should follow the advices 
 
 In Bayesian models, the parameters are represented by their probability distributions. So here the model's outputs are the approximated probability distributions for the diet propotions (PI) and the trophic links probabilities (eta). To summarize these distributions, we can use point estimates like the mean and visualize it with the `plot_results` function:
 
-```{r, fig2, fig.height = 4, fig.width = 6, fig.align = "center"}
+```{r, fig5, fig.height = 4, fig.width = 6, fig.align = "center"}
 plot_results(mcmc_output, data)
 ```
 
@@ -279,14 +308,14 @@ write.table(eta_mean, file = "eta_mean.csv", sep = ",", col.names = NA)
 
 You can also plot the probability densities for the `PI` variable and for one predator:
 
-```{r, fig3, fig.height = 4, fig.width = 6, fig.align = "center"}
-plot_results(mcmc_output, data, variables = "PI", pred = "huge")
+```{r, fig6, fig.height = 4, fig.width = 6, fig.align = "center"}
+plot_results(mcmc_output, data, variable = "PI", pred = "huge")
 ```
 
 If you find the plot to contain too much information, you can also precise for which preys you want to see the probability density:
 
-```{r, fig4, fig.height = 4, fig.width = 6, fig.align = "center"}
-plot_results(mcmc_output, data, variables = "PI", pred = "huge", prey = c("large", "small"))
+```{r, fig7, fig.height = 4, fig.width = 6, fig.align = "center"}
+plot_results(mcmc_output, data, variable = "PI", pred = "huge", prey = c("large", "small"))
 ```
 
 ## Save the full results
@@ -310,29 +339,6 @@ knitr::kable(quantiles)
 The quantiles can finally be saved as `.csv` tables:
 ```{r, eval = FALSE}
 write.table(quantiles, file = "quantiles.csv", sep = ",", col.names = NA)
-```
-
-## Plot the prior distributions
-
-You can also plot the prior distributions by running the model with empty data. To do so, you can use the following instructions:
-
-```{r}
-data$o[] <- NA
-data$y[] <- NA
-data$nb_y[] <- 0
-
-mcmc_priors <- run_model(textConnection(model_string), data,
-                         nb_adapt = 1e2, nb_burnin = 1, nb_iter = 1e5)
-```
-
-You can now plot the prior distributions you are interested in:
-
-```{r, fig5, fig.height = 4, fig.width = 6, fig.align = "center"}
-plot_results(mcmc_priors, data, variables = "eta", pred = "large")
-```
-
-```{r, fig6, fig.height = 4, fig.width = 6, fig.align = "center"}
-plot_results(mcmc_priors, data, variables = "PI", pred = "huge")
 ```
 
 ## Save another variable than PI and eta
