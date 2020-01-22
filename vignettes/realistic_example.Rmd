@@ -1,0 +1,72 @@
+---
+title: "EcoDiet possibilities explored on a realistic example"
+author: "Heloise Thero"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{EcoDiet possibilities explored on a realistic example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+```{r}
+# realistic_stomach_data_path <- system.file("extdata", "realistic_stomach_data.csv",
+                                    # package = "EcoDiet")
+realistic_stomach_data <- read.csv("C:/Users/hthero/Documents/EcoDiet/inst/extdata/realistic_stomach_data.csv")
+knitr::kable(realistic_stomach_data)
+```
+
+```{r}
+# realistic_isotope_data_path <- system.file("extdata", "realistic_isotope_data.csv",
+                                    # package = "EcoDiet")
+realistic_isotope_data <- read.csv("C:/Users/hthero/Documents/EcoDiet/inst/extdata/realistic_isotope_data.csv")
+knitr::kable(realistic_isotope_data[c(1:3, 31:33, 61:63), ])
+```
+
+```{r}
+# realistic_literature_diets_path <- system.file("extdata", "realistic_literature_diets.csv",
+                                    # package = "EcoDiet")
+realistic_literature_diets <- read.csv("C:/Users/hthero/Documents/EcoDiet/inst/extdata/realistic_literature_diets.csv")
+realistic_literature_diets[, -1] <- round(realistic_literature_diets[, -1], 2)
+knitr::kable(realistic_literature_diets)
+```
+
+```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
+library(EcoDiet)
+
+plot_data(isotope_data = realistic_isotope_data,
+          stomach_data = realistic_stomach_data)
+```
+
+```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
+literature_prior <- FALSE
+
+data <- preprocess_data(isotope_data = realistic_isotope_data,
+                        trophic_enrichment_factor = c(0.8, 3.4),
+                        literature_prior = literature_prior,
+                        stomach_data = realistic_stomach_data)
+
+plot_prior(data, literature_prior)
+```
+
+```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
+model_string <- write_model(literature_prior = literature_prior)
+
+mcmc_output <- run_model(textConnection(model_string), data, nb_iter = 1e2)
+
+plot_results(mcmc_output, data)
+```
+
+```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
+plot_prior(data, literature_prior, pred = "Pout")
+plot_results(mcmc_output, data, pred = "Pout")
+```
+
