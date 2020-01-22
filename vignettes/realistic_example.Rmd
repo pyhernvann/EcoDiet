@@ -66,7 +66,7 @@ plot_results(mcmc_output, data)
 ```
 
 ```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
-plot_prior(data, literature_prior, pred = "Pout")
-plot_results(mcmc_output, data, pred = "Pout")
+# plot_prior(data, literature_prior, pred = "Pout")
+# plot_results(mcmc_output, data, pred = "Pout")
 ```
 
