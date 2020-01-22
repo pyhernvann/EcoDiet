@@ -50,4 +50,4 @@ Several vignettes will then explain to you how to use this package depending on 
 ```
 browseVignettes("EcoDiet")
 ```
-And click on the HTML button next to the vignette you are interested in, for example "Introduction to EcoDiet (quick start)".
+And click on the HTML button next to the vignette you are interested in, for example "Introduction - How to use EcoDiet".
