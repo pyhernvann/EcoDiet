@@ -304,7 +304,7 @@ extract_mean <- function(mcmc_output, data, variable_to_extract = "PI"){
 #' @keywords internal
 #' @noRd
 
-plot_psoterior_distribution <- function(mcmc_output, data, pred, prey,
+plot_posterior_distribution <- function(mcmc_output, data, pred, prey,
                                         variable_to_extract, title){
   
   pred_index <- which(colnames(data$o) == pred)
@@ -391,8 +391,8 @@ plot_results <- function(mcmc_output, data, pred = NULL, prey = NULL, variable =
   for (var in variable){
     
     title <- switch(var, 
-                    PI = "Prior diet proportions", 
-                    eta = "Prior trophic links probabilities")
+                    PI = "Posterior diet proportions", 
+                    eta = "Posterior trophic links probabilities")
     
     if (is.null(pred) & is.null(prey)){
       
@@ -401,7 +401,7 @@ plot_results <- function(mcmc_output, data, pred = NULL, prey = NULL, variable =
       save(mean, file = paste0(var, "_mean.Rdata"))
       
     } else {
-      plot_psoterior_distribution(mcmc_output, data, pred, prey,
+      plot_posterior_distribution(mcmc_output, data, pred, prey,
                                   variable_to_extract = var, title = title)
     }
   }
