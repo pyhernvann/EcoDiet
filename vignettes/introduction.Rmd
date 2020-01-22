@@ -237,19 +237,19 @@ data <- preprocess_data(isotope_data = example_isotope_data,
 
 Whether they are informed by the literature, or non-informative, you can now plot the mean priors for the `eta` and `PI` variables:
 
-```{r, fig2, fig.height = 4, fig.width = 6, fig.align = "center"}
+```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 plot_prior(data, literature_prior)
 ```
 
 You can also see the prior distributions for one predator if you wish:
 
-```{r, fig3, fig.height = 4, fig.width = 6, fig.align = "center"}
+```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 plot_prior(data, literature_prior, pred = "huge", variable = "eta")
 ```
 
 This way, you can change the prior parameters and see how it affects the prior distributions (here, for example we have changed the `nb_literature` parameter from 10 to 2:
 
-```{r, fig4, fig.height = 4, fig.width = 6, fig.align = "center"}
+```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 data <- preprocess_data(isotope_data = example_isotope_data,
                         trophic_enrichment_factor = c(0.8, 3.4),
                         literature_prior = literature_prior,
@@ -291,7 +291,7 @@ If you see again a warning message being printed, you should follow the advices 
 
 In Bayesian models, the parameters are represented by their probability distributions. So here the model's outputs are the approximated probability distributions for the diet propotions (PI) and the trophic links probabilities (eta). To summarize these distributions, we can use point estimates like the mean and visualize it with the `plot_results` function:
 
-```{r, fig5, fig.height = 4, fig.width = 6, fig.align = "center"}
+```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 plot_results(mcmc_output, data)
 ```
 
@@ -309,13 +309,13 @@ write.table(eta_mean, file = "eta_mean.csv", sep = ",", col.names = NA)
 
 You can also plot the probability densities for the `PI` variable and for one predator:
 
-```{r, fig6, fig.height = 4, fig.width = 6, fig.align = "center"}
+```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 plot_results(mcmc_output, data, variable = "PI", pred = "huge")
 ```
 
 If you find the plot to contain too much information, you can also precise for which preys you want to see the probability density:
 
-```{r, fig7, fig.height = 4, fig.width = 6, fig.align = "center"}
+```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 plot_results(mcmc_output, data, variable = "PI", pred = "huge", prey = c("large", "small"))
 ```
 
