@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.R
 \name{plot_prior}
 \alias{plot_prior}
-\title{Plot the prior distributions for the eta and/or PI parameters}
+\title{Plot the prior means or distributions for the eta and/or PI parameters}
 \usage{
 plot_prior(
   data,
@@ -25,5 +25,5 @@ prior distributions defined by a study of the literature}
 \item{variable}{the variable(s) for which we want to plot the probability densities}
 }
 \description{
-Plot the prior distributions for the eta and/or PI parameters
+Plot the prior means or distributions for the eta and/or PI parameters
 }

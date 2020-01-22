@@ -124,7 +124,81 @@ plot_data <- function(isotope_data = NULL, stomach_data = NULL){
   
 }
 
-#' Plot the prior distributions for the eta and/or PI parameters
+
+#' Plot the prior probability density(ies) for a given variable and predator
+#' 
+#' @param data the preprocessed data outputed by the preprocess_data() function
+#' @param literature_prior a boolean (TRUE or FALSE) indicating whether the model will have 
+#' @param pred the predator name for which we want to plot the probability densities
+#' @param prey the prey(s) name for which we want to plot the probability densities
+#' @param var the variable for which we want to plot the probability densities
+#' @param title the title to put (depends on the variable and the predator to plot)
+#'  
+#' @import ggplot2
+#' 
+#' @keywords internal
+#' @noRd
+
+plot_prior_distribution <- function(data, literature_prior, pred, prey, var, title){
+  
+  pred_index <- which(colnames(data$o) == pred)
+  if (length(pred_index) == 0){
+    stop("You did not put a correct predator name in the `pred` argument.\n",
+         "  You entered the name \"", pred,"\", while the predator names are actually: \"",
+         paste(colnames(data$o), collapse = "\", \""), "\".\n",
+         "  Please use one of the above names in the `pred` argument.")
+  }
+  
+  if (is.null(prey)){
+    prey_index <- data$list_prey[, pred_index]
+    prey_index <- prey_index[!is.na(prey_index)]
+    prey <- colnames(data$o)[prey_index]
+  } else {
+    prey_index <- which(colnames(data$o) %in% prey)
+    if (length(prey) != length(prey_index)){
+      stop("You used an incorrect prey name in the `prey` argument.\n",
+           "  You have entered the names: \"", paste(prey, collapse = "\", \""),
+           "\".\n  But the prey names are actually: \"",
+           paste(colnames(data$o), collapse = "\", \""), "\".\n",
+           "  Please put correct names in the `prey` argument.")
+    }
+  }
+  
+  x <-  seq(0, 1, length = 101)
+  df_to_plot <- data.frame(Prey = c(), x = c(), Density = c())
+  
+  for (each_prey in prey){
+    prey_idx <- which(colnames(data$o) == each_prey)
+    if (var == "PI"){
+      if (literature_prior) {
+        Density <- dbeta(x, data$alpha_lit[prey_idx, pred_index], 
+                         colSums(data$alpha_lit)[pred_index])
+      } else {
+        Density <- dbeta(x, 1, data$nb_prey[pred_index])
+      }
+    } else if (var == "eta"){
+      if (literature_prior) {
+        Density <- dbeta(x, data$eta_hyperparam_1[prey_idx, pred_index],
+                         data$eta_hyperparam_2[prey_idx, pred_index])
+      } else {
+        Density <- dbeta(x, 1, 1)
+      }
+    }
+    df_to_plot <- rbind(df_to_plot, data.frame(Prey = rep(each_prey, 101), x = x, Density = Density))
+  }
+  
+  figure <- ggplot(df_to_plot, aes(x = x, y = Density, colour = Prey, linetype = Prey)) +
+    geom_line(size = 1.25) +
+    ggtitle(paste(title, "\nfor the", pred, "predator")) +
+    xlim(0, 1) +
+    theme_bw() +
+    theme(axis.title.x = element_blank(),
+          plot.title = element_text(hjust = 0.5))
+  plot(figure)
+  
+}
+
+#' Plot the prior means or distributions for the eta and/or PI parameters
 #'
 #' @param data the preprocessed data list outputed by the preprocess_data() function
 #' @param literature_prior a boolean (TRUE or FALSE) indicating whether the model will have 
@@ -137,11 +211,17 @@ plot_data <- function(isotope_data = NULL, stomach_data = NULL){
  
 plot_prior <- function(data, literature_prior, pred = NULL, prey = NULL, variable = c("PI", "eta")){
   
+  if (!all(variable %in% c("eta", "PI"))){
+    stop("This function can only print a figure for the PI or eta variable.\n",
+         "  But you have entered this variable name: \"", variable, "\".\n",
+         "  Please use rather `variable = \"PI\"` or `variable = \"eta\"` for this function.")
+  }
+  
   for (var in variable){
     
     title <- switch(var, 
-                    PI = "Prior mean diet proportions", 
-                    eta = "Prior mean trophic links probabilities")
+                    PI = "Prior diet proportions", 
+                    eta = "Prior trophic links probabilities")
     
     if (is.null(pred) & is.null(prey)){
       
@@ -167,11 +247,11 @@ plot_prior <- function(data, literature_prior, pred = NULL, prey = NULL, variabl
         }
       }
       
-      plot_matrix(mean_prior, title = title)
+      plot_matrix(mean_prior, title = paste(title, "(means)"))
       
     } else {
       
-      
+      plot_prior_distribution(data, literature_prior, pred, prey, var, title)
       
     }
   }
@@ -212,52 +292,20 @@ extract_mean <- function(mcmc_output, data, variable_to_extract = "PI"){
   
 }
 
-#' Plot the main results of the EcoDiet model (the means of each variable)
-#'
-#' @param mcmc_output the mcmc.list object outputed by the run_model() function
-#' @param data the preprocessed data outputed by the preprocess_data() function
-#' @param pred the predator name for which we want to plot the probability densities
-#' @param prey the prey(s) name for which we want to plot the probability densities
-#' @param variable the variable(s) for which we want to plot the probability densities
-#'
-#' @export
-
-plot_results <- function(mcmc_output, data, pred = NULL, prey = NULL, variable = c("PI", "eta")){
-  
-  for (var in variable){
-    
-    title <- switch(var, 
-                    PI = "Posterior mean diet proportions", 
-                    eta = "Posterior mean trophic links probabilities")
-    
-    if (is.null(pred) & is.null(prey)){
-      
-      mean <- extract_mean(mcmc_output, data, variable_to_extract = var)
-      plot_matrix(mean, title = title)
-      save(mean, file = paste0(var, "_mean.Rdata"))
-      
-    } else {
-      plot_probability_density(mcmc_output, data, pred, prey,
-                               variable_to_extract = var, title = title)
-    }
-  }
-
-}
-
-#' Plot the probability density(ies) for a given variable
+#' Plot the posterior probability density(ies) for a given variable and predator
 #' 
 #' @param mcmc_output the mcmc.list object outputed by the run_model() function
 #' @param data the preprocessed data outputed by the preprocess_data() function
-#' @param variable_to_extract the name of the variable we want to plot ("PI" by default)
-#' @param variable_to_extract the title to put (depends on the variable to plot)
+#' @param variable_to_extract the name of the variable we want to plot
+#' @param title the title to put (depends on the variable and the predator to plot)
 #'  
 #' @import ggplot2
 #' 
 #' @keywords internal
 #' @noRd
 
-plot_probability_density <- function(mcmc_output, data, pred, prey,
-                                       variable_to_extract, title){
+plot_psoterior_distribution <- function(mcmc_output, data, pred, prey,
+                                        variable_to_extract, title){
   
   pred_index <- which(colnames(data$o) == pred)
   if (length(pred_index) == 0){
@@ -298,7 +346,7 @@ plot_probability_density <- function(mcmc_output, data, pred, prey,
     prey <- colnames(data$o)[lookup_table[lookup_table$pred == pred_index, ]$prey]
   } else {
     variables_to_extract <- lookup_table[(lookup_table$pred == pred_index &
-                                          lookup_table$prey %in% prey_index), ]$names
+                                            lookup_table$prey %in% prey_index), ]$names
   }
   values_to_extract <- mcmc_output[, variables_to_extract]
   
@@ -321,3 +369,41 @@ plot_probability_density <- function(mcmc_output, data, pred, prey,
   plot(figure)
 }
 
+
+#' Plot the main results of the EcoDiet model (the means of each variable)
+#'
+#' @param mcmc_output the mcmc.list object outputed by the run_model() function
+#' @param data the preprocessed data outputed by the preprocess_data() function
+#' @param pred the predator name for which we want to plot the probability densities
+#' @param prey the prey(s) name for which we want to plot the probability densities
+#' @param variable the variable(s) for which we want to plot the probability densities
+#'
+#' @export
+
+plot_results <- function(mcmc_output, data, pred = NULL, prey = NULL, variable = c("PI", "eta")){
+  
+  if (!all(variable %in% c("eta", "PI"))){
+    stop("This function can only print a figure for the PI or eta variable.\n",
+         "  But you have entered this variable name: \"", variable, "\".\n",
+         "  Please use rather `variable = \"PI\"` or `variable = \"eta\"` for this function.")
+  }
+  
+  for (var in variable){
+    
+    title <- switch(var, 
+                    PI = "Prior diet proportions", 
+                    eta = "Prior trophic links probabilities")
+    
+    if (is.null(pred) & is.null(prey)){
+      
+      mean <- extract_mean(mcmc_output, data, variable_to_extract = var)
+      plot_matrix(mean, title = paste(title, "(means)"))
+      save(mean, file = paste0(var, "_mean.Rdata"))
+      
+    } else {
+      plot_psoterior_distribution(mcmc_output, data, pred, prey,
+                                  variable_to_extract = var, title = title)
+    }
+  }
+
+}

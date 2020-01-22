@@ -200,7 +200,7 @@ data <- preprocess_data(isotope_data = example_isotope_data,
                         stomach_data = example_stomach_data,
                         literature_diets = example_literature_diets,
                         nb_literature = 10,
-                        literature_slope = 0.6)
+                        literature_slope = 0.5)
 ```
 
 If any error appears, it means your data is not in the correct format. Please read the error message and try to rearrange the data in the correct format.
@@ -230,7 +230,7 @@ data <- preprocess_data(isotope_data = example_isotope_data,
                         stomach_data = example_stomach_data,
                         literature_diets = example_literature_diets,
                         nb_literature = 10,
-                        literature_slope = 0.6)
+                        literature_slope = 0.5)
 ```
 
 ## Plot the priors
@@ -243,22 +243,23 @@ plot_prior(data, literature_prior)
 
 You can also see the prior distributions for one predator if you wish:
 
-```{r, eval = FALSE, fig3, fig.height = 4, fig.width = 6, fig.align = "center"}
-plot_prior(data, literature_prior, pred = "huge", variable = "PI")
+```{r, fig3, fig.height = 4, fig.width = 6, fig.align = "center"}
+plot_prior(data, literature_prior, pred = "huge", variable = "eta")
 ```
 
-This way, you can change the prior parameters and see how it affects the prior distributions (here, for example we have changed the `literature_slope` from 0.6 to 0.5:
-```{r, eval = FALSE, fig4, fig.height = 4, fig.width = 6, fig.align = "center"}
+This way, you can change the prior parameters and see how it affects the prior distributions (here, for example we have changed the `nb_literature` parameter from 10 to 2:
+
+```{r, fig4, fig.height = 4, fig.width = 6, fig.align = "center"}
 data <- preprocess_data(isotope_data = example_isotope_data,
                         trophic_enrichment_factor = c(0.8, 3.4),
                         literature_prior = literature_prior,
                         trophic_links = trophic_links,
                         stomach_data = example_stomach_data,
                         literature_diets = example_literature_diets,
-                        nb_literature = 10,
+                        nb_literature = 2,
                         literature_slope = 0.5)
 
-plot_prior(data, literature_prior, pred = "huge", variable = "PI")
+plot_prior(data, literature_prior, pred = "huge", variable = "eta")
 ```
 
 
