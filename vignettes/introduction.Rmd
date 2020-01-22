@@ -109,7 +109,7 @@ If any error appears, it means your data is not in the correct format. Please re
 
 * You should now check the trophic links matrix.
 
-The last message should tell you to check the trophic links that will be investigated by the model. It is generally not wise to assume that all the trophic links are possible ( = a matrix filled with only ones), as the model will likely be over-paramaterized and have problems to converge. You therefore need to keep only the reasonnable trophic links (e.g., a shrimp cannot eat a whale). 
+The last message tell you to check the trophic links that will be investigated by the model. It is generally not wise to assume that all the trophic links are possible ( = a matrix filled with only ones), as the model will likely be over-paramaterized and have problems to converge. You therefore need to keep only the reasonnable trophic links (e.g., a shrimp cannot eat a whale). 
 
 The matrix displayed by the `preprocess_data` function is based on the stomach content data, so by-default EcoDiet will investigate trophic links only based on what you have found in stomachs analyses (`data$o`):
 
@@ -118,14 +118,14 @@ trophic_links <- 1 * (data$o > 0)
 print(trophic_links)
 ```
 
-If you want to add another trophic link, you can modify directly the topological matrix. For example, to specify that the "huge" animal can also eat "small" animals (even if none was found in the huge's stomachs), you can do:  
+If you want to add another trophic link, you can modify directly the topological matrix. This can be useful if your stomach sampling size is too low and you missed a prey you are definitely sure that the predator feeds on, or if the prey is difficulty identifiable is stomachs (e.g., really small and highly digestible prey). For example, to specify that the "huge" animal can also eat "small" animals despite none was found in the huge's stomachs, you can do:  
 
 ```{r}
 trophic_links["small", "huge"] <- 1
 print(trophic_links)
 ```
 
-Now the new topological matrix can be entered as an argument of the `preprocess_data` function, and you can see that the new trophic links matrix will be investigated by the model:
+Now, the new topological matrix can be entered as an argument of the `preprocess_data` function, and you can see that the new trophic links matrix will be investigated by the model:
 ```{r}
 data <- preprocess_data(isotope_data = example_isotope_data,
                         trophic_enrichment_factor = c(0.8, 3.4),
@@ -139,9 +139,9 @@ data <- preprocess_data(isotope_data = example_isotope_data,
 
 **Skip this part if your want to use EcoDiet without prior from the literature.**
 
-The calculation of the priors for the variables "eta" and "PI" from the literature values and the Pedigree scrore also involves to import a litterature diet matrix, and two additional parameters allowing to modulate the relationship between the Pedigree value and the priors' precision.
+The calculation of the priors for the variables "eta" and "PI" mainly relies on a literature diet matrix, summarizing the knowledge on diets extracted from the literature, and Pedigree scores that quantifies the reliability of the literature-derived information on each predator's diet. As detailed below, the coefficients of the literature diet matrix are used to set the priors' mode, and the Pedigree scores are used to determine these priors' precision. Two additional parameters allow to modulate the relationship between the Pedigree value and the priors' precision for more adaptability to specific case studies.
 
-* Diet matrix from the literature:
+* Diet matrix from the literature and the associated Pedigree scores:
 
 ```{r}
 example_literature_diets_path <- system.file("extdata", "example_literature_diets.csv",
@@ -150,9 +150,9 @@ example_literature_diets <- read.csv(example_literature_diets_path)
 knitr::kable(example_literature_diets)
 ```
 
-This table is a diet matrix built from a literature search. As for the stomach contents table, all trophic groups must be included and there should be as many columns as rows as number of trophic groups. The matrix coefficients are the contributions (in decimals) of the corresponding row-group to the diet of the corresponding column-group averaged over the selected studies. The coefficients within a given column must sum to 1, except if the column corresponds to a group at the base of the trophic network.  In this example, the selected studies identified that "huge" animals eat equally "large" and "medium" animals (thus the 0.5 and 0.5 numbers in the first column). The "small" animals are at the base of the ecosystem and their prey are not considered in the food-web representation.
+This table is a diet matrix built from a literature search. As for the stomach contents table, all trophic groups must be included and there should be as many columns as rows as number of trophic groups. The matrix coefficients are the contributions (in decimal units) of the corresponding row-group to the diet of the corresponding column-group averaged over the selected studies. The coefficients within a given column must sum to 1, except if the column corresponds to a group at the base of the trophic network.  In this example, the selected studies identified that "huge" animals eat equally "large" and "medium" animals (thus the 0.5 and 0.5 numbers in the first column). The "small" animals are at the base of the ecosystem and their prey are not considered in the food-web representation.
 
-These priors will be used to formulate:
+This summary of the literature knowledge will be used to formulate:
 
 1. The priors on the probabilities that links exist. Whether they are null or strictly positive, the coefficients of the diet matrix from the literature are used to respectively shift toward 0 or 1 the Beta distributions used as priors on the varaibles "eta".
 
@@ -214,7 +214,7 @@ trophic_links <- 1 * ((data$o > 0) | (data$alpha_lit > 0))
 print(trophic_links)
 ```
 
-If you want to add another trophic link, you can modify directly the topological matrix. For example, to specify that the "huge" animal can also eat "small" animals (even if none was found in the huge's stomachs), you can do:
+If you want to add another trophic link, you can modify directly the topological matrix. For instance, it can be useful if you are definitely sure that a prey is consumed by a given predator but your stomach sampling size is too small to allow any observation and the study extracted from the literature did not identify the prey because the prey is absent of the ecosystem where it was conducted. In our study case, to specify that the "huge" animal can also eat "small" animals (even if none was found in the huge's stomachs), you can do:
 
 ```{r}
 trophic_links["small", "huge"] <- 1
