@@ -4,7 +4,7 @@
 \alias{plot_data}
 \title{Plot the raw data entered by the user.}
 \usage{
-plot_data(isotope_data, stomach_data = NULL)
+plot_data(isotope_data = NULL, stomach_data = NULL)
 }
 \arguments{
 \item{isotope_data}{the raw isotopic data}

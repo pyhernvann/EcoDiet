@@ -97,14 +97,14 @@ plot_matrix <- function(matrix, title){
 #'
 #' @export
 
-plot_data <- function(isotope_data, stomach_data = NULL){
+plot_data <- function(isotope_data = NULL, stomach_data = NULL){
   
-  plot_isotope_data(isotope_data)
+  if (!is.null(isotope_data)){
+    plot_isotope_data(isotope_data)
+  }
   
   if (!is.null(stomach_data)){
-    
     # Clean the stomach data similarly as in the preprocess_data function except for the commented parts
-    
     if (colnames(stomach_data)[1] == "X"){
       row.names(stomach_data) <- stomach_data[, 1]
       stomach_data[, 1] <- NULL
