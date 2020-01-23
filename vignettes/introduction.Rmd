@@ -244,7 +244,7 @@ plot_prior(data, literature_prior)
 You can also see the prior distributions for one predator if you wish:
 
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
-plot_prior(data, literature_prior, pred = "huge", variable = "eta")
+plot_prior(data, literature_prior, pred = "huge")
 ```
 
 This way, you can change the prior parameters and see how it affects the prior distributions (here, for example we have changed the `nb_literature` parameter from 10 to 2:
