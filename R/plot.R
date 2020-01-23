@@ -165,6 +165,10 @@ plot_prior_distribution <- function(data, literature_prior, pred, prey, var, tit
            paste(colnames(data$o), collapse = "\", \""), "\".\n",
            "  Please put correct names in the `prey` argument.")
     }
+    if (sum(prey_index %in% data$list_prey[pred_index, ]) == 0){
+      stop("None of the input preys you have entered (\"", paste(prey, collapse = "\", \""),
+           "\") are considered as eaten by the input predator (\"", pred ,"\").")
+    }
   }
   
   x <-  seq(0, 1, length = 101)
@@ -172,22 +176,24 @@ plot_prior_distribution <- function(data, literature_prior, pred, prey, var, tit
   
   for (each_prey in prey){
     prey_idx <- which(colnames(data$o) == each_prey)
-    if (var == "PI"){
-      if (literature_prior) {
-        Density <- dbeta(x, data$alpha_lit[prey_idx, pred_index], 
-                         colSums(data$alpha_lit)[pred_index])
-      } else {
-        Density <- dbeta(x, 1, data$nb_prey[pred_index])
+    if (prey_idx %in% data$list_prey[pred_index, ]){
+      if (var == "PI"){
+        if (literature_prior) {
+          Density <- dbeta(x, data$alpha_lit[prey_idx, pred_index], 
+                           colSums(data$alpha_lit)[pred_index])
+        } else {
+          Density <- dbeta(x, 1, data$nb_prey[pred_index])
+        }
+      } else if (var == "eta"){
+        if (literature_prior) {
+          Density <- dbeta(x, data$eta_hyperparam_1[prey_idx, pred_index],
+                           data$eta_hyperparam_2[prey_idx, pred_index])
+        } else {
+          Density <- dbeta(x, 1, 1)
+        }
       }
-    } else if (var == "eta"){
-      if (literature_prior) {
-        Density <- dbeta(x, data$eta_hyperparam_1[prey_idx, pred_index],
-                         data$eta_hyperparam_2[prey_idx, pred_index])
-      } else {
-        Density <- dbeta(x, 1, 1)
-      }
+      df_to_plot <- rbind(df_to_plot, data.frame(Prey = rep(each_prey, 101), x = x, Density = Density)) 
     }
-    df_to_plot <- rbind(df_to_plot, data.frame(Prey = rep(each_prey, 101), x = x, Density = Density))
   }
   
   figure <- ggplot(df_to_plot, aes(x = x, y = Density, colour = Prey, linetype = Prey)) +
