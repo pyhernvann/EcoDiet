@@ -150,7 +150,7 @@ plot_prior_distribution <- function(data, literature_prior, pred, prey, var, tit
   }
   
   if (is.null(prey)){
-    prey_index <- data$list_prey[, pred_index]
+    prey_index <- data$list_prey[pred_index, ]
     prey_index <- prey_index[!is.na(prey_index)]
     prey <- colnames(data$o)[prey_index]
   } else {
@@ -335,9 +335,12 @@ plot_posterior_distribution <- function(mcmc_output, data, pred, prey,
   #     2 PI[3,1]    3    1
   #     3 PI[3,2]    3    2
   lookup <- sapply(colnames(mcmc_output), function(X) regmatches(X, regexec("\\[(.*?)\\]", X))[[1]][2])
+  prey_idx <- sapply(lookup, function(X) strsplit(X, split=',')[[1]][[1]])
+  pred_idx <- sapply(lookup, function(X) strsplit(X, split=',')[[1]][[2]])
+  
   lookup_table <- data.frame(names = colnames(mcmc_output),
-                             prey = as.integer(substr(lookup, 1, 1)),
-                             pred = as.integer(substr(lookup, 3, 3)),
+                             prey = as.integer(prey_idx),
+                             pred = as.integer(pred_idx),
                              stringsAsFactors = FALSE)
   
   # Prepare a data frame with the values for one predator's preys
