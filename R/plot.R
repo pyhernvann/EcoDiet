@@ -336,6 +336,10 @@ plot_posterior_distribution <- function(mcmc_output, data, pred, prey,
            paste(colnames(data$o), collapse = "\", \""), "\".\n",
            "  Please put correct names in the `prey` argument.")
     }
+    if (sum(prey_index %in% data$list_prey[pred_index, ]) == 0){
+      stop("None of the input preys you have entered (\"", paste(prey, collapse = "\", \""),
+           "\") are considered as eaten by the input predator (\"", pred ,"\").")
+    }
   }
   
   # Keep only the variable of interest (all the "PI" or all the "eta")
@@ -361,7 +365,8 @@ plot_posterior_distribution <- function(mcmc_output, data, pred, prey,
     prey <- colnames(data$o)[lookup_table[lookup_table$pred == pred_index, ]$prey]
   } else {
     variables_to_extract <- lookup_table[(lookup_table$pred == pred_index &
-                                            lookup_table$prey %in% prey_index), ]$names
+                                            lookup_table$prey %in% prey_index &
+                                            lookup_table$prey %in% data$list_prey[pred_index, ]), ]$names
   }
   values_to_extract <- mcmc_output[, variables_to_extract]
   
