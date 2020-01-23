@@ -148,6 +148,9 @@ plot_prior_distribution <- function(data, literature_prior, pred, prey, var, tit
          paste(colnames(data$o), collapse = "\", \""), "\".\n",
          "  Please use one of the above names in the `pred` argument.")
   }
+  if (data$nb_prey[pred_index] == 0){
+    stop("The predator you have chosen (\"", pred, "\") has no prey and thus cannot be plotted.")
+  }
   
   if (is.null(prey)){
     prey_index <- data$list_prey[pred_index, ]
@@ -313,6 +316,9 @@ plot_posterior_distribution <- function(mcmc_output, data, pred, prey,
          "  You entered the name \"", pred,"\", while the predator names are actually: \"",
          paste(colnames(data$o), collapse = "\", \""), "\".\n",
          "  Please use one of the above names in the `pred` argument.")
+  }
+  if (data$nb_prey[pred_index] == 0){
+    stop("The predator you have chosen (\"", pred, "\") has no prey and thus cannot be plotted.")
   }
   
   if (!is.null(prey)){ 
