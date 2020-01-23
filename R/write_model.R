@@ -16,30 +16,21 @@ write_model <- function(literature_prior = FALSE){
     
     for (k in list_prey[i, 1:nb_prey[i]]){
     
-      o[k, i] ~ dbin(eta[k, i], nb_o[i])
-      LAMBDA[k, i] ~ dbern(eta[k, i])
-    
-    }
+      LAMBDA[k, i] ~ dbern(eta[k, i])"
+  if (literature_prior){
+    model_string2 <- 
+"      eta[k, i] ~ dbeta(o[k, i] + eta_hyperparam_1[k, i], nb_o[i] - o[k, i] + eta_hyperparam_2[k, i])"
+  } else {
+    model_string2 <- 
+"      eta[k, i] ~ dbeta(o[k, i] + 1, nb_o[i] - o[k, i] + 1)"
+  }
+  
+  model_string3 <-
+"   }
     
     s[i] <- sum(LAMBDA[list_prey[i, 1:nb_prey[i]], i])
     is_link_identified[i] <- ifelse(s[i] == 0, 0, 1)
     
-  }
-  
-  for (i in list_pred){
-      
-    for (k in list_prey[i, 1:nb_prey[i]]){"
-  
-  if (literature_prior){
-    model_string2 <- 
-"      eta[k, i] ~ dbeta(eta_hyperparam_1[k, i], eta_hyperparam_2[k, i])"
-  } else {
-    model_string2 <- 
-"      eta[k, i] ~ dbeta(1, 1)"
-  }
-  
-  model_string3 <-  
-"    }
   }
  
   for (i in 1:nb_group){
