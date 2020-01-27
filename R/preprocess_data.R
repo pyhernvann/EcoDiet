@@ -99,15 +99,6 @@ check_isotope_data <- function(isotope_data, stomach_data){
     stop("The isotope data should only contain numbers, and not text.\n",
          "  Please remove the values that do not correspond to an isotopic measurement.")
   }
-  if (sum(is.na(isotope_data[, -1])) > 0){
-    stop("The isotopic data should not contain NA or NaN.\n",
-         "  But we have found at least one NA in the \"",
-         isotope_data[which(is.na(isotope_data), arr.ind = T)[, 1][1], 1],
-         "\" trophic group for the \"",
-         colnames(isotope_data)[which(is.na(isotope_data), arr.ind = T)[, 2][1]], 
-         "\" measurement.\n",
-         "  Please enter a number instead or remove the corresponding row.")
-  }
 }
 
 
