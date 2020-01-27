@@ -232,11 +232,13 @@ check_literature_diets <- function(literature_diets, isotope_data){
          "  Please remove the abnormal values.")
   }
   if (!all((colSums(literature_diets[-nrow(literature_diets), ]) == 0) | 
-           (colSums(literature_diets[-nrow(literature_diets), ]) == 1))){
+           ((colSums(literature_diets[-nrow(literature_diets), ]) > 0.99) & (
+             colSums(literature_diets[-nrow(literature_diets), ]) < 1.01)))){
     stop("Each column of the literature diets matrix should sum to one or be entirely filled with zeros.\n",
          "  But it is not the case with the \"", 
          names(which(((colSums(literature_diets[-nrow(literature_diets), ]) == 0) | 
-                        (colSums(literature_diets[-nrow(literature_diets), ]) == 1)) == FALSE))[1],
+                        ((colSums(literature_diets[-nrow(literature_diets), ]) > 0.99) & (
+                          colSums(literature_diets[-nrow(literature_diets), ]) < 1.01))) == FALSE))[1],
          "\" column.\n  Please change that column.")
   }
 }
