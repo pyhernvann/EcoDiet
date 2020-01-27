@@ -31,8 +31,7 @@ plot_isotope_data <- function(isotope_data){
           xlab(names(isotope_data)[element1 + 1]) + 
           ylab(names(isotope_data)[element2 + 1]) +
           geom_point(size = 3) +
-          scale_colour_brewer(palette = "Paired") +
-          guides(colour = guide_legend(byrow = 1, ncol = 1)) +
+          guides(colour = guide_legend()) +
           theme_bw() +
           theme(panel.grid.major = element_line(colour = "grey"),
                 panel.grid.minor = element_blank(),
@@ -72,7 +71,6 @@ plot_matrix <- function(matrix, title){
     scale_x_continuous(labels = colnames(matrix), breaks = seq(1, ncol(matrix))) +
     scale_y_continuous(labels = rev(rownames(matrix)), breaks = seq(1, nrow(matrix))) +
     scale_fill_gradient(low = "white", high = "blue3", limit = c(0, 1)) +
-    geom_text(aes(label = round(value, 2))) +
     ggtitle(title) +
     ylab("Preys") +
     xlab("Predators") +
@@ -83,6 +81,10 @@ plot_matrix <- function(matrix, title){
           axis.text.y = element_text(size = 12),
           legend.title = element_blank(),
           plot.title = element_text(hjust = 0.5))
+  
+  if (ncol(matrix) < 15){
+    figure <- figure + geom_text(data = df[df$value > 0, ], aes(label = round(value, 2)))
+  }
   
   plot(figure)
   
