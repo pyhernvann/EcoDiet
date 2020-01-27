@@ -56,9 +56,9 @@ run_model <- function(model_file, data, inits = NULL,
          "to the number of iterations (\"nb_iter\").\n", "Please decrease it.")
   }
   
-  start_run <- Sys.time()
-  
   nb_thin <- max(1, floor((nb_iter - nb_burnin)/1000))
+  
+  start_init <- Sys.time()
   
   jags_model <- rjags::jags.model(
     file = model_file,
@@ -66,6 +66,13 @@ run_model <- function(model_file, data, inits = NULL,
     inits = inits,
     n.chains = 3,
     n.adapt = nb_adapt)
+  
+  duration_init <- Sys.time() - start_init
+  message("The model took ", 
+          round(unclass(duration_init), 1), " ", attr(duration_init, "units"), 
+          " to be initialized.\n")
+  
+  start_run <- Sys.time()
   
   cat("\nBurning in the MCMC chains...\n\n")
   update(jags_model, n.iter = nb_burnin)
@@ -78,12 +85,13 @@ run_model <- function(model_file, data, inits = NULL,
     thin = nb_thin)
   
   duration_run <- Sys.time() - start_run
-  message("The model took ", round(unclass(duration_run), 1), " ", attr(duration_run, "units"), " to run.\n")
+  message("The model took ", 
+          round(unclass(duration_run), 1), " ", attr(duration_run, "units"), 
+          " to run.\n")
   
   print_convergence_diagnostic(mcmc_output)
   
   mcmc_output <- as.matrix(mcmc_output)
-  # mcmc_output[] <- signif(mcmc_output, digits = 2)
   save(mcmc_output, file ="mcmc_output.Rdata")
   
   return(mcmc_output)
