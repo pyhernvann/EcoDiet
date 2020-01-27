@@ -1,7 +1,8 @@
 #' Write a string containing the EcoDiet model in the BUGS syntax
 #'
-#' @param file_name the name of the bugs files on which the model will be written
-#' @return a string containing the model definition written in bugs syntax
+#' @param literature_prior a boolean (TRUE or FALSE) indicating whether the model will have 
+#' prior distributions defined by a study of the literature
+#' @return a string containing the model definition written in BUGS syntax
 #' 
 #' @examples
 #' model_string <- write_model()

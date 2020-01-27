@@ -7,10 +7,11 @@
 write_model(literature_prior = FALSE)
 }
 \arguments{
-\item{file_name}{the name of the bugs files on which the model will be written}
+\item{literature_prior}{a boolean (TRUE or FALSE) indicating whether the model will have 
+prior distributions defined by a study of the literature}
 }
 \value{
-a string containing the model definition written in bugs syntax
+a string containing the model definition written in BUGS syntax
 }
 \description{
 Write a string containing the EcoDiet model in the BUGS syntax
