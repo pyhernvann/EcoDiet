@@ -21,8 +21,7 @@ print_convergence_diagnostic <- function(mcmc_output){
   variable_number_over_1.1 <- length(gelman[which(gelman > 1.1)])
   
   if (variable_number_over_1.1 > 0){
-    message("Warning message:")
-    message("  Convergence problem")
+    message("\n  /!\\ CONVERGENCE PROBLEM /!\\")
     message("Out of the ", variable_number,  " variables, ",
             variable_number_over_1.1, " variables have a Gelman-Rubin statistic > 1.1.")
     message("You should increase the number of iterations of your model with the `nb_iter` argument.\n")
@@ -74,10 +73,8 @@ run_model <- function(model_file, data, inits = NULL,
   
   start_run <- Sys.time()
   
-  cat("\nBurning in the MCMC chains...\n\n")
   update(jags_model, n.iter = nb_burnin)
 
-  cat("\nSampling finally the MCMC chains...\n\n")
   mcmc_output <- rjags::coda.samples(
     model = jags_model,
     variable.name = variables_to_save,

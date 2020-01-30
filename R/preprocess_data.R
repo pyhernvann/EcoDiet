@@ -372,10 +372,9 @@ preprocess_data <- function(isotope_data, trophic_enrichment_factor,
   } 
   
   # Print the trophic links
-  message("The model will investigate the following trophic links:")
-  print(trophic_links)
-  message("If you want to add other links, you can define a new matrix with the `trophic_links` argument.\n")
-  
+  message("The model will investigate the following trophic links:\n",
+          paste(capture.output(trophic_links), "\n", sep=""))
+ 
   # Constructs the model indices from the binary web matrix
   nb_prey  <- colSums(trophic_links)
   
