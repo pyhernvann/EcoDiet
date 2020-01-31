@@ -136,7 +136,7 @@ data <- preprocess_data(isotope_data = example_isotope_data,
 
 ## Define your prior (*Literature option*)
 
-**Skip this part if your want to use EcoDiet without prior from the literature.**
+**Skip this part if you want to use EcoDiet without prior from the literature.**
 
 The calculation of the priors for the variables "eta" and "PI" mainly relies on a literature diet matrix, summarizing the knowledge on diets extracted from the literature, and Pedigree scores that quantifies the reliability of the literature-derived information on each predator's diet. As detailed below, the coefficients of the literature diet matrix are used to set the priors' mode, and the Pedigree scores are used to determine these priors' precision. Two additional parameters allow to modulate the relationship between the Pedigree value and the priors' precision for more adaptability to specific case studies.
 
@@ -176,7 +176,7 @@ literature_slope = 0.5
 
 ## Preprocess the data and prior (*Literature option*)
 
-**Skip this part if your want to use EcoDiet without prior from the literature.**
+**Skip this part if you want to use EcoDiet without prior from the literature.**
 
 * You first need to have loaded your `.csv` files as shown previously. 
 
