@@ -17,7 +17,7 @@ write_model_new <- function(literature_prior = FALSE){
     
     for (k in list_prey[i, 1:nb_prey[i]]){
     
-      LAMBDA[k, i] ~ dbern(eta[k, i])"
+      LAMBDA_star[k, i] ~ dbern(eta[k, i])"
   if (literature_prior){
     model_string2 <- 
 "      eta[k, i] ~ dbeta(o[k, i] + eta_hyperparam_1[k, i], nb_o[i] - o[k, i] + eta_hyperparam_2[k, i])"
@@ -28,7 +28,11 @@ write_model_new <- function(literature_prior = FALSE){
   
   model_string3 <-
 "   }
-    
+
+    for (k in list_prey[i, 1:nb_prey[i]]){
+      LAMBDA[k, i] <- ifelse(sum(LAMBDA_star[list_prey[i, 1:nb_prey[i]], i]) == 0, 1, LAMBDA_star[k, i])
+    }
+
     s[i] <- sum(LAMBDA[list_prey[i, 1:nb_prey[i]], i])
     is_link_identified[i] <- ifelse(s[i] == 0, 0, 1)
     
