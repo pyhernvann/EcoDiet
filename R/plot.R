@@ -182,9 +182,9 @@ plot_prior_distribution <- function(data, literature_prior, pred, prey, var, tit
       if (var == "PI"){
         if (literature_prior) {
           Density <- dbeta(x, data$alpha_lit[prey_idx, pred_index], 
-                           colSums(data$alpha_lit)[pred_index])
+                           colSums(data$alpha_lit)[pred_index] - data$alpha_lit[prey_idx, pred_index])
         } else {
-          Density <- dbeta(x, 1, data$nb_prey[pred_index])
+          Density <- dbeta(x, 1, data$nb_prey[pred_index] - 1)
         }
       } else if (var == "eta"){
         if (literature_prior) {
