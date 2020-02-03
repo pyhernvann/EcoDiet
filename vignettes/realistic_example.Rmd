@@ -1,10 +1,10 @@
 ---
-title: "EcoDiet possibilities explored on a realistic example"
+title: "EcoDiet explored on a realistic example"
 author: "Heloise Thero"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{EcoDiet possibilities explored on a realistic example}
+  %\VignetteIndexEntry{2. EcoDiet explored on a realistic example}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

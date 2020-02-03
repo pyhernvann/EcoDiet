@@ -4,7 +4,7 @@ author: "Heloise Thero"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{How to deal with convergence problem}
+  %\VignetteIndexEntry{3. How to deal with convergence problems}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
