@@ -68,7 +68,7 @@ run_model <- function(model_file, data, inits = NULL,
   
   duration_init <- Sys.time() - start_init
   message("The model took ", 
-          round(unclass(duration_init), 1), " ", attr(duration_init, "units"), 
+          round(unclass(duration_init), 2), " ", attr(duration_init, "units"), 
           " to be initialized.\n")
   
   start_run <- Sys.time()
@@ -83,7 +83,7 @@ run_model <- function(model_file, data, inits = NULL,
   
   duration_run <- Sys.time() - start_run
   message("The model took ", 
-          round(unclass(duration_run), 1), " ", attr(duration_run, "units"), 
+          round(unclass(duration_run), 2), " ", attr(duration_run, "units"), 
           " to run.\n")
   
   print_convergence_diagnostic(mcmc_output)
