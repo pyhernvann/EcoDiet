@@ -5,7 +5,8 @@
 #' @return a string containing the model definition written in BUGS syntax
 #' 
 #' @examples
-#' model_string <- write_model()
+#' model_string <- write_model(TRUE)
+#' model_string <- write_model(FALSE)
 #'
 #' @export
 
@@ -76,13 +77,13 @@ write_model <- function(literature_prior = FALSE){
     xi[j] ~ dnorm(0, 0.0016)
     tau_theta[j] ~ dgamma(0.5, 0.5)
 
-  }"
+  }
+  
+  for (i in list_pred){"
   
   if (literature_prior){
     model_string4 <-
-"  for (i in list_pred){
-  
-      are_several_links[i] <- step(s[i] - 2)
+"      are_several_links[i] <- step(s[i] - 2)
       iota[i] <- (((s[i] - 1) / (CVs[i]^2)) - 1) * are_several_links[i] + (1 - are_several_links[i])
       
       psi[i] <- is_link_identified[i] * sum(psi_sub[list_prey[i, 1:nb_prey[i]], i]) + (1 - is_link_identified[i])
@@ -95,30 +96,24 @@ write_model <- function(literature_prior = FALSE){
         1 / (s[i] * (is_link_identified[i]) + nb_prey[i] * (1 - is_link_identified[i])), 
         0)
         
-        alpha[k, i] <- ((1 - is_link_identified[i]) + is_link_identified[i] * LAMBDA[k,i]) * 
-                       ((alpha_lit[k, i] + add[k, i]) * iota[i] / psi[i]) + 0.1
-        
-        rho[k, i] ~ dgamma(alpha[k, i], 1)
-        PI[k, i] <- rho[k, i] / sum(rho[list_prey[i, 1:nb_prey[i]], i])
-      }
-    }
-  }"
+        alpha[k, i] <- ((1 - is_link_identified[i]) + is_link_identified[i] * LAMBDA[k, i]) * 
+                       ((alpha_lit[k, i] + add[k, i]) * iota[i] / psi[i]) + 0.1"
   } else {
     model_string4 <-
-"  for (i in list_pred){
-    
-    for (k in list_prey[i, 1:nb_prey[i]]){
+"    for (k in list_prey[i, 1:nb_prey[i]]){
       
-      alpha[k, i] <- (1 - is_link_identified[i]) + is_link_identified[i] * LAMBDA[k,i] + 0.1
-      rho[k, i] ~ dgamma(alpha[k, i], 1)
-      PI[k, i] <- rho[k, i] / sum(rho[list_prey[i, 1:nb_prey[i]], i])
-
-    }
-  }
-}"   
+      alpha[k, i] <- (1 - is_link_identified[i]) + is_link_identified[i] * LAMBDA[k, i] + 0.1"   
   }
   
-  model_string <- paste(model_string1, model_string2, model_string3, model_string4, sep = "\n\n")
+  model_string5 <- 
+"      rho[k, i] ~ dgamma(alpha[k, i], 1)
+      PI[k, i] <- rho[k, i] / sum(rho[list_prey[i, 1:nb_prey[i]], i])
+    }
+  }
+}"
+  
+  model_string <- paste(model_string1, model_string2, model_string3, model_string4, model_string5, 
+                        sep = "\n\n")
 
   return(model_string)
 }

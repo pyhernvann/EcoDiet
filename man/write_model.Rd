@@ -17,6 +17,7 @@ a string containing the model definition written in BUGS syntax
 Write a string containing the EcoDiet model in the BUGS syntax
 }
 \examples{
-model_string <- write_model()
+model_string <- write_model(TRUE)
+model_string <- write_model(FALSE)
 
 }
