@@ -47,7 +47,7 @@ print_convergence_diagnostic <- function(mcmc_output){
 #' @export
 
 run_model <- function(model_file, data, inits = NULL, 
-                      nb_iter = 1e+03, nb_adapt = 1e+03, nb_burnin = floor(nb_iter/2),
+                      nb_iter = 1e2, nb_adapt = 1e1, nb_burnin = floor(nb_iter/2),
                       variables_to_save = c("eta", "PI")){
   
   if (nb_burnin >= nb_iter){

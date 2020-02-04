@@ -8,8 +8,8 @@ run_model(
   model_file,
   data,
   inits = NULL,
-  nb_iter = 1000,
-  nb_adapt = 1000,
+  nb_iter = 100,
+  nb_adapt = 10,
   nb_burnin = floor(nb_iter/2),
   variables_to_save = c("eta", "PI")
 )
