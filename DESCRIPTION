@@ -1,14 +1,15 @@
 Package: EcoDiet
 Type: Package
-Title: Estimating a diet matrix from isotopic and stomachal data sources
-Description: The goal of the package is to estimate trophic links and a diet matrix 
-    from isotopic and stomachal data using a Bayesian Hierarchical Model. The package 
-    relies on the JAGS software and the rjags package to run a MCMC approximation of 
-    the different variables.
-Version: 0.0.0.910
+Title: Estimating a diet matrix from biotracer and stomach content data.
+Description: The goal of the package is to estimate trophic links probabilities (who eats whom 
+    in the food web) and diet proportions (in which proportions each prey is eaten) by combining 
+    biotracers and stomach content analyses using a Bayesian hierarchical model. 
+    The package relies on the JAGS software and the rjags package to run a Markov chain Monte Carlo 
+    approximation of the different variables.
+Version: 1.0.0
 Authors@R: c(
-    person("Heloise", "Thero", email = "thero.heloise@gmail.com", role = "cre"),
-    person("Pierre-Yves", "Hernvann", role = "aut"),
+    person("Heloise", "Thero", role = "aut"),
+    person("Pierre-Yves", "Hernvann", email = "pierre.yves.hernvann@gmail.com", role = "cre"),
     person("Didier", "Gascuel", role = "aut"),
     person("Dorothee", "Kopp", role = "aut"),
     person("Marianne", "Robert", role = "aut"),
@@ -24,6 +25,8 @@ Suggests:
     rmarkdown,
     devtools
 SystemRequirements: JAGS
+URL: https://github.com/pyhernvann/EcoDiet
+BugReports: https://github.com/pyhernvann/EcoDiet/issues
 License: CC0
 Encoding: UTF-8
 LazyData: true

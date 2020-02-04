@@ -1,6 +1,6 @@
 # EcoDiet <img src="man/figures/logo.PNG" align="right" width="120" />
 
-*This is a work in progress!*
+The goal of the package is to estimate trophic links probabilities (who eats whom in the food web) and diet proportions (in which proportions each prey is eaten) by combining biotracers and stomach content analyses in a Bayesian hierarchical model. 
 
 ## R installation
 
@@ -8,7 +8,7 @@ EcoDiet is an R package, so first and foremost, you should download and install/
 
 ## JAGS installation
 
-EcoDiet relies on the JAGS program (Plummer, 2013), so you also need to download and install/update JAGS.
+EcoDiet relies on the JAGS software, so you also need to download and install/update JAGS.
 
 #### For Windows users
 
@@ -41,13 +41,13 @@ install.packages("devtools")
 Once `devtools` has been installed, you can load the EcoDiet package:
 
 ```{r, eval = FALSE}
-devtools::install_github("heloisethero/EcoDiet", build_vignettes = TRUE)
+devtools::install_github("pyhernvann/EcoDiet", build_vignettes = TRUE)
 ```
 
 ## Learn how to use EcoDiet
 
-Several vignettes will then explain to you how to use this package depending on the data types available. To access the vignettes run the following in R:
+Several vignettes will then explain to you how to use the package. To access the vignettes run the following in R:
 ```
 browseVignettes("EcoDiet")
 ```
-And click on the HTML button next to the vignette you are interested in, for example "Introduction - How to use EcoDiet".
+Then click on the HTML button next to the vignette you are interested in, like "1. Introduction - How to use EcoDiet (quick start)".
