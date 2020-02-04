@@ -30,7 +30,7 @@ plot_isotope_data <- function(isotope_data){
           ggtitle("Isotopic measurements") + 
           xlab(names(isotope_data)[element1 + 1]) + 
           ylab(names(isotope_data)[element2 + 1]) +
-          geom_point(size = 3) +
+          geom_point(size = 3, na.rm = TRUE) +
           guides(colour = guide_legend()) +
           theme_bw() +
           theme(panel.grid.major = element_line(colour = "grey"),

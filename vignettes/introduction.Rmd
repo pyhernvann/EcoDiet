@@ -71,6 +71,8 @@ example_isotope_data <- read.csv(example_isotope_data_path)
 knitr::kable(example_isotope_data)
 ```
 
+You should have the same trophic groups in your stomach and isotope data. Thus, if you have a group with stomach content analyses but without biotracer data, you should still enter it as one line in the biotracer data with "NA" values (as it is the case for the "huge" group).
+
 You also need to define the trophic enrichment factors corresponding to your isotopic data. In this example, because we have data for the d13C and d15N isotopes,  we use the corresponding trophic enrichment factors:
 
 ```{r, eval = FALSE}
