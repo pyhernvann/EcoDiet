@@ -4,21 +4,30 @@
 \name{EcoDiet-package}
 \alias{EcoDiet}
 \alias{EcoDiet-package}
-\title{EcoDiet: Estimating a diet matrix from isotopic and stomachal data sources}
+\title{EcoDiet: Estimating a diet matrix from biotracer and stomach content data.}
 \description{
 \if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
 
-The goal of the package is to estimate trophic links and a diet matrix 
-    from isotopic and stomachal data using a Bayesian Hierarchical Model. The package 
-    relies on the JAGS software and the rjags package to run a MCMC approximation of 
-    the different variables.
+The goal of the package is to estimate trophic links probabilities (who eats whom 
+    in the food web) and diet proportions (in which proportions each prey is eaten) by combining 
+    biotracers and stomach content analyses using a Bayesian hierarchical model. 
+    The package relies on the JAGS software and the rjags package to run a Markov chain Monte Carlo 
+    approximation of the different variables.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/pyhernvann/EcoDiet}
+  \item Report bugs at \url{https://github.com/pyhernvann/EcoDiet/issues}
+}
+
 }
 \author{
-\strong{Maintainer}: Heloise Thero \email{thero.heloise@gmail.com}
+\strong{Maintainer}: Pierre-Yves Hernvann \email{pierre.yves.hernvann@gmail.com}
 
 Authors:
 \itemize{
-  \item Pierre-Yves Hernvann
+  \item Heloise Thero
   \item Didier Gascuel
   \item Dorothee Kopp
   \item Marianne Robert
