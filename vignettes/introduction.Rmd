@@ -20,7 +20,7 @@ The goal of the package is to estimate trophic links probabilities (who eats who
 
 There are different ways of using this package:
 
-* *Default option* - you have only stomach content and biotracers data, and non informative priors will be used;
+* *Default option* - you have only stomach content and biotracers data, so non informative priors will be used;
 
 * *Literature option* - you have stomach content and biotracers data, and results from a literature search that will be used to formulate informative priors. 
 
@@ -88,6 +88,10 @@ plot_data(isotope_data = example_isotope_data,
 
 ## Preprocess your data without prior (*Default option*)
 
+**Skip this part if you want to use EcoDiet with prior from the literature.**
+
+### Preprocess the data
+
 The `preprocess_data` function checks and rearranges the data in a specific format so that the EcoDiet model can be run:
 
 ```{r}
@@ -100,6 +104,8 @@ data <- preprocess_data(isotope_data = example_isotope_data,
 ```
 
 If any error appears, it means your data is not in the correct format. Please read the error message and rearrange your data in the correct format.
+
+### Check the trophic links
 
 The last message tells you to check the trophic links that will be investigated by the model. It is generally not wise to assume that all the trophic links are possible ( = a matrix filled with only ones), as the model will likely be over-paramaterized and have problems to converge. You therefore need to keep only the reasonnable trophic links (e.g., a shrimp cannot eat a whale). 
 
@@ -131,9 +137,11 @@ data <- preprocess_data(isotope_data = example_isotope_data,
 
 **Skip this part if you want to use EcoDiet without prior from the literature.**
 
-The calculation of the priors for the variables "eta" and "PI" mainly relies on a literature diet matrix, summarizing the knowledge on diets extracted from the literature, and Pedigree scores that quantifies the reliability of the literature-derived information on each predator's diet. As detailed below, the coefficients of the literature diet matrix are used to set the priors' mode, and the Pedigree scores are used to determine these priors' precision. Two additional parameters allow to modulate the relationship between the Pedigree value and the priors' precision for more adaptability to specific case studies.
+### Define the priors
 
-* Diet matrix from the literature and the associated Pedigree scores:
+You will use a literature diet table to set priors on the trophic link probabilities (the `eta` variables) and the diet proportions (the `PI` variables). This table is similar to the stomach contents table, as all trophic groups must be included in the columns and rows. The numbers are the the average diets proportions found in the literature. Here, the selected studies have identified that "huge" animals eat equally "large" and "medium" animals (thus the 0.5 and 0.5 numbers in the first column). The proportions for a given predator (i.e., within a given column) must sum to 1. The "small" animals are at the base of the ecosystem, so the column is filled with zeros.
+
+The last row of the table corresponds to the literature pedigree score. This score (a number from 0 to 1) quantifies the literature reliability on each predator's diet. Here the dietary proportions from the literature are estimated very reliable for the "huge" animals, so the pedigree score associated is high (0.9). On the contrary, the diet proportions for the "medium" animals come from an old article focusing on a very different ecosystem so the pedigree score associated is low (0.2). Because the diet proportions won't be estimated for the "small" animals, we have put the by-default value for the pedigree (1).
 
 ```{r}
 example_literature_diets_path <- system.file("extdata", "example_literature_diets.csv",
@@ -142,30 +150,27 @@ example_literature_diets <- read.csv(example_literature_diets_path)
 knitr::kable(example_literature_diets)
 ```
 
-This table is a diet matrix built from a literature study. As for the stomach contents table, all trophic groups must be included and there should be as many columns as rows as number of trophic groups. The matrix coefficients are the contributions (in decimal units) of the corresponding row-group to the diet of the corresponding column-group averaged over the selected studies. The coefficients within a given column must sum to 1, except if the column corresponds to a group at the base of the trophic network.  In this example, the selected studies identified that "huge" animals eat equally "large" and "medium" animals (thus the 0.5 and 0.5 numbers in the first column). The "small" animals are at the base of the ecosystem and their prey are not considered in the food-web representation.
-
 This summary of the literature knowledge will be used to formulate:
 
-1. The priors on the probabilities that links exist. Whether they are null or strictly positive, the coefficients of the diet matrix from the literature are used to respectively shift toward 0 or 1 the Beta distributions used as priors on the varaibles "eta".
+1. The prior on the trophic link probabilities `eta`. If the literature diet proportion is zero, the prior Beta distribution of `eta` will be shifted to 0. If the proportion is positive, the distribution will be shifted toward 1.
 
-2. The priors on dietary proportions. The coefficients of the diet matrix from the literature are entered as the hyperparameters "alpha" of the Dirichlet distributions for the priors on the variables "PI".
+2. The priors on the diet proportions `PI`. The literature diet proportions are entered as the hyperparameters of the prior Dirichlet distribution of `PI`.
 
-Finally, the last row of the matrix corresponds to the *literature pedigrees*. The Pedigree score (a number from 0 to 1) quantifies the relevance of the information found about a given consumer. Here the dietary proportions from the literature are estimated very reliable for the "huge" animals, so the pedigree score associated is high (0.9). On the contrary, the diet proportions for the "medium" animals come from an old article focusing on a very different ecosystem so the pedigree score associated is low (0.2). Because the "small" animals are at the base of the ecosystem and its diet proportions won't be estimated, its pedigree score will not be used so we have put the by-default value, which is 1. The Pedigree score is used to calculate the hyperparameters of the probability distributions used to formulate "eta" and "PI" priors.
+The Pedigree scores are used to determine these priors' precision. Other parameters can be used to adjust the prior distributions:
 
-
-* the `nb_literature` parameter. This parameter is used to formulate the prior on the "eta" parameters and is set by the user according to its study case. `nb_literature` is an integer equivalent to a number of stomachs sampled and, in a way, represents the number of stomachs that the user judges ideal to infer on a species' diet; in other words the number of stomachs that would be equivalent to a quantitative dietary study from the literature both locally and recently conducted following a good sampling scheme (i.e., of Pedigree 1).
-
-For a given consumer, the ratio between the product `nb_literature * literature_pedigrees` and the number of stomachs determine the influence of the literature relative to data. Thus, the higher the `nb_literature` is, the stronger will be the weight of the literature in the final inferences. In practice, due to the inherent emptiness of stomachs when analyzing them, `nb_literature` should be set at a lower value in order to not put too much weight to the literature. Setting this parameter to 10 is like saying that the prior from the literature weights as much as additional data from 10 stomachs. There are no rules for attributing a value to `nb_literature`, but a good start can be the mean number of stomachs analyzed per species in the data sampled.
+* the `nb_literature` parameter (an integer higher than 2). The higher this nummber, the stronger will be the weight of the literature in the final inference for `eta`. Setting this parameter to 10 is like saying that the prior from the literature will weight as much as additional data from 10 stomachs. Thus for any particular application, `nb_literature` should be set to a value smaller than the sample size in the available stomachal data.
 
 ```{r}
 nb_literature = 10
 ```
 
-* the `literature_slope` parameter. This parameter is a number between 0 and 1 (excluding 0) used to calculate the hyperparameters of the Dirichlet priors for the PI parameter. To represent the greater uncertainty around dietary proportions from the literature when they come from a less relevant study, we fixed the hyperparameters so that their mean coefficient of variation increases with decreasing `literature_pedigrees`. This linear relationship is defined by an intercept giving a coefficient of variation of 1 for a null `literature_pedigrees`, and by a slope equal to `literature_slope`. Thus, increasing the`literature_slope` value tends to make the literature prior on dietary proportions stronger. This value is set by the user to adapt to specific cases, e.g. the number of biotracers used in the study etc. By default it is equal to 0.5.
+* the `literature_slope` parameter (a value between 0 and 1). The higher this number, the stronger will be the weight of the literature in the final inference for `PI`. You should set this value depending on the value of your data (number of biotracers, etc).
 
 ```{r}
 literature_slope = 0.5
 ```
+
+### Preprocess the data
 
 The `preprocess_data` function then checks and rearranges the data in a specific format so that the EcoDiet model can be run:
 
@@ -183,7 +188,7 @@ data <- preprocess_data(isotope_data = example_isotope_data,
 
 If any error appears, it means your data is not in the correct format. Please read the error message and try to rearrange the data in the correct format.
 
-* You should now check the trophic links matrix.
+### Check the trophic links
 
 These are the links that will be investigated by the model. The matrix displayed by the `preprocess_data` function is based by default on the stomach content data (`data$o`) and on the literature diets matrix (`data$alpha_lit`):
 
@@ -213,19 +218,19 @@ data <- preprocess_data(isotope_data = example_isotope_data,
 
 ## Plot the priors
 
-Whether they are informed by the literature, or non-informative, you can now plot the mean priors for the `eta` and `PI` variables:
+Whether the priors are informed by the literature or non-informative, you can plot the mean of the prior distributions for the trophic link probabilities (`eta`) and the diet proportions (`PI`):
 
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 plot_prior(data, literature_prior)
 ```
 
-You can also see the prior distributions for one predator if you wish:
+You can also see the prior distributions for one trophic group (or predator):
 
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 plot_prior(data, literature_prior, pred = "huge")
 ```
 
-This way, you can change the prior parameters and see how it affects the prior distributions (here, for example we have changed the `nb_literature` parameter from 10 to 2:
+This way, you can change the prior parameters and see how it affects the prior distributions. Here, we will change the `nb_literature` parameter from 10 to 2:
 
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 data <- preprocess_data(isotope_data = example_isotope_data,
@@ -243,7 +248,7 @@ plot_prior(data, literature_prior, pred = "huge", variable = "eta")
 
 ## Write the model
 
-The `write_model` function writes the model in the BUGS syntax. The option non informative priors / informative priors must be specified at this level. 
+The `write_model` function writes the model in the BUGS syntax. You need to specify the option non informative priors / informative priors:
 
 ```{r}
 model_string <- write_model(literature_prior = literature_prior)
@@ -251,29 +256,29 @@ model_string <- write_model(literature_prior = literature_prior)
 
 ## Run the model
 
-Now that the model is defined, you can use the function `run_model` to run the model. By default the number of MCMC iterations is very low (1,000), it allows you to test if your model is compiling properly. In most of the cases, this low number of iterations is not sufficient to achieve a satisfactory model convergence, as you can see from the warning message:
+Now that the model is defined, you can run it. By default the numbers of MCMC adaption steps and iterations are very low (10 and 100 respectively) to test if your model is compiling properly:
 
 ```{r}
 mcmc_output <- run_model(textConnection(model_string), data)
 ```
 
-We advise you to increase the number of iterations until you have met the convergence threshold:
+This low number of iterations will surely not be enough to achieve a satisfactory model convergence. You should progressively increase the number of adaptation steps and of iterations until you no longer see a "stopping adaptation" note, or a "convergence problem" message:
 
 ```{r, eval = FALSE}
-mcmc_output <- run_model(textConnection(model_string), data, nb_iter = 1e6)
+mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e3, nb_iter = 1e6)
 ```
 
-If you see again a warning message being printed, you should follow the advices of the corresponding vignette: `vignette("model_warnings")`.
+Depending on your data, the model can be very long to reach convergence (a few hours to a few days). This vignette is about convergence problems: `vignette("convergence_problems")`.
 
 ## Plot and save the model's mean results
 
-In Bayesian models, the parameters are represented by their probability distributions. So here the model's outputs are the approximated probability distributions for the diet propotions (PI) and the trophic links probabilities (eta). To summarize these distributions, we can use point estimates like the mean and visualize it with the `plot_results` function:
+The model's outputs are the approximated a posteriori distributions for the trophic links probabilities (`eta`) and the diet propotions (`PI`). You can visualize the mean of these distribitions with the `plot_results` function:
 
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 plot_results(mcmc_output, data)
 ```
 
-The means are automatically saved when running this function so you can access them and save them as `.csv` tables:
+The means are automatically saved when running this function. You can load and save them as `.csv` tables:
 
 ```{r, eval = FALSE}
 load("PI_mean.Rdata")
@@ -285,13 +290,13 @@ write.table(eta_mean, file = "eta_mean.csv", sep = ",", col.names = NA)
 
 ## Plot the probability densities
 
-You can also plot the probability densities for the `PI` variable and for one predator:
+You can also plot the probability densities for the one variable (here `PI`) and for one predator:
 
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 plot_results(mcmc_output, data, variable = "PI", pred = "huge")
 ```
 
-If you find the plot to contain too much information, you can also precise for which preys you want to see the probability density:
+You can also precise for which preys you want to plot the probability densities:
 
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 plot_results(mcmc_output, data, variable = "PI", pred = "huge", prey = c("large", "small"))
@@ -307,7 +312,7 @@ mcmc_output <- signif(mcmc_output, digits = 2)
 knitr::kable(head(mcmc_output))
 ```
 
-You can now compute any summary statistics that you need, on top of the mean. For example if you want the median (thus the 50% quantile), and the 5% and the 95% quantiles of your distribution, you can use:
+You can now compute any summary statistics that you need. If you want the median (thus the 50% quantile), and the 5% and the 95% quantiles of your distribution, you can use:
 
 ```{r}
 quantiles <- apply(mcmc_output, 2, function(X) quantile(X, probs = c(0.05, 0.5, 0.95)))
@@ -333,10 +338,4 @@ And now you can access its mean value using:
 
 ```{r}
 print(colMeans(mcmc_output))
-```
-
-## Environment on which this vignette has been run
-
-```{r}
-devtools::session_info()
 ```
