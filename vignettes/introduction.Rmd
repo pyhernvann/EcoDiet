@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-The goal of the package is to estimate trophic links probabilities (who eats whom in the food web) and diet proportions (in which proportions each prey is eaten) by combining biotracers and stomach content analyses in a Bayesian hierarchical model.
+The goal of the package is to estimate trophic links probabilities (who eats whom in the food web) and diet proportions (in which proportions each prey is eaten) by combining biotracers and stomach content analyses in a Bayesian hierarchical model. The full model and its application on a real dataset are described in *Hernvann et al.* (under review).
 
 There are different ways of using this package:
 
