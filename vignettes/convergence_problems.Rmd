@@ -1,0 +1,80 @@
+---
+title: "How to deal with convergence problems"
+author: "Heloise Thero"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{3. How to deal with convergence problems}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This vignette help you deal with troubling messages from the `run_model` function.
+
+* The 'adaptation incomplete' warning or 'Stopping adaptation' note means that the samplers aren't optimised for your model after the adaptation phase. JAGS doesn't think that the model will run with the optimal state. This tends to happen in complex models for a too small number of adaptation steps (`nb_adapt`).
+
+* The 'convergence problem' warning means that the Gelman-Rubin diagnostic stayed above 1.1 for at least one variable. The Gelman-Rubin statistic is used to measure convergence for each variable.
+
+As a prerequisite, the `preprocess_data`, `write_model` and `run_model` functions must have been run without errors before trying to solve the convergence problems:
+
+```{r, results = 'hide', message = FALSE, warning = FALSE}
+library(EcoDiet)
+
+example_stomach_data_path <- system.file("extdata", "example_stomach_data.csv",
+                                    package = "EcoDiet")
+example_isotope_data_path <- system.file("extdata", "example_isotope_data.csv",
+                                    package = "EcoDiet")
+
+data <- preprocess_data(isotope_data = read.csv(example_isotope_data_path),
+                        trophic_enrichment_factor = c(0.8, 3.4),
+                        literature_prior = FALSE,
+                        stomach_data = read.csv(example_stomach_data_path))
+
+model_string <- write_model(literature_prior = FALSE)
+
+mcmc_output <- run_model(textConnection(model_string), data)
+```
+
+## Increase the number of iterations
+
+The first thing that should be tried is to increase the number of iterations to run the model. The approximated probability distributions are bound to converge to their true distributions if enough iterations are given. 
+
+So you should try to increase the `nb_iter` argument, althouh this will likely takes several hours/days to run:
+```{r, eval = FALSE}
+mcmc_output <- run_model(textConnection(model_string), data, nb_iter = 1e+07)
+```
+
+## Increase the number of adaptation steps
+
+The adaptation may be incomplete because not enough time was given to find optimal parameters. You can try to increase the `nb_adapt` argument:
+
+```{r, eval = FALSE}
+mcmc_output <- run_model(textConnection(model_string), data, nb_iter = 1e+06, nb_adapt = 1e+04)
+```
+
+## Understand which variable is problematic
+
+The full Gelman-Rubin diagnostic for each variable is saved everytime the `run_model` function is used, and you can acess it using:
+
+```{r, eval = FALSE}
+load("convergence_diagnostic.Rdata")
+View(gelman)
+```
+
+It will allow you to understand which variables has not converged properly (the closer to 1, the better it has converged). 
+
+If the `PI` and `eta` variables has both trouble converging for a specific trophic link between a predator and a prey, you can look at the corresponding data to see if there is not an error somewhere (maybe an isotopic measurement was entered as 104 instead of 1.04 for this prey or predator).
+
+## Specify initial values for the model
+
+The next step might be to define starting values from which to run the MCMC chains. By default JAGS will use the prior distributions to randomly fix the starting values of the chains, which can cause problems.
+
+First try to change the prior distributions used through the `literature-diets` table, the `nb_literature` and the `literature_slope` parameters to make the literature priors less inconsistent with the data (if you used priors from the literature).
+
+Or you can try to manually set a good set of fixed initial values, i.e., fixed values that you know are close to the values you want the model to converge to. This way the model should be faster to converge because it is given a good start.
+
+## Conclusions
+
+If you still have an 'adaptation incomplete' warning or 'Stopping adaptation' note, you can just live with the sub-optimal sampler efficiency and run the model for a higher number of iterations.
+
+But if you still have a 'convergence problem' message, you really need a solution. You cannot use the obtained results as they are clearly incorrect.
