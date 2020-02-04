@@ -16,51 +16,38 @@ knitr::opts_chunk$set(
 )
 ```
 
-The goal of EcoDiet is to combine biotracers and stomach content analyses together with *a priori* knowledge from the literature to simulataneously identify who eats whom in the food web (**topology matrix**), and in which proportions (**diet matrix**). 
+The goal of the package is to estimate trophic links probabilities (who eats whom in the food web) and diet proportions (in which proportions each prey is eaten) by combining biotracers and stomach content analyses in a Bayesian hierarchical model.
 
-More specifically, EcoDiet is an integrated Bayesian model that uses *(i)* stomach content analyses and priors from studies found in the literature to estimate the probability that any trophic link exists *(ii)* biotracers analyses and priors from studies found in the literature to estimate the dietary proportions of each consumer in the food web conditionnally to the trophic links identified.
+There are different ways of using this package:
 
-There are two ways of using this package:
+* *Default option* - you have only stomach content and biotracers data, and non informative priors will be used;
 
-* *Default option* - Only stomach content and biotracers data are integrated, and non informative priors will be used;
+* *Literature option* - you have stomach content and biotracers data, and results from a literature search that will be used to formulate informative priors. 
 
-* *Literature option* - Stomach content and biotracers data are integrated and results from a literature search are used to formulate informative priors. 
-
-We will explain the two possibilities in this vignette.
-
-Note that biotracers data will be here illustrated by stable isotope only, but EcoDiet could be used to treat other analyses such as fatty acids or specific-compounds stable isotopes.
+The following example is an artificial dataset, created to be simple to visualize and understand. Note that the biotracers data used here are stable isotopes, but EcoDiet could be used to treat other analyses such as fatty acids or specific-compounds stable isotopes.
 
 ## Load the package
 
-The first thing to do is to load the EcoDiet package.
+Follow the [README](https://github.com/heloisethero/EcoDiet/blob/master/README.md)'s instructions, and then load the EcoDiet package:
 
 ```{r}
 library(EcoDiet)
 ```
 
-EcoDiet requires the installation of JAGS (see [the README](https://github.com/heloisethero/EcoDiet/blob/master/README.md) if you have an error).
-
 ## Load and check your data
 
-You need to load the data you want to be analyzed by EcoDiet. You can load your data by importing it from `.csv` files. To be treated by the package, your data should be in specific formats, similar to those of following example.
+Your data should be in a specific format, similar to those of following example. You can load your data by importing it from `.csv` files or directly as R data.frames. 
 
-* Isotopic data:
+If you have the CSV files in a `data` folder and in a specific `.csv` format (semicolon separated, and not coma separated), you can try something like this:
 
-```{r}
-example_isotope_data_path <- system.file("extdata", "example_isotope_data.csv",
-                                    package = "EcoDiet")
-example_isotope_data <- read.csv(example_isotope_data_path)
-knitr::kable(example_isotope_data)
-```
-
-Each line of the table represents one individual on which were conducted stable isotope analyses. For a given individual, stable isotope analyses can be realized for various elements (carbon and nitrogen in this example). The first column of the table indicates to which trophic group the individual belongs and the others contain the isotopic measurements.
-
-You will also need to define the trophic enrichment factors that corresponds to your isotopic data. If your isotopic data files contains d13C and d15N data as in the example, then you should enter the trophic enrichment factors for the d13C and d15N isotopes (in that order):
 ```{r, eval = FALSE}
-trophic_enrichment_factor = c(0.8, 3.4)
+example_stomach_data <- read.csv("./data/my_stomach_data.csv", sep = ";")
+example_isotope_data <- read.csv("./data/my_isotope_data.csv", sep = ";")
 ```
 
-* Stomachal data:
+### Stomach content data
+
+The stomach content table gathers the sum of occurrences of each prey type in the stomachs of each trophic group. The first column of the table contains the names of the prey type and the headers of the following columns contain the names of all the trophic groups. The last row of the table should be named "full", and indicates how many (non-empty) stomachs have been analyzed for each trophic group.
 
 ```{r}
 example_stomach_data_path <- system.file("extdata", "example_stomach_data.csv",
@@ -69,11 +56,26 @@ example_stomach_data <- read.csv(example_stomach_data_path)
 knitr::kable(example_stomach_data)
 ```
 
-The stomach content table gathers the sum of occurrences of each prey type in the stomachs of trophic groups. The first column of the table contains the names of the prey and the headers of the following columns contain the names of **all** trophic groups with or without stomach content analyses available: in the case where no analyses were available, as for groups at the base of the trophic network, a column filled with zeros must be provided. 
+In this example, for the "huge" animals, 19 stomachs were analyzed and contained remainings. Among these stomachs, 17 contained "large" animal remainings and 12 contained "medium" animal remainings.
 
-The last row of the table indicates how many (non-empty) stomachs have been analyzed for each trophic group. In this example, for the "huge" animals, 19 stomachs were analyzed and contained remainings. Among these stomachs, 17 contain "Large" animal remainings and 12 contain "medium" animal remainings.
+If you have trophic groups for which no stomach content analyses were done, you should fill the column with zeros (it is the case here for "small" animals that are at the base of the trophic network).
 
-The example is of course an artificial dataset, created to be simple to visualize and understand.
+### Biotracer data
+
+Each line of the table represents one individual on which were conducted stable isotope analyses for various elements (carbon and nitrogen here). The first column of the table should be called "group" and indicates to which trophic group the individual belongs. The other columns contain the measures.
+
+```{r}
+example_isotope_data_path <- system.file("extdata", "example_isotope_data.csv",
+                                    package = "EcoDiet")
+example_isotope_data <- read.csv(example_isotope_data_path)
+knitr::kable(example_isotope_data)
+```
+
+You also need to define the trophic enrichment factors corresponding to your isotopic data. In this example, because we have data for the d13C and d15N isotopes,  we use the corresponding trophic enrichment factors:
+
+```{r, eval = FALSE}
+trophic_enrichment_factor = c(0.8, 3.4)
+```
 
 ## Plot the data
 
@@ -86,15 +88,8 @@ plot_data(isotope_data = example_isotope_data,
 
 ## Preprocess your data without prior (*Default option*)
 
-* You first need to have loaded your `.csv` files as shown previously. 
+The `preprocess_data` function checks and rearranges the data in a specific format so that the EcoDiet model can be run:
 
-If you have your files in a `data` folder and in a specific `.csv` format (semicolon separated, and not coma separated), you should add the `data` folder in the path and use the `sep` argument to load your data:
-```{r, eval = FALSE}
-example_stomach_data <- read.csv("./data/my_stomach_data.csv",     sep = ";")
-example_isotope_data <- read.csv("./data/my_isotope_data.csv",     sep = ";")
-```
-
-* The `preprocess_data` function then checks and rearranges the data in a specific format so that the EcoDiet model can be run:
 ```{r}
 literature_prior <- FALSE
 
@@ -104,11 +99,9 @@ data <- preprocess_data(isotope_data = example_isotope_data,
                         stomach_data = example_stomach_data)
 ```
 
-If any error appears, it means your data is not in the correct format. Please read the error message and try to rearrange the data in the correct format.
+If any error appears, it means your data is not in the correct format. Please read the error message and rearrange your data in the correct format.
 
-* You should now check the trophic links matrix.
-
-The last message tell you to check the trophic links that will be investigated by the model. It is generally not wise to assume that all the trophic links are possible ( = a matrix filled with only ones), as the model will likely be over-paramaterized and have problems to converge. You therefore need to keep only the reasonnable trophic links (e.g., a shrimp cannot eat a whale). 
+The last message tells you to check the trophic links that will be investigated by the model. It is generally not wise to assume that all the trophic links are possible ( = a matrix filled with only ones), as the model will likely be over-paramaterized and have problems to converge. You therefore need to keep only the reasonnable trophic links (e.g., a shrimp cannot eat a whale). 
 
 The matrix displayed by the `preprocess_data` function is based on the stomach content data, so by-default EcoDiet will investigate trophic links only based on what you have found in stomachs analyses (`data$o`):
 
@@ -134,7 +127,7 @@ data <- preprocess_data(isotope_data = example_isotope_data,
 ```
 
 
-## Define your prior (*Literature option*)
+## Preprocess your data with prior (*Literature option*)
 
 **Skip this part if you want to use EcoDiet without prior from the literature.**
 
@@ -174,20 +167,7 @@ nb_literature = 10
 literature_slope = 0.5
 ```
 
-## Preprocess the data and prior (*Literature option*)
-
-**Skip this part if you want to use EcoDiet without prior from the literature.**
-
-* You first need to have loaded your `.csv` files as shown previously. 
-
-If you have your files in a `data` folder and in a specific `.csv` format (semicolon separated, and not coma separated), you should add the `data` folder in the path and use the `sep` argument to load your data:
-```{r, eval = FALSE}
-example_stomach_data     <- read.csv("./data/my_stomach_data.csv",     sep = ";")
-example_isotope_data     <- read.csv("./data/my_isotope_data.csv",     sep = ";")
-example_literature_diets <- read.csv("./data/my_literature_diets.csv", sep = ";")
-```
-
-* The `preprocess_data` function then checks and rearranges the data in a specific format so that the EcoDiet model can be run:
+The `preprocess_data` function then checks and rearranges the data in a specific format so that the EcoDiet model can be run:
 
 ```{r}
 literature_prior <- TRUE
