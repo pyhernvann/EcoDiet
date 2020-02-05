@@ -1,4 +1,4 @@
-#' Check the format of the stomachal and isotopic data and print an error message
+#' Check the format of the stomachal and biotracer data and print an error message
 #' if something is not correct
 #'
 #' @param stomach_data the almost raw stomachal data
@@ -61,43 +61,43 @@ check_stomach_data <- function(stomach_data){
 }
 
 
-#' Check that the isotopic data is in a correct format and print an error message if not.
+#' Check that the biotracer data is in a correct format and print an error message if not.
 #'
-#' @param isotope_data the raw isotopic data
+#' @param biotracer_data the input biotracer data
 #' @param stomach_data the preprocessed stomachal data
 #'
 #' @keywords internal
 #' @noRd
 
-check_isotope_data <- function(isotope_data, stomach_data){
+check_biotracer_data <- function(biotracer_data, stomach_data){
 
-  # Check the column name of the isotopic data
-  if (colnames(isotope_data)[1] != "group"){
-    stop("The first column of the isotopic data should be named \"group\".\n",
-  "  But here it is named \"", colnames(isotope_data)[1],"\".\n  Please rename it.")
+  # Check the column name of the biotracer data
+  if (colnames(biotracer_data)[1] != "group"){
+    stop("The first column of the biotracer data should be named \"group\".\n",
+  "  But here it is named \"", colnames(biotracer_data)[1],"\".\n  Please rename it.")
   }
 
-  # Check the coherence between the isotopic and stomachal data
-  if (length(unique(isotope_data$group)) != ncol(stomach_data)){
-    stop("You should have the same number of trophic groups in your stomachal and isotopic data.\n",
+  # Check the coherence between the biotracer and stomachal data
+  if (length(unique(biotracer_data$group)) != ncol(stomach_data)){
+    stop("You should have the same number of trophic groups in your stomachal and biotracer data.\n",
          "  But here you have ", ncol(stomach_data), " trophic groups in your stomachal data (\"",
          paste(colnames(stomach_data), collapse = ", "), "\"), and ",
-         length(unique(isotope_data$group)), " in your isotopic data (\"",
-         paste(sort(unique(isotope_data$group)), collapse = ", "), "\").\n",
+         length(unique(biotracer_data$group)), " in your biotracer data (\"",
+         paste(sort(unique(biotracer_data$group)), collapse = ", "), "\").\n",
          "  Please put the same number of trophic groups in both datasets.")
   }
-  if (!all(as.vector(sort(unique(isotope_data$group))) == colnames(stomach_data))){
-    stop("The trophic groups in the isotopic data and the stomachal data should have the same names.\n",
+  if (!all(as.vector(sort(unique(biotracer_data$group))) == colnames(stomach_data))){
+    stop("The trophic groups in the biotracer data and the stomachal data should have the same names.\n",
          "  But here your trophic groups are called: \"", paste(colnames(stomach_data), collapse = ", "),
-         "\" in your stomachal data, and: \"", paste(sort(unique(isotope_data$group)), collapse = ", "),
-         "\" in your isotopic data.\n",
+         "\" in your stomachal data, and: \"", paste(sort(unique(biotracer_data$group)), collapse = ", "),
+         "\" in your biotracer data.\n",
          "  Please rename them to be consistent.")
   }
 
-  # Check the content of the isotopic data
-  if (!is.double(as.matrix(isotope_data[, -1]))){
-    stop("The isotope data should only contain numbers, and not text.\n",
-         "  Please remove the values that do not correspond to an isotopic measurement.")
+  # Check the content of the biotracer data
+  if (!is.double(as.matrix(biotracer_data[, -1]))){
+    stop("The biotracer data should only contain numbers, and not text.\n",
+         "  Please remove the values that do not correspond to an biotracer measurement.")
   }
 }
 
@@ -105,12 +105,12 @@ check_isotope_data <- function(isotope_data, stomach_data){
 #' Check that the trophic discrimination factor is in a correct format and print an error message if not.
 #'
 #' @param trophic_discrimination_factor the raw trophic discrimination factor data
-#' @param isotope_data the raw isotopic data
+#' @param biotracer_data the raw biotracer data
 #'
 #' @keywords internal
 #' @noRd
 
-check_tef_data <- function(trophic_discrimination_factor, isotope_data){
+check_tef_data <- function(trophic_discrimination_factor, biotracer_data){
 
   # Check the format
   if (!is.null(dim(trophic_discrimination_factor))){
@@ -127,18 +127,18 @@ check_tef_data <- function(trophic_discrimination_factor, isotope_data){
   if (sum(is.na(trophic_discrimination_factor)) > 0){
     stop("The trophic discrimination factor should not contain NA or NaN.\n",
          "  But we have found a NA for the discrimination factor corresponding to the \"",
-         colnames(isotope_data)[-1][which(is.na(trophic_discrimination_factor))[1]], "\" isotope.\n",
+         colnames(biotracer_data)[-1][which(is.na(trophic_discrimination_factor))[1]], "\" biotracer.\n",
          "  Please enter a number instead.")
   }
 
-  # Check whether the length is consistent with the isotopic data
-  if (length(trophic_discrimination_factor) != ncol(isotope_data) - 1){
+  # Check whether the length is consistent with the biotracer data
+  if (length(trophic_discrimination_factor) != ncol(biotracer_data) - 1){
     stop("There should be as many trophic discrimination factors as",
-         "there are chemical elements in the isotopic data.\n",
+         "there are chemical elements in the biotracer data.\n",
          "  But here there are actually ", length(trophic_discrimination_factor),
          " trophic enrichement factors (\"", paste(trophic_discrimination_factor, collapse = ", "),
-         "\") and ", ncol(isotope_data) - 1, " chemical elements (\"",
-         paste(colnames(isotope_data)[-1], collapse = ", "), "\") in the isotopic data.")
+         "\") and ", ncol(biotracer_data) - 1, " chemical elements (\"",
+         paste(colnames(biotracer_data)[-1], collapse = ", "), "\") in the biotracer data.")
   }
 }
 
@@ -170,12 +170,12 @@ check_literature_configuration <- function(literature_configuration){
 #' Check that the literature diets matrix is in a correct format and print an error message if not.
 #'
 #' @param literature_diets the preprocessed literature diets matrix
-#' @param isotope_data the preprocessed isotopic data
+#' @param biotracer_data the preprocessed biotracer data
 #'
 #' @keywords internal
 #' @noRd
 
-check_literature_diets <- function(literature_diets, isotope_data){
+check_literature_diets <- function(literature_diets, biotracer_data){
 
   # Check the rows and columns of the literature diets
   if (rownames(literature_diets)[nrow(literature_diets)] != "pedigree"){
@@ -198,20 +198,20 @@ check_literature_diets <- function(literature_diets, isotope_data){
          "  Please rename them to be consistent.")
   }
 
-  # Check the coherence between the isotopic data and the literature diets
-  if (length(unique(isotope_data$group)) != ncol(literature_diets)){
-    stop("You should have the same number of trophic groups in your literature diets and your isotopic data.\n",
+  # Check the coherence between the biotracer data and the literature diets
+  if (length(unique(biotracer_data$group)) != ncol(literature_diets)){
+    stop("You should have the same number of trophic groups in your literature diets and your biotracer data.\n",
          "  But here you have ", ncol(literature_diets), " trophic groups in your literature diets (\"",
          paste(colnames(literature_diets), collapse = ", "), "\"), and ",
-         length(unique(isotope_data$group)), " in your isotopic data (\"",
-         paste(sort(unique(isotope_data$group)), collapse = ", "), "\").\n",
+         length(unique(biotracer_data$group)), " in your biotracer data (\"",
+         paste(sort(unique(biotracer_data$group)), collapse = ", "), "\").\n",
          "  Please put the same number of trophic groups in both.")
   }
-  if (!all(as.vector(sort(unique(isotope_data$group))) == colnames(literature_diets))){
-    stop("The trophic groups in the isotopic data and the literature diets should have the same names.\n",
+  if (!all(as.vector(sort(unique(biotracer_data$group))) == colnames(literature_diets))){
+    stop("The trophic groups in the biotracer data and the literature diets should have the same names.\n",
          "  But here your trophic groups are called: \"", paste(colnames(literature_diets), collapse = ", "),
-         "\" in your literature diets, and: \"", paste(sort(unique(isotope_data$group)), collapse = ", "),
-         "\" in your isotopic data.\n",
+         "\" in your literature diets, and: \"", paste(sort(unique(biotracer_data$group)), collapse = ", "),
+         "\" in your biotracer data.\n",
          "  Please rename them to be consistent.")
   }
 
@@ -268,10 +268,9 @@ check_numeric_parameter <- function(numeric_parameter, parameter_name){
 
 #' Load and preprocess the data to feed the EcoDiet model
 #'
-#' @param isotope_data the table containing the isotopic data in the specific format
+#' @param biotracer_data the table containing the biotracer data in the specific format
 #' @param trophic_discrimination_factor a vector containing the trophic discrimination factors corresponding
-#' to each biotracer found in the biotracer data
-#' corresponding to each column of the isotope data table (except the group column)
+#' to each column found in the biotracer data (except the group column of course)
 #' @param literature_configuration a boolean (TRUE or FALSE) indicating whether the model will have
 #' prior distributions informed by a literature study
 #' @param topology a matrix that the user may input if she wants the model to
@@ -287,7 +286,7 @@ check_numeric_parameter <- function(numeric_parameter, parameter_name){
 #'
 #' @export
 
-preprocess_data <- function(isotope_data, trophic_discrimination_factor,
+preprocess_data <- function(biotracer_data, trophic_discrimination_factor,
                             literature_configuration = FALSE,
                             topology = NULL,
                             element_concentration = 1,
@@ -311,22 +310,22 @@ preprocess_data <- function(isotope_data, trophic_discrimination_factor,
   nb_o <- stomach_data[nrow(stomach_data), ]
   stomach_data <- stomach_data[-nrow(stomach_data), ]
 
-  # Check the isotopic and trophic enrichement factor data
-  check_isotope_data(isotope_data, stomach_data)
-  check_tef_data(trophic_discrimination_factor, isotope_data)
+  # Check the biotracer and trophic enrichement factor data
+  check_biotracer_data(biotracer_data, stomach_data)
+  check_tef_data(trophic_discrimination_factor, biotracer_data)
 
-  # Rearrange the isotopic data
-  isotope_data <- isotope_data[order(isotope_data$group), ]
+  # Rearrange the biotracer data
+  biotracer_data <- biotracer_data[order(biotracer_data$group), ]
 
-  nb_group <- length(unique(isotope_data$group))
-  nb_elem <- ncol(isotope_data) - 1
-  nb_y <- as.vector(table(isotope_data$group))
+  nb_group <- length(unique(biotracer_data$group))
+  nb_elem <- ncol(biotracer_data) - 1
+  nb_y <- as.vector(table(biotracer_data$group))
 
   y <- array(NA, dim = c(nb_group, max(nb_y), nb_elem))
   rownames(y) <- colnames(stomach_data)
   for (el in 1:nb_elem){
     for (grp in 1:nb_group){
-      y[grp, 1:nb_y[grp], el] <- isotope_data[isotope_data$group == colnames(stomach_data)[grp], el + 1]
+      y[grp, 1:nb_y[grp], el] <- biotracer_data[biotracer_data$group == colnames(stomach_data)[grp], el + 1]
     }
   }
 
@@ -356,7 +355,7 @@ preprocess_data <- function(isotope_data, trophic_discrimination_factor,
     literature_diets <- as.matrix(literature_diets)
 
     # Check the literature diets matrix
-    check_literature_diets(literature_diets, isotope_data)
+    check_literature_diets(literature_diets, biotracer_data)
 
     # Create the pedigree vector and the literature diets only matrix from it
     literature_pedigrees <- as.vector(literature_diets[nrow(literature_diets), ])

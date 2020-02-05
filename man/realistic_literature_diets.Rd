@@ -3,7 +3,7 @@
 \name{realistic_literature_diets}
 \alias{realistic_literature_diets}
 \title{Realistic literature diets}
-\format{A table with 11 rows and 11 columns. 
+\format{A table with 11 rows and 11 columns.
 The headers contain the predators' names, the first column contains the preys' names.
 Each cell contains the average diet proportions fond in the literature for the corresponding predator.
 The last row contains the average pedigree score for the literature on each predator.}

@@ -22,10 +22,10 @@ library(EcoDiet)
 
 example_stomach_data_path <- system.file("extdata", "example_stomach_data.csv",
                                     package = "EcoDiet")
-example_isotope_data_path <- system.file("extdata", "example_isotope_data.csv",
+example_biotracer_data_path <- system.file("extdata", "example_biotracer_data.csv",
                                     package = "EcoDiet")
 
-data <- preprocess_data(isotope_data = read.csv(example_isotope_data_path),
+data <- preprocess_data(biotracer_data = read.csv(example_biotracer_data_path),
                         trophic_discrimination_factor = c(0.8, 3.4),
                         literature_configuration = FALSE,
                         stomach_data = read.csv(example_stomach_data_path))
@@ -56,7 +56,7 @@ View(gelman)
 
 It will allow you to understand which variables has not converged properly (the closer to 1, the better it has converged).
 
-If the `PI` and `eta` variables has both trouble converging for a specific trophic link between a predator and a prey, you can look at the corresponding data to see if there is not an error somewhere (maybe an isotopic measurement was entered as 104 instead of 1.04 for this prey or predator).
+If the `PI` and `eta` variables has both trouble converging for a specific trophic link between a predator and a prey, you can look at the corresponding data to see if there is not an error somewhere (maybe a biotracer measurement was entered as 104 instead of 1.04 for this prey or predator).
 
 ## Specify initial values for the model
 

@@ -5,7 +5,7 @@
 \title{Load and preprocess the data to feed the EcoDiet model}
 \usage{
 preprocess_data(
-  isotope_data,
+  biotracer_data,
   trophic_discrimination_factor,
   literature_configuration = FALSE,
   topology = NULL,
@@ -17,11 +17,10 @@ preprocess_data(
 )
 }
 \arguments{
-\item{isotope_data}{the table containing the isotopic data in the specific format}
+\item{biotracer_data}{the table containing the biotracer data in the specific format}
 
 \item{trophic_discrimination_factor}{a vector containing the trophic discrimination factors corresponding
-to each biotracer found in the biotracer data
-corresponding to each column of the isotope data table (except the group column)}
+to each column found in the biotracer data (except the group column of course)}
 
 \item{literature_configuration}{a boolean (TRUE or FALSE) indicating whether the model will have
 prior distributions informed by a literature study}

@@ -4,10 +4,10 @@
 \alias{plot_data}
 \title{Plot the raw data entered by the user.}
 \usage{
-plot_data(isotope_data = NULL, stomach_data = NULL)
+plot_data(biotracer_data = NULL, stomach_data = NULL)
 }
 \arguments{
-\item{isotope_data}{the raw isotopic data}
+\item{biotracer_data}{the input biotracer data}
 
 \item{stomach_data}{the raw stomachal data if the user has it.
 By default this variable is set on NULL and is not ploted.}

@@ -1,15 +1,15 @@
-#' Plot the isotopic data with one biplot for each combination of 2 isotopes
+#' Plot the biotracer data with one biplot for each combination of 2 biotracers
 #'
-#' @param isotope_data the raw isotopic data
+#' @param biotracer_data the input biotracer data
 #'
 #' @import ggplot2
 #'
 #' @keywords internal
 #' @noRd
 
-plot_isotope_data <- function(isotope_data){
+plot_biotracer_data <- function(biotracer_data){
 
-  # If the isotopic data contains 3 elements called d13C, d15N and d125I, then we will plot 3 figures,
+  # If the biotracer data contains 3 elements called d13C, d15N and d125I, then we will plot 3 figures,
   # because there are 3 ways to choose an unordered subset of 2 elements from a fixed set of 3 elements:
   #          d13C vs. d15N,
   #          d13C vs. d125I and
@@ -17,19 +17,19 @@ plot_isotope_data <- function(isotope_data){
   #
   # With the following code, we select all the possible combinations without repetition:
 
-  nb_element <- ncol(isotope_data) - 1
+  nb_element <- ncol(biotracer_data) - 1
 
   for (element1 in 1:nb_element){
     for (element2 in 1:nb_element){
 
       if (element2 > element1){
-        figure <- ggplot(isotope_data,
-                         aes(x = isotope_data[, element1 + 1],
-                             y = isotope_data[, element2 + 1],
+        figure <- ggplot(biotracer_data,
+                         aes(x = biotracer_data[, element1 + 1],
+                             y = biotracer_data[, element2 + 1],
                              colour = group)) +
           ggtitle("Isotopic measurements") +
-          xlab(names(isotope_data)[element1 + 1]) +
-          ylab(names(isotope_data)[element2 + 1]) +
+          xlab(names(biotracer_data)[element1 + 1]) +
+          ylab(names(biotracer_data)[element2 + 1]) +
           geom_point(size = 3, na.rm = TRUE) +
           guides(colour = guide_legend()) +
           theme_bw() +
@@ -93,13 +93,13 @@ plot_matrix <- function(matrix, title){
 
 #' Plot the raw data entered by the user.
 #'
-#' @param isotope_data the raw isotopic data
+#' @param biotracer_data the input biotracer data
 #' @param stomach_data the raw stomachal data if the user has it.
 #' By default this variable is set on NULL and is not ploted.
 #'
 #' @export
 
-plot_data <- function(isotope_data = NULL, stomach_data = NULL){
+plot_data <- function(biotracer_data = NULL, stomach_data = NULL){
 
   if (!is.null(stomach_data)){
     # Clean the stomach data similarly as in the preprocess_data function except for the commented parts
@@ -120,8 +120,8 @@ plot_data <- function(isotope_data = NULL, stomach_data = NULL){
     plot_matrix(stomach_data, title = "Proportion of occurences in stomachs")
   }
 
-  if (!is.null(isotope_data)){
-    plot_isotope_data(isotope_data)
+  if (!is.null(biotracer_data)){
+    plot_biotracer_data(biotracer_data)
   }
 
 }

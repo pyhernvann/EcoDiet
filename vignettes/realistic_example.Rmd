@@ -26,16 +26,16 @@ knitr::kable(realistic_stomach_data)
 ```
 
 ```{r}
-realistic_isotope_data_path <- system.file("extdata", "realistic_isotope_data.csv",
+realistic_biotracer_data_path <- system.file("extdata", "realistic_biotracer_data.csv",
                                            package = "EcoDiet")
-realistic_isotope_data <- read.csv(realistic_isotope_data_path)
-knitr::kable(realistic_isotope_data[c(1:3, 31:33, 61:63), ])
+realistic_biotracer_data <- read.csv(realistic_biotracer_data_path)
+knitr::kable(realistic_biotracer_data[c(1:3, 31:33, 61:63), ])
 ```
 
 ```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
 library(EcoDiet)
 
-plot_data(isotope_data = realistic_isotope_data,
+plot_data(biotracer_data = realistic_biotracer_data,
           stomach_data = realistic_stomach_data)
 ```
 
@@ -44,7 +44,7 @@ plot_data(isotope_data = realistic_isotope_data,
 ```{r}
 literature_configuration <- FALSE
 
-data <- preprocess_data(isotope_data = realistic_isotope_data,
+data <- preprocess_data(biotracer_data = realistic_biotracer_data,
                         trophic_discrimination_factor = c(0.8, 3.4),
                         literature_configuration = literature_configuration,
                         stomach_data = realistic_stomach_data)

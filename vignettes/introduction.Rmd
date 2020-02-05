@@ -42,7 +42,7 @@ If you have the CSV files in a `data` folder and in a specific `.csv` format (se
 
 ```{r, eval = FALSE}
 example_stomach_data <- read.csv("./data/my_stomach_data.csv", sep = ";")
-example_isotope_data <- read.csv("./data/my_isotope_data.csv", sep = ";")
+example_biotracer_data <- read.csv("./data/my_biotracer_data.csv", sep = ";")
 ```
 
 ### Stomach content data
@@ -65,15 +65,15 @@ If you have trophic groups for which no stomach content analyses were done, you 
 Each line of the table represents one individual on which were conducted stable isotope analyses for various elements (carbon and nitrogen here). The first column of the table should be called "group" and indicates to which trophic group the individual belongs. The other columns contain the measures.
 
 ```{r}
-example_isotope_data_path <- system.file("extdata", "example_isotope_data.csv",
+example_biotracer_data_path <- system.file("extdata", "example_biotracer_data.csv",
                                     package = "EcoDiet")
-example_isotope_data <- read.csv(example_isotope_data_path)
-knitr::kable(example_isotope_data)
+example_biotracer_data <- read.csv(example_biotracer_data_path)
+knitr::kable(example_biotracer_data)
 ```
 
-You should have the same trophic groups in your stomach and isotope data. Thus, if you have a group with stomach content analyses but without biotracer data, you should still enter it as one line in the biotracer data with "NA" values (as it is the case for the "huge" group).
+You should have the same trophic groups in your stomach and biotracer data. Thus, if you have a group with stomach content analyses but without biotracer data, you should still enter it as one line in the biotracer data with "NA" values (as it is the case for the "huge" group).
 
-You also need to define the trophic discrimination factors corresponding to your isotopic data. In this example, because we have data for the d13C and d15N isotopes, we use the following trophic discrimination factors:
+You also need to define the trophic discrimination factors corresponding to your biotracer data. In this example, because we have data for the d13C and d15N isotopes, we use the following trophic discrimination factors:
 
 ```{r, eval = FALSE}
 trophic_discrimination_factor = c(0.8, 3.4)
@@ -84,7 +84,7 @@ trophic_discrimination_factor = c(0.8, 3.4)
 You can visualize your data with the `plot_data` function:
 
 ```{r, fig1, fig.height = 4, fig.width = 6, fig.align = "center"}
-plot_data(isotope_data = example_isotope_data,
+plot_data(biotracer_data = example_biotracer_data,
           stomach_data = example_stomach_data)
 ```
 
@@ -99,7 +99,7 @@ The `preprocess_data` function checks and rearranges the data in a specific form
 ```{r}
 literature_configuration <- FALSE
 
-data <- preprocess_data(isotope_data = example_isotope_data,
+data <- preprocess_data(biotracer_data = example_biotracer_data,
                         trophic_discrimination_factor = c(0.8, 3.4),
                         literature_configuration = literature_configuration,
                         stomach_data = example_stomach_data)
@@ -127,7 +127,7 @@ print(topology)
 
 Now, the new topological matrix can be entered as an argument of the `preprocess_data` function, and you can see that the new trophic links matrix will be investigated by the model:
 ```{r}
-data <- preprocess_data(isotope_data = example_isotope_data,
+data <- preprocess_data(biotracer_data = example_biotracer_data,
                         trophic_discrimination_factor = c(0.8, 3.4),
                         literature_configuration = literature_configuration,
                         topology = topology,
@@ -179,7 +179,7 @@ The `preprocess_data` function then checks and rearranges the data in a specific
 ```{r}
 literature_configuration <- TRUE
 
-data <- preprocess_data(isotope_data = example_isotope_data,
+data <- preprocess_data(biotracer_data = example_biotracer_data,
                         trophic_discrimination_factor = c(0.8, 3.4),
                         literature_configuration = literature_configuration,
                         stomach_data = example_stomach_data,
@@ -208,7 +208,7 @@ print(topology)
 
 Now the new topological matrix can be entered as an argument of the `preprocess_data` function, and you can see that the new trophic links matrix will be investigated by the model:
 ```{r}
-data <- preprocess_data(isotope_data = example_isotope_data,
+data <- preprocess_data(biotracer_data = example_biotracer_data,
                         trophic_discrimination_factor = c(0.8, 3.4),
                         literature_configuration = literature_configuration,
                         topology = topology,
@@ -235,7 +235,7 @@ plot_prior(data, literature_configuration, pred = "huge")
 This way, you can change the prior parameters and see how it affects the prior distributions. Here, we will change the `nb_literature` parameter from 10 to 2:
 
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
-data <- preprocess_data(isotope_data = example_isotope_data,
+data <- preprocess_data(biotracer_data = example_biotracer_data,
                         trophic_discrimination_factor = c(0.8, 3.4),
                         literature_configuration = literature_configuration,
                         topology = topology,
