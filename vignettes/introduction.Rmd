@@ -290,23 +290,29 @@ load("eta_mean.Rdata")
 write.table(eta_mean, file = "eta_mean.csv", sep = ",", col.names = NA)
 ```
 
-## Plot the probability densities
+## Plot the probability distributions
 
-You can also plot the whole probability densities for one predator:
-
-```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
-plot_results(mcmc_output, data, pred = "huge")
-```
-
-You can also precise for which variable and preys you want to plot the probability densities:
+The probability distributions can be plotted for one predator:
 
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
-plot_results(mcmc_output, data, variable = "PI", pred = "huge", prey = c("large", "small"))
+plot_results(mcmc_output, data, pred = "large")
 ```
 
-You can see that the a posteriori `PI` distributions are mostly concentrated around 0. **But you should not interpret this as the "huge" predator eating most of the time 0 % of the "small" animals, with very few indivudals eating them sometimes.**
+You can also precise for which variable and preys you want to plot the probability distributions:
 
-The `PI` distributions are very peaked around 0 because of how the `PI` variables are modelled in EcoDiet. EcoDiet is a model with probabilistic trophic links. The model first evaluates whether the trophic link exists or not between a predator and his prey. If the trophic link is seen as existing, the `PI` will be computed based on the biotracer data and the literature prior. But if the trophic link is evaluted as non-existent, the `PI` will be set at a quasi-null value. Because the sum of the diet proportions equals 1, if there are only 2 preys and one `PI` is fixed at 0, the other `PI` will automatically be fixed at 1. 
+```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
+plot_results(mcmc_output, data, variable = "PI", pred = "large", prey = c("medium", "small"))
+```
+
+You can see that the a posteriori `PI` distributions are mostly concentrated around 0 and 1. **But you should not interpret this as most of the "large" predators eating 100 % "medium" animals and  0 % "small" animals, with very few indivudals having a balanced diet.**
+
+The `PI` distributions are very peaked around 0 and 1 because of how the variables are modelled in EcoDiet. It is a model with probabilistic trophic links, so:
+
+* The model first evaluates whether the trophic link exists or not between a predator and his prey (based on the `eta` variables). 
+
+* The `PI` will be updated with the biotracer data *only if the link is considered present*. If the link is evaluted as non-existent, the `PI` will be set at a quasi-null value. 
+
+Because the sum of the diet proportions equals 1, if there are only 2 preys and one `PI` is fixed at 0, then the other `PI` will automatically be fixed at 1. 
 
 Thus only values far from 0 and 1 can inform us on the "real" values for the diet propotions `PI`. Here is how to plot these values:
 
@@ -315,7 +321,7 @@ len <- dim(mcmc_output)[2]
 mcmc_output[, 1:(len/2)] <- ifelse(mcmc_output[, 1:(len/2)] < 0.05 | mcmc_output[, 1:(len/2)] > 0.95, 
                                    NA, mcmc_output[, 1:(len/2)])
 
-plot_results(mcmc_output, data, variable = "PI", pred = "huge", prey = c("large", "small"))
+plot_results(mcmc_output, data, variable = "PI", pred = "large", prey = c("medium", "small"))
 ```
 
 ## Save the full results
