@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-The goal of the package is to estimate a probabilistic topology matrix (all trophic link probabilities) and a diet matrix (all diet propotions) by combining biotracers and stomach content analyses in a Bayesian hierarchical model. A trophic link probability is the probability that a given prey in eaten by a given predator, and a diet proportion is the percentage of contribution of this prey to this predator's diet. The full model and its application on a real dataset are described in *Hernvann et al.* (under review).
+The goal of the package is to estimate a probabilistic topology matrix (all trophic link probabilities $\eta$) and a diet matrix (all diet propotions $\Pi$) by combining biotracers and stomach content analyses in a Bayesian hierarchical model. A trophic link probability is the probability that a given prey in eaten by a given predator, and a diet proportion is the percentage of contribution of this prey to this predator's diet. The full model and its application on a real dataset are described in *Hernvann et al.* (under review).
 
 There are different ways of using this package:
 
@@ -141,7 +141,7 @@ data <- preprocess_data(isotope_data = example_isotope_data,
 
 ### Define the priors
 
-You will use a literature diet table to set priors on the trophic link probabilities (the `eta` variables) and the diet proportions (the `PI` variables). This table is similar to the stomach contents table, as all trophic groups must be included in the columns and rows. The numbers are the the average diets proportions found in the literature. Here, the selected studies have identified that "huge" animals eat equally "large" and "medium" animals (thus the 0.5 and 0.5 numbers in the first column). The proportions for a given predator (i.e., within a given column) must sum to 1. The "small" animals are at the base of the ecosystem, so the column is filled with zeros.
+You will use a literature diet table to set priors on the trophic link probabilities $\eta$ and the diet proportions $\Pi$. This table is similar to the stomach contents table, as all trophic groups must be included in the columns and rows. The numbers are the the average diets proportions found in the literature. Here, the selected studies have identified that "huge" animals eat equally "large" and "medium" animals (thus the 0.5 and 0.5 numbers in the first column). The proportions for a given predator (i.e., within a given column) must sum to 1. The "small" animals are at the base of the ecosystem, so the column is filled with zeros.
 
 The last row of the table corresponds to the literature pedigree score. This score (a number from 0 to 1) quantifies the literature reliability on each predator's diet. Here the dietary proportions from the literature are estimated very reliable for the "huge" animals, so the pedigree score associated is high (0.9). On the contrary, the diet proportions for the "medium" animals come from an old article focusing on a very different ecosystem so the pedigree score associated is low (0.2). Because the diet proportions won't be estimated for the "small" animals, we have put the by-default value for the pedigree (1).
 
@@ -154,19 +154,19 @@ knitr::kable(example_literature_diets)
 
 This summary of the literature knowledge will be used to formulate:
 
-1. The prior on the trophic link probabilities `eta`. If the literature diet proportion is zero, the prior Beta distribution of `eta` will be shifted to 0. If the proportion is positive, the distribution will be shifted toward 1.
+1. The prior on the trophic link probabilities $\eta$. If the literature diet proportion is zero, the prior Beta distribution of $\eta$ will be shifted to 0. If the proportion is positive, the distribution will be shifted toward 1.
 
-2. The priors on the diet proportions `PI`. The literature diet proportions are entered as the hyperparameters of the prior Dirichlet distribution of `PI`.
+2. The priors on the diet proportions $\Pi$. The literature diet proportions are entered as the hyperparameters of the prior Dirichlet distribution of $\Pi$.
 
 The Pedigree scores are used to determine these priors' precision. Other parameters can be used to adjust the prior distributions:
 
-* the `nb_literature` parameter (an integer higher than 2). The higher this nummber, the stronger will be the weight of the literature in the final inference for `eta`. Setting this parameter to 10 is like saying that the prior from the literature will weight as much as additional data from 10 stomachs. Thus for any particular application, `nb_literature` should be set to a value smaller than the sample size in the available stomachal data.
+* the `nb_literature` parameter (an integer higher than 2). The higher this nummber, the stronger will be the weight of the literature in the final inference on $\eta$. Setting this parameter to 10 is like saying that the prior from the literature will weight as much as additional data from 10 stomachs. Thus for any particular application, `nb_literature` should be set to a value smaller than the sample size in the available stomachal data.
 
 ```{r}
 nb_literature = 10
 ```
 
-* the `literature_slope` parameter (a value between 0 and 1). The higher this number, the stronger will be the weight of the literature in the final inference for `PI`. You should set this value depending on the value of your data (number of biotracers, etc).
+* the `literature_slope` parameter (a value between 0 and 1). The higher this number, the stronger will be the weight of the literature in the final inference on $\Pi$. You should set this value depending on the value of your data (number of biotracers, etc).
 
 ```{r}
 literature_slope = 0.5
@@ -220,7 +220,7 @@ data <- preprocess_data(isotope_data = example_isotope_data,
 
 ## Plot the priors
 
-Whether the priors are informed by the literature or non-informative, you can plot the mean of the prior distributions for the trophic link probabilities (`eta`) and the diet proportions (`PI`):
+Whether the priors are informed by the literature or non-informative, you can plot the mean of the prior distributions for the trophic link probabilities $\eta$ and the diet proportions $\Pi$:
 
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 plot_prior(data, literature_prior)
@@ -284,7 +284,7 @@ See this vignette if you have convergence problems: `vignette("convergence_probl
 
 ## Plot and save the model's mean results
 
-The model's outputs are the approximated a posteriori distributions for the trophic links probabilities (`eta`) and the diet propotions (`PI`). You can visualize the mean of these distribitions with the `plot_results` function:
+The model's outputs are the approximated a posteriori distributions for the trophic links probabilities $\eta$ and the diet propotions $\Pi$. You can visualize the mean of these distribitions with the `plot_results` function:
 
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 plot_results(mcmc_output, data)
@@ -308,17 +308,17 @@ The probability distributions can be plotted for one predator:
 plot_results(mcmc_output, data, pred = "large")
 ```
 
-You can see that the a posteriori `PI` distributions are mostly concentrated around 0 and 1. **But you should not interpret this as most of the "large" predators eating 100 % "medium" animals and  0 % "small" animals, with very few indivudals having a balanced diet.**
+You can see that the a posteriori $\Pi$ distributions are mostly concentrated around 0 and 1. **But you should not interpret this as most of the "large" predators eating 100 % "medium" animals and  0 % "small" animals, with very few indivudals having a balanced diet.**
 
-The `PI` distributions are very peaked around 0 and 1 because of how the variables are modelled in EcoDiet. It is a model with probabilistic trophic links, so:
+The $\Pi$ distributions are very peaked around 0 and 1 because of how the variables are modelled in EcoDiet. It is a model with probabilistic trophic links, so:
 
-* The model first evaluates whether the trophic link exists or not between a predator and his prey (based on the `eta` variables). 
+* The model first evaluates whether the trophic link exists or not between a predator and his prey (based on the $\eta$ variables). 
 
-* The `PI` will be updated with the biotracer data *only if the link is considered present*. If the link is evaluted as non-existent, the `PI` will be set at a quasi-null value. 
+* The $\Pi$ will be updated with the biotracer data *only if the link is considered present*. If the link is evaluted as non-existent, the $\Pi$ will be set at a quasi-null value. 
 
-Because the sum of the diet proportions equals 1, if there are only 2 preys and one `PI` is fixed at 0, then the other `PI` will automatically be fixed at 1. 
+Because the sum of the diet proportions equals 1, if there are only 2 preys and one $\Pi$ is fixed at 0, then the other $\Pi$ will automatically be fixed at 1. 
 
-Thus only values far from 0 and 1 can inform us on the "real" values for the diet propotions `PI`. Here is how to plot these values:
+Thus only values far from 0 and 1 can inform us on the "real" values for the diet propotions $\Pi$. Here is how to plot these values:
 
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 len <- dim(mcmc_output)[2]
@@ -326,7 +326,7 @@ mcmc_output[, 1:(len/2)] <- ifelse(mcmc_output[, 1:(len/2)] < 0.05 |
                                      mcmc_output[, 1:(len/2)] > 0.95, 
                                    NA, mcmc_output[, 1:(len/2)])
 
-plot_results(mcmc_output, data, variable = "PI", pred = "large")
+plot_results(mcmc_output, data, variable = "PI", pred = "large", prey = c("medium", "small"))
 ```
 
 ## Save the full results
@@ -352,9 +352,9 @@ The quantiles can finally be saved as `.csv` tables:
 write.table(quantiles, file = "quantiles.csv", sep = ",", col.names = NA)
 ```
 
-## Save another variable than PI and eta
+## Save another variable than $\Pi$ and $\eta$
 
-You have the possibility to access all the model parameters. For example you may be interested by the variable `delta` that represents the trophic enrichment factor. In the EcoDiet model, a different trophic enrichment factor is used for each trophic group and for each element, allowing some differences between species. We can save these parameters using the `variables_to_save` argument:
+You have the possibility to access all the model parameters. For example you may be interested by the variable $\delta$ that represents the trophic enrichment factor. In the EcoDiet model, a different trophic enrichment factor is used for each trophic group and for each element, allowing some differences between species. We can save these parameters using the `variables_to_save` argument:
 
 ```{r}
 mcmc_output <- run_model(textConnection(model_string), data, variables_to_save = c("delta"), 
