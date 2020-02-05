@@ -73,10 +73,10 @@ knitr::kable(example_isotope_data)
 
 You should have the same trophic groups in your stomach and isotope data. Thus, if you have a group with stomach content analyses but without biotracer data, you should still enter it as one line in the biotracer data with "NA" values (as it is the case for the "huge" group).
 
-You also need to define the trophic enrichment factors corresponding to your isotopic data. In this example, because we have data for the d13C and d15N isotopes,  we use the corresponding trophic enrichment factors:
+You also need to define the trophic discrimination factors corresponding to your isotopic data. In this example, because we have data for the d13C and d15N isotopes, we use the following trophic discrimination factors:
 
 ```{r, eval = FALSE}
-trophic_enrichment_factor = c(0.8, 3.4)
+trophic_discrimination_factor = c(0.8, 3.4)
 ```
 
 ## Plot the data
@@ -100,7 +100,7 @@ The `preprocess_data` function checks and rearranges the data in a specific form
 literature_prior <- FALSE
 
 data <- preprocess_data(isotope_data = example_isotope_data,
-                        trophic_enrichment_factor = c(0.8, 3.4),
+                        trophic_discrimination_factor = c(0.8, 3.4),
                         literature_prior = literature_prior,
                         stomach_data = example_stomach_data)
 ```
@@ -128,7 +128,7 @@ print(topology)
 Now, the new topological matrix can be entered as an argument of the `preprocess_data` function, and you can see that the new trophic links matrix will be investigated by the model:
 ```{r}
 data <- preprocess_data(isotope_data = example_isotope_data,
-                        trophic_enrichment_factor = c(0.8, 3.4),
+                        trophic_discrimination_factor = c(0.8, 3.4),
                         literature_prior = literature_prior,
                         topology = topology,
                         stomach_data = example_stomach_data)
@@ -180,7 +180,7 @@ The `preprocess_data` function then checks and rearranges the data in a specific
 literature_prior <- TRUE
 
 data <- preprocess_data(isotope_data = example_isotope_data,
-                        trophic_enrichment_factor = c(0.8, 3.4),
+                        trophic_discrimination_factor = c(0.8, 3.4),
                         literature_prior = literature_prior,
                         stomach_data = example_stomach_data,
                         literature_diets = example_literature_diets,
@@ -209,7 +209,7 @@ print(topology)
 Now the new topological matrix can be entered as an argument of the `preprocess_data` function, and you can see that the new trophic links matrix will be investigated by the model:
 ```{r}
 data <- preprocess_data(isotope_data = example_isotope_data,
-                        trophic_enrichment_factor = c(0.8, 3.4),
+                        trophic_discrimination_factor = c(0.8, 3.4),
                         literature_prior = literature_prior,
                         topology = topology,
                         stomach_data = example_stomach_data,
@@ -236,7 +236,7 @@ This way, you can change the prior parameters and see how it affects the prior d
 
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 data <- preprocess_data(isotope_data = example_isotope_data,
-                        trophic_enrichment_factor = c(0.8, 3.4),
+                        trophic_discrimination_factor = c(0.8, 3.4),
                         literature_prior = literature_prior,
                         topology = topology,
                         stomach_data = example_stomach_data,
@@ -354,7 +354,7 @@ write.table(quantiles, file = "quantiles.csv", sep = ",", col.names = NA)
 
 ## Save another variable than $\Pi$ and $\eta$
 
-You have the possibility to access all the model parameters. For example you may be interested by the variable $\delta$ that represents the trophic enrichment factor. In the EcoDiet model, a different trophic enrichment factor is used for each trophic group and for each element, allowing some differences between species. We can save these parameters using the `variables_to_save` argument:
+You have the possibility to access all the model parameters. For example you may be interested by the variable $\delta$ that represents the trophic discrimination factor. In the EcoDiet model, a different trophic discrimination factor is used for each trophic group and for each element, allowing some differences between species. We can save these parameters using the `variables_to_save` argument:
 
 ```{r}
 mcmc_output <- run_model(textConnection(model_string), data, variables_to_save = c("delta"),

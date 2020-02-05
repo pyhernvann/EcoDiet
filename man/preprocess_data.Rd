@@ -6,7 +6,7 @@
 \usage{
 preprocess_data(
   isotope_data,
-  trophic_enrichment_factor,
+  trophic_discrimination_factor,
   literature_prior = FALSE,
   topology = NULL,
   element_concentration = 1,
@@ -19,7 +19,8 @@ preprocess_data(
 \arguments{
 \item{isotope_data}{the table containing the isotopic data in the specific format}
 
-\item{trophic_enrichment_factor}{a vector containing the mean trophic enrichement factor
+\item{trophic_discrimination_factor}{a vector containing the trophic discrimination factors corresponding
+to each biotracer found in the biotracer data
 corresponding to each column of the isotope data table (except the group column)}
 
 \item{literature_prior}{a boolean (TRUE or FALSE) indicating whether the model will have

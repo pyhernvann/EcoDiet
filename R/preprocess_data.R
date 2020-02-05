@@ -102,41 +102,41 @@ check_isotope_data <- function(isotope_data, stomach_data){
 }
 
 
-#' Check that the trophic enrichment factor is in a correct format and print an error message if not.
+#' Check that the trophic discrimination factor is in a correct format and print an error message if not.
 #'
-#' @param trophic_enrichment_factor the raw trophic enrichment factor data
+#' @param trophic_discrimination_factor the raw trophic discrimination factor data
 #' @param isotope_data the raw isotopic data
 #'
 #' @keywords internal
 #' @noRd
 
-check_tef_data <- function(trophic_enrichment_factor, isotope_data){
+check_tef_data <- function(trophic_discrimination_factor, isotope_data){
 
   # Check the format
-  if (!is.null(dim(trophic_enrichment_factor))){
-    stop("The trophic enrichment factor should be a vector, and not a matrix or an array.\n",
-         "  Please enter a vector as in the vignette's example: \"trophic_enrichment_factor = c(0.8, 3.4)\".")
+  if (!is.null(dim(trophic_discrimination_factor))){
+    stop("The trophic discrimination factor should be a vector, and not a matrix or an array.\n",
+         "  Please enter a vector as in the vignette's example: \"trophic_discrimination_factor = c(0.8, 3.4)\".")
   }
 
   # Check the content
-  if (!is.double(trophic_enrichment_factor)){
-    stop("The trophic enrichment factor should contain only numbers, not text.\n",
+  if (!is.double(trophic_discrimination_factor)){
+    stop("The trophic discrimination factor should contain only numbers, not text.\n",
          "  But here are the trophic enrichement factors you entered: ",
-         paste(trophic_enrichment_factor, collapse = ", "), "\n  Please use numbers instead.")
+         paste(trophic_discrimination_factor, collapse = ", "), "\n  Please use numbers instead.")
   }
-  if (sum(is.na(trophic_enrichment_factor)) > 0){
-    stop("The trophic enrichment factor should not contain NA or NaN.\n",
-         "  But we have found a NA for the enrichment factor corresponding to the \"",
-         colnames(isotope_data)[-1][which(is.na(trophic_enrichment_factor))[1]], "\" isotope.\n",
+  if (sum(is.na(trophic_discrimination_factor)) > 0){
+    stop("The trophic discrimination factor should not contain NA or NaN.\n",
+         "  But we have found a NA for the discrimination factor corresponding to the \"",
+         colnames(isotope_data)[-1][which(is.na(trophic_discrimination_factor))[1]], "\" isotope.\n",
          "  Please enter a number instead.")
   }
 
   # Check whether the length is consistent with the isotopic data
-  if (length(trophic_enrichment_factor) != ncol(isotope_data) - 1){
-    stop("There should be as many trophic enrichment factors as",
+  if (length(trophic_discrimination_factor) != ncol(isotope_data) - 1){
+    stop("There should be as many trophic discrimination factors as",
          "there are chemical elements in the isotopic data.\n",
-         "  But here there are actually ", length(trophic_enrichment_factor),
-         " trophic enrichement factors (\"", paste(trophic_enrichment_factor, collapse = ", "),
+         "  But here there are actually ", length(trophic_discrimination_factor),
+         " trophic enrichement factors (\"", paste(trophic_discrimination_factor, collapse = ", "),
          "\") and ", ncol(isotope_data) - 1, " chemical elements (\"",
          paste(colnames(isotope_data)[-1], collapse = ", "), "\") in the isotopic data.")
   }
@@ -269,7 +269,8 @@ check_numeric_parameter <- function(numeric_parameter, parameter_name){
 #' Load and preprocess the data to feed the EcoDiet model
 #'
 #' @param isotope_data the table containing the isotopic data in the specific format
-#' @param trophic_enrichment_factor a vector containing the mean trophic enrichement factor
+#' @param trophic_discrimination_factor a vector containing the trophic discrimination factors corresponding
+#' to each biotracer found in the biotracer data
 #' corresponding to each column of the isotope data table (except the group column)
 #' @param literature_prior a boolean (TRUE or FALSE) indicating whether the model will have
 #' prior distributions defined by a study of the literature
@@ -286,7 +287,7 @@ check_numeric_parameter <- function(numeric_parameter, parameter_name){
 #'
 #' @export
 
-preprocess_data <- function(isotope_data, trophic_enrichment_factor,
+preprocess_data <- function(isotope_data, trophic_discrimination_factor,
                             literature_prior = FALSE,
                             topology = NULL,
                             element_concentration = 1,
@@ -312,7 +313,7 @@ preprocess_data <- function(isotope_data, trophic_enrichment_factor,
 
   # Check the isotopic and trophic enrichement factor data
   check_isotope_data(isotope_data, stomach_data)
-  check_tef_data(trophic_enrichment_factor, isotope_data)
+  check_tef_data(trophic_discrimination_factor, isotope_data)
 
   # Rearrange the isotopic data
   isotope_data <- isotope_data[order(isotope_data$group), ]
@@ -399,7 +400,7 @@ preprocess_data <- function(isotope_data, trophic_enrichment_factor,
     list_pred  = list_pred,
     list_prey  = list_prey,
     nb_prey    = nb_prey,
-    DELTA      = trophic_enrichment_factor,
+    DELTA      = trophic_discrimination_factor,
     q          = element_concentration,
     ZEROS      = matrix(0, nrow = nb_elem, ncol = nb_group),
     ID         = diag(nb_elem)

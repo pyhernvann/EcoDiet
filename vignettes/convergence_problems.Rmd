@@ -26,7 +26,7 @@ example_isotope_data_path <- system.file("extdata", "example_isotope_data.csv",
                                     package = "EcoDiet")
 
 data <- preprocess_data(isotope_data = read.csv(example_isotope_data_path),
-                        trophic_enrichment_factor = c(0.8, 3.4),
+                        trophic_discrimination_factor = c(0.8, 3.4),
                         literature_prior = FALSE,
                         stomach_data = read.csv(example_stomach_data_path))
 
@@ -54,7 +54,7 @@ load("convergence_diagnostic.Rdata")
 View(gelman)
 ```
 
-It will allow you to understand which variables has not converged properly (the closer to 1, the better it has converged). 
+It will allow you to understand which variables has not converged properly (the closer to 1, the better it has converged).
 
 If the `PI` and `eta` variables has both trouble converging for a specific trophic link between a predator and a prey, you can look at the corresponding data to see if there is not an error somewhere (maybe an isotopic measurement was entered as 104 instead of 1.04 for this prey or predator).
 

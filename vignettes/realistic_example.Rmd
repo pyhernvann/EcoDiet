@@ -45,7 +45,7 @@ plot_data(isotope_data = realistic_isotope_data,
 literature_prior <- FALSE
 
 data <- preprocess_data(isotope_data = realistic_isotope_data,
-                        trophic_enrichment_factor = c(0.8, 3.4),
+                        trophic_discrimination_factor = c(0.8, 3.4),
                         literature_prior = literature_prior,
                         stomach_data = realistic_stomach_data)
 ```
