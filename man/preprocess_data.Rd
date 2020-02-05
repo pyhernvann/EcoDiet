@@ -8,7 +8,7 @@ preprocess_data(
   isotope_data,
   trophic_enrichment_factor,
   literature_prior = FALSE,
-  trophic_links = NULL,
+  topology = NULL,
   element_concentration = 1,
   stomach_data = NULL,
   literature_diets = NULL,
@@ -19,14 +19,14 @@ preprocess_data(
 \arguments{
 \item{isotope_data}{the table containing the isotopic data in the specific format}
 
-\item{trophic_enrichment_factor}{a vector containing the mean trophic enrichement factor 
+\item{trophic_enrichment_factor}{a vector containing the mean trophic enrichement factor
 corresponding to each column of the isotope data table (except the group column)}
 
-\item{literature_prior}{a boolean (TRUE or FALSE) indicating whether the model will have 
+\item{literature_prior}{a boolean (TRUE or FALSE) indicating whether the model will have
 prior distributions defined by a study of the literature}
 
-\item{trophic_links}{a potential matrix entered by the user if she wants the model to 
-investigate additionnal trophic links (by default it is NULL and defined from the stomach
+\item{topology}{a matrix that the user may input if she wants the model to
+investigate some additionnal trophic links (by default it is NULL and defined from the stomach
 data and the alpha priors if they are defined)}
 
 \item{stomach_data}{the table containing the stomachal data in a specific format}
@@ -35,7 +35,7 @@ data and the alpha priors if they are defined)}
 
 \item{nb_literature}{the equivalent number of stomach for the literature priors}
 
-\item{literature_slope}{the slope of the linear relationship between the pedigrees 
+\item{literature_slope}{the slope of the linear relationship between the pedigrees
 and the PIs' coefficients of variation (CVs)}
 }
 \value{
