@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
+We first load and plot the data:
 
 ```{r}
 realistic_stomach_data_path <- system.file("extdata", "realistic_stomach_data.csv",
@@ -31,14 +32,6 @@ realistic_isotope_data <- read.csv(realistic_isotope_data_path)
 knitr::kable(realistic_isotope_data[c(1:3, 31:33, 61:63), ])
 ```
 
-```{r}
-realistic_literature_diets_path <- system.file("extdata", "realistic_literature_diets.csv",
-                                               package = "EcoDiet")
-realistic_literature_diets <- read.csv(realistic_literature_diets_path)
-realistic_literature_diets[, -1] <- round(realistic_literature_diets[, -1], 2)
-knitr::kable(realistic_literature_diets)
-```
-
 ```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
 library(EcoDiet)
 
@@ -46,30 +39,54 @@ plot_data(isotope_data = realistic_isotope_data,
           stomach_data = realistic_stomach_data)
 ```
 
-```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
+## The case without priors from the literature
+
+```{r}
 literature_prior <- FALSE
 
 data <- preprocess_data(isotope_data = realistic_isotope_data,
                         trophic_enrichment_factor = c(0.8, 3.4),
                         literature_prior = literature_prior,
                         stomach_data = realistic_stomach_data)
+```
 
+As you can see the priors are non-informative:
+
+```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
 plot_prior(data, literature_prior)
 ```
 
-```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
-plot_prior(data, literature_prior, pred = "Bivalves")
+```{r}
+model_string <- write_model(literature_prior = literature_prior)
+
+mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e1, nb_iter = 1e2)
+```
+
+You should try to run the model until it converges (it can take a few **hours**):
+```{r, eval = FALSE}
+mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e3, nb_iter = 1e4)
 ```
 
 ```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
-model_string <- write_model(literature_prior = literature_prior)
-
-mcmc_output <- run_model(textConnection(model_string), data, nb_iter = 1e2)
-
 plot_results(mcmc_output, data)
 ```
 
-```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
+```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 plot_results(mcmc_output, data, pred = "Pout")
 ```
 
+You can also precise for which variable and preys you want to plot the probability distributions:
+
+```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
+plot_results(mcmc_output, data, variable = "PI", pred = "Pout", prey = c("Bivalves", "Worms"))
+```
+
+## The case with priors from the literature
+
+```{r}
+realistic_literature_diets_path <- system.file("extdata", "realistic_literature_diets.csv",
+                                               package = "EcoDiet")
+realistic_literature_diets <- read.csv(realistic_literature_diets_path)
+realistic_literature_diets[, -1] <- round(realistic_literature_diets[, -1], 2)
+knitr::kable(realistic_literature_diets)
+```

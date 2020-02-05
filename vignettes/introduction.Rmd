@@ -1,10 +1,10 @@
 ---
-title: "Introduction - How to use EcoDiet (quick start)"
+title: "Introduction - How to use EcoDiet"
 author: "Heloise Thero"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{1. Introduction - How to use EcoDiet (quick start)}
+  %\VignetteIndexEntry{1. Introduction - How to use EcoDiet}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -256,21 +256,31 @@ The `write_model` function writes the model in the BUGS syntax. You need to spec
 model_string <- write_model(literature_prior = literature_prior)
 ```
 
-## Run the model
-
-Now that the model is defined, you can run it. By default the numbers of MCMC adaption steps and iterations are very low (10 and 100 respectively) to test if your model is compiling properly:
-
-```{r}
-mcmc_output <- run_model(textConnection(model_string), data)
+You can see the model with this command:
+```{r, eval = FALSE}
+cat(model_string)
 ```
 
-This low number of iterations will surely not be enough to achieve a satisfactory model convergence. You should progressively increase the number of adaptation steps and of iterations until you no longer see a "stopping adaptation" note, or a "convergence problem" message:
+## Run the model
+
+You can run the model first with very low adaption step and iteration number to test if it is compiling properly:
+
+```{r}
+mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e1, nb_iter = 1e2)
+```
+
+This low number of iterations will surely not be enough to achieve a satisfactory model convergence. You should progressively increase the number of adaptation steps `nb_adapt` and of iterations `nb_iter` until you no longer see an "adaptation incomplete" warning, or a "convergence problem" message.
+
+Depending on your data, the model can take **hours or days** to run:
 
 ```{r, eval = FALSE}
+mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e2, nb_iter = 1e3)
+mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e3, nb_iter = 1e4)
+mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e3, nb_iter = 1e5)
 mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e3, nb_iter = 1e6)
 ```
 
-Depending on your data, the model can be very long to reach convergence (a few hours to a few days). This vignette is about convergence problems: `vignette("convergence_problems")`.
+See this vignette if you have convergence problems: `vignette("convergence_problems")`.
 
 ## Plot and save the model's mean results
 
@@ -298,12 +308,6 @@ The probability distributions can be plotted for one predator:
 plot_results(mcmc_output, data, pred = "large")
 ```
 
-You can also precise for which variable and preys you want to plot the probability distributions:
-
-```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
-plot_results(mcmc_output, data, variable = "PI", pred = "large", prey = c("medium", "small"))
-```
-
 You can see that the a posteriori `PI` distributions are mostly concentrated around 0 and 1. **But you should not interpret this as most of the "large" predators eating 100 % "medium" animals and  0 % "small" animals, with very few indivudals having a balanced diet.**
 
 The `PI` distributions are very peaked around 0 and 1 because of how the variables are modelled in EcoDiet. It is a model with probabilistic trophic links, so:
@@ -318,10 +322,11 @@ Thus only values far from 0 and 1 can inform us on the "real" values for the die
 
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 len <- dim(mcmc_output)[2]
-mcmc_output[, 1:(len/2)] <- ifelse(mcmc_output[, 1:(len/2)] < 0.05 | mcmc_output[, 1:(len/2)] > 0.95, 
+mcmc_output[, 1:(len/2)] <- ifelse(mcmc_output[, 1:(len/2)] < 0.05 | 
+                                     mcmc_output[, 1:(len/2)] > 0.95, 
                                    NA, mcmc_output[, 1:(len/2)])
 
-plot_results(mcmc_output, data, variable = "PI", pred = "large", prey = c("medium", "small"))
+plot_results(mcmc_output, data, variable = "PI", pred = "large")
 ```
 
 ## Save the full results

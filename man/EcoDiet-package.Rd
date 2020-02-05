@@ -8,9 +8,9 @@
 \description{
 \if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
 
-The goal of the package is to estimate trophic links probabilities (who eats whom 
-    in the food web) and diet proportions (in which proportions each prey is eaten) by combining 
-    biotracers and stomach content analyses using a Bayesian hierarchical model. 
+The goal of the package is to estimate a probabilistic topology matrix 
+    (all trophic link probabilities) and a diet matrix (all diet propotions) by combining biotracers 
+    and stomach content analyses in a Bayesian hierarchical model.
     The package relies on the JAGS software and the rjags package to run a Markov chain Monte Carlo 
     approximation of the different variables.
 }

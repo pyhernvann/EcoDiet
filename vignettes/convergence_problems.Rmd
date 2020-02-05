@@ -13,7 +13,7 @@ This vignette help you deal with troubling messages from the `run_model` functio
 
 * The 'adaptation incomplete' warning or 'Stopping adaptation' note means that the samplers aren't optimised for your model after the adaptation phase. JAGS doesn't think that the model will run with the optimal state. This tends to happen in complex models for a too small number of adaptation steps (`nb_adapt`).
 
-* The 'convergence problem' warning means that the Gelman-Rubin diagnostic stayed above 1.1 for at least one variable. The Gelman-Rubin statistic is used to measure convergence for each variable.
+* The 'convergence problem' warning means that the Gelman-Rubin diagnostic stayed above 1.1 for at least one variable. The Gelman-Rubin statistic is used to measure convergence for each variable. This tends to happen in complex models for a too small number of iteration (`nb_iter`).
 
 As a prerequisite, the `preprocess_data`, `write_model` and `run_model` functions must have been run without errors before trying to solve the convergence problems:
 
@@ -35,22 +35,15 @@ model_string <- write_model(literature_prior = FALSE)
 mcmc_output <- run_model(textConnection(model_string), data)
 ```
 
-## Increase the number of iterations
+## Increase the number of iterations and/or adaptation steps
 
-The first thing that should be tried is to increase the number of iterations to run the model. The approximated probability distributions are bound to converge to their true distributions if enough iterations are given. 
-
-So you should try to increase the `nb_iter` argument, althouh this will likely takes several hours/days to run:
-```{r, eval = FALSE}
-mcmc_output <- run_model(textConnection(model_string), data, nb_iter = 1e+07)
-```
-
-## Increase the number of adaptation steps
-
-The adaptation may be incomplete because not enough time was given to find optimal parameters. You can try to increase the `nb_adapt` argument:
+The first thing that should be tried is to put a high number of iterations and/or adaptation steps to run the model. Depending on your data, this can take **hours or days** to run:
 
 ```{r, eval = FALSE}
-mcmc_output <- run_model(textConnection(model_string), data, nb_iter = 1e+06, nb_adapt = 1e+04)
+mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e3, nb_iter = 1e6)
 ```
+
+If you have already tried this and that increasing again these numbers may take several days or weeks, try the following.
 
 ## Understand which variable is problematic
 
@@ -69,7 +62,7 @@ If the `PI` and `eta` variables has both trouble converging for a specific troph
 
 The next step might be to define starting values from which to run the MCMC chains. By default JAGS will use the prior distributions to randomly fix the starting values of the chains, which can cause problems.
 
-First try to change the prior distributions used through the `literature-diets` table, the `nb_literature` and the `literature_slope` parameters to make the literature priors less inconsistent with the data (if you used priors from the literature).
+First try to change the prior distributions used through the `literature_diets` table, the `nb_literature` and the `literature_slope` parameters to make the literature priors less inconsistent with the data (if you used priors from the literature).
 
 Or you can try to manually set a good set of fixed initial values, i.e., fixed values that you know are close to the values you want the model to converge to. This way the model should be faster to converge because it is given a good start.
 
