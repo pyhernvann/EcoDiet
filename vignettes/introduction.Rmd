@@ -28,7 +28,7 @@ The following example is an artificial dataset, created to be simple to visualiz
 
 ## Load the package
 
-Follow the [README](https://github.com/heloisethero/EcoDiet/blob/master/README.md)'s instructions, and then load the EcoDiet package:
+Follow the [README](https://github.com/pyhernvann/EcoDiet/blob/master/README.md)'s instructions, and then load the EcoDiet package:
 
 ```{r}
 library(EcoDiet)
