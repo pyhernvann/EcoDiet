@@ -9,7 +9,7 @@ plot_prior(
   literature_prior,
   pred = NULL,
   prey = NULL,
-  variable = c("PI", "eta")
+  variable = c("eta", "PI")
 )
 }
 \arguments{

@@ -101,10 +101,6 @@ plot_matrix <- function(matrix, title){
 
 plot_data <- function(isotope_data = NULL, stomach_data = NULL){
   
-  if (!is.null(isotope_data)){
-    plot_isotope_data(isotope_data)
-  }
-  
   if (!is.null(stomach_data)){
     # Clean the stomach data similarly as in the preprocess_data function except for the commented parts
     if (colnames(stomach_data)[1] == "X"){
@@ -122,6 +118,10 @@ plot_data <- function(isotope_data = NULL, stomach_data = NULL){
     stomach_data <- stomach_data[order(rownames(stomach_data)), ]
     
     plot_matrix(stomach_data, title = "Proportion of occurences in stomachs")
+  }
+  
+  if (!is.null(isotope_data)){
+    plot_isotope_data(isotope_data)
   }
   
 }
@@ -220,7 +220,7 @@ plot_prior_distribution <- function(data, literature_prior, pred, prey, var, tit
 #' 
 #' @export
  
-plot_prior <- function(data, literature_prior, pred = NULL, prey = NULL, variable = c("PI", "eta")){
+plot_prior <- function(data, literature_prior, pred = NULL, prey = NULL, variable = c("eta", "PI")){
   
   if (!all(variable %in% c("eta", "PI"))){
     stop("This function can only print a figure for the PI or eta variable.\n",
@@ -404,7 +404,7 @@ plot_posterior_distribution <- function(mcmc_output, data, pred, prey,
 #'
 #' @export
 
-plot_results <- function(mcmc_output, data, pred = NULL, prey = NULL, variable = c("PI", "eta")){
+plot_results <- function(mcmc_output, data, pred = NULL, prey = NULL, variable = c("eta", "PI")){
   
   if (!all(variable %in% c("eta", "PI"))){
     stop("This function can only print a figure for the PI or eta variable.\n",

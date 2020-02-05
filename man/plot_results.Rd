@@ -9,7 +9,7 @@ plot_results(
   data,
   pred = NULL,
   prey = NULL,
-  variable = c("PI", "eta")
+  variable = c("eta", "PI")
 )
 }
 \arguments{
