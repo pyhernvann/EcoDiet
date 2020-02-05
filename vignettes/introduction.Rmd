@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-The goal of the package is to estimate a probabilistic topology matrix (all trophic link probabilities $\eta$) and a diet matrix (all diet propotions $\Pi$) by combining biotracers and stomach content analyses in a Bayesian hierarchical model. A trophic link probability is the probability that a given prey in eaten by a given predator, and a diet proportion is the percentage of contribution of this prey to this predator's diet. The full model and its application on a real dataset are described in *Hernvann et al.* (under review).
+EcoDiet is a new tool for assimilating data in food-web studies. The goal of the package is to simultaneously estimate a probabilistic topology matrix and a diet matrix by combining biotracers and stomach content analyses in a Bayesian hierarchical model. The topology matrix contains all trophic link probabilities $\eta$, hence it gives for any prey the probability to be eaten by a given predator. The diet matrix contains all diet proportions $\Pi$, hence it gives for any prey the percentage of its contribution to a given predator's diet. The full model and its application on a real dataset are described in *Hernvann et al.* (under review).
 
 There are different ways of using this package:
 
@@ -107,7 +107,7 @@ data <- preprocess_data(biotracer_data = example_biotracer_data,
 
 If any error appears, it means your data is not in the correct format. Please read the error message and rearrange your data in the correct format.
 
-### Check the trophic links
+### Check the trophic links to investigate
 
 The last message tells you to check the trophic links that will be investigated by the model. It is generally not wise to assume that all the trophic links are possible ( = a matrix filled with only ones), as the model will likely be over-paramaterized and have problems to converge. You therefore need to keep only the reasonnable trophic links (e.g., a shrimp cannot eat a whale).
 
@@ -118,14 +118,14 @@ topology <- 1 * (data$o > 0)
 print(topology)
 ```
 
-If you want to add another trophic link, you can modify directly the topological matrix. This can be useful if your stomach sampling size is too low and you missed a prey you are definitely sure that the predator feeds on, or if the prey is difficulty identifiable is stomachs (e.g., really small and highly digestible prey). For example, to specify that the "huge" animal can also eat "small" animals despite none was found in the huge's stomachs, you can do:  
+If you want to add another trophic link, you can modify directly this binary topology matrix. This can be useful if your stomach sampling size is too low and you missed a prey you are definitely sure that the predator feeds on, or if the prey is difficulty identifiable is stomachs (e.g., really small and highly digestible prey). For example, to specify that the "huge" animal can also eat "small" animals despite none was found in the huge's stomachs, you can do:  
 
 ```{r}
 topology["small", "huge"] <- 1
 print(topology)
 ```
 
-Now, the new topological matrix can be entered as an argument of the `preprocess_data` function, and you can see that the new trophic links matrix will be investigated by the model:
+Now, you can see that the binary topology matrix has been updated and can be entered as an argument of the `preprocess_data` function:
 ```{r}
 data <- preprocess_data(biotracer_data = example_biotracer_data,
                         trophic_discrimination_factor = c(0.8, 3.4),
@@ -143,7 +143,7 @@ data <- preprocess_data(biotracer_data = example_biotracer_data,
 
 You will use a literature diet table to set priors on the trophic link probabilities $\eta$ and the diet proportions $\Pi$. This table is similar to the stomach contents table, as all trophic groups must be included in the columns and rows. The numbers are the the average diets proportions found in the literature. Here, the selected studies have identified that "huge" animals eat equally "large" and "medium" animals (thus the 0.5 and 0.5 numbers in the first column). The proportions for a given predator (i.e., within a given column) must sum to 1. The "small" animals are at the base of the ecosystem, so the column is filled with zeros.
 
-The last row of the table corresponds to the literature pedigree score. This score (a number from 0 to 1) quantifies the literature reliability on each predator's diet. Here the dietary proportions from the literature are estimated very reliable for the "huge" animals, so the pedigree score associated is high (0.9). On the contrary, the diet proportions for the "medium" animals come from an old article focusing on a very different ecosystem so the pedigree score associated is low (0.2). Because the diet proportions won't be estimated for the "small" animals, we have put the by-default value for the pedigree (1).
+The last row of the table corresponds to the literature pedigree score. This score (a number from 0 to 1) quantifies the literature reliability on each predator's diet. Here the diet proportions from the literature are estimated very reliable for the "huge" animals, so the pedigree score associated is high (0.9). On the contrary, the diet proportions for the "medium" animals come from an old article focusing on a very different ecosystem so the pedigree score associated is low (0.2). Because the diet proportions won't be estimated for the "small" animals, we have put the by-default value for the pedigree (1).
 
 ```{r}
 example_literature_diets_path <- system.file("extdata", "example_literature_diets.csv",
@@ -154,9 +154,9 @@ knitr::kable(example_literature_diets)
 
 This summary of the literature knowledge will be used to formulate:
 
-1. The prior on the trophic link probabilities $\eta$. If the literature diet proportion is zero, the prior Beta distribution of $\eta$ will be shifted to 0. If the proportion is positive, the distribution will be shifted toward 1.
+1. The priors on the topology matrix's $\eta$s. If a given literature diet proportion is zero, the corresponding prior Beta distribution of $\eta$ will be shifted toward 0. If the proportion is positive, the distribution will be shifted toward 1.
 
-2. The priors on the diet proportions $\Pi$. The literature diet proportions are entered as the hyperparameters of the prior Dirichlet distribution of $\Pi$.
+2. The priors on the diet matrix's $\Pi$s. The literature diet proportions are entered as the hyperparameters of the prior Dirichlet distribution of $\Pi$.
 
 The Pedigree scores are used to determine these priors' precision. Other parameters can be used to adjust the prior distributions:
 
@@ -190,7 +190,7 @@ data <- preprocess_data(biotracer_data = example_biotracer_data,
 
 If any error appears, it means your data is not in the correct format. Please read the error message and try to rearrange the data in the correct format.
 
-### Check the trophic links
+### Check the trophic links to investigate
 
 These are the links that will be investigated by the model. The matrix displayed by the `preprocess_data` function is based by default on the stomach content data (`data$o`) and on the literature diets matrix (`data$alpha_lit`):
 
@@ -199,14 +199,14 @@ topology <- 1 * ((data$o > 0) | (data$alpha_lit > 0))
 print(topology)
 ```
 
-If you want to add another trophic link, you can modify directly the topological matrix. For instance, it can be useful if you are definitely sure that a prey is consumed by a given predator but your stomach sampling size is too small to allow any observation and the study extracted from the literature did not identify the prey because the prey is absent of the ecosystem where it was conducted. In our study case, to specify that the "huge" animal can also eat "small" animals (even if none was found in the huge's stomachs), you can do:
+If you want to add another trophic link, you can modify directly this binary topology matrix. For instance, it can be useful if you are definitely sure that a prey is consumed by a given predator but your stomach sampling size is too small to allow any observation and the study extracted from the literature did not identify the prey because the prey is absent of the ecosystem where it was conducted. In our study case, to specify that the "huge" animal can also eat "small" animals (even if none was found in the huge's stomachs), you can do:
 
 ```{r}
 topology["small", "huge"] <- 1
 print(topology)
 ```
 
-Now the new topological matrix can be entered as an argument of the `preprocess_data` function, and you can see that the new trophic links matrix will be investigated by the model:
+Now, you can see that the binary topology matrix has been updated and can be entered as an argument of the `preprocess_data` function:
 ```{r}
 data <- preprocess_data(biotracer_data = example_biotracer_data,
                         trophic_discrimination_factor = c(0.8, 3.4),
@@ -220,7 +220,7 @@ data <- preprocess_data(biotracer_data = example_biotracer_data,
 
 ## Plot the priors
 
-Whether the priors are informed by the literature or non-informative, you can plot the mean of the prior distributions for the trophic link probabilities $\eta$ and the diet proportions $\Pi$:
+Whether the priors are non-informative or informed by the literature, you can plot the mean of the prior distributions for the trophic link probabilities $\eta$ and the diet proportions $\Pi$:
 
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 plot_prior(data, literature_configuration)
@@ -284,7 +284,7 @@ See this vignette if you have convergence problems: `vignette("convergence_probl
 
 ## Plot and save the model's mean results
 
-The model's outputs are the approximated a posteriori distributions for the trophic links probabilities $\eta$ and the diet propotions $\Pi$. You can visualize the mean of these distribitions with the `plot_results` function:
+The model's outputs are the approximated a posteriori distributions for the trophic links probabilities $\eta$ and the diet proportions $\Pi$. You can visualize the mean of these distribitions with the `plot_results` function:
 
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 plot_results(mcmc_output, data)
@@ -310,9 +310,9 @@ plot_results(mcmc_output, data, pred = "large")
 
 You can see that the a posteriori $\Pi$ distributions are mostly concentrated around 0 and 1. **But you should not interpret this as most of the "large" predators eating 100 % "medium" animals and  0 % "small" animals, with very few indivudals having a balanced diet.**
 
-The $\Pi$ distributions are very peaked around 0 and 1 because of how the variables are modelled in EcoDiet. It is a model with probabilistic trophic links, so:
+The $\Pi$ distributions are peaked around 0 and 1 because of the way that the variables are modelled in EcoDiet. It is a model with probabilistic topology matrix, so:
 
-* The model first evaluates whether the trophic link exists or not between a predator and his prey (based on the $\eta$ variables).
+* The model evaluates whether the trophic link exists or not between a predator and his prey (based on the $\eta$ variables).
 
 * The $\Pi$ will be updated with the biotracer data *only if the link is considered present*. If the link is evaluted as non-existent, the $\Pi$ will be set at a quasi-null value.
 
