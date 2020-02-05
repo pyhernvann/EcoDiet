@@ -27,10 +27,10 @@ example_isotope_data_path <- system.file("extdata", "example_isotope_data.csv",
 
 data <- preprocess_data(isotope_data = read.csv(example_isotope_data_path),
                         trophic_discrimination_factor = c(0.8, 3.4),
-                        literature_prior = FALSE,
+                        literature_configuration = FALSE,
                         stomach_data = read.csv(example_stomach_data_path))
 
-model_string <- write_model(literature_prior = FALSE)
+model_string <- write_model(literature_configuration = FALSE)
 
 mcmc_output <- run_model(textConnection(model_string), data)
 ```

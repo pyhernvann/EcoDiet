@@ -6,7 +6,7 @@
 \usage{
 plot_prior(
   data,
-  literature_prior,
+  literature_configuration,
   pred = NULL,
   prey = NULL,
   variable = c("eta", "PI")
@@ -15,8 +15,8 @@ plot_prior(
 \arguments{
 \item{data}{the preprocessed data list outputed by the preprocess_data() function}
 
-\item{literature_prior}{a boolean (TRUE or FALSE) indicating whether the model will have 
-prior distributions defined by a study of the literature}
+\item{literature_configuration}{a boolean (TRUE or FALSE) indicating whether the model will have
+prior distributions informed by a literature study}
 
 \item{pred}{the predator name for which we want to plot the probability densities}
 

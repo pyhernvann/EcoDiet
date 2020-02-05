@@ -97,11 +97,11 @@ plot_data(isotope_data = example_isotope_data,
 The `preprocess_data` function checks and rearranges the data in a specific format so that the EcoDiet model can be run:
 
 ```{r}
-literature_prior <- FALSE
+literature_configuration <- FALSE
 
 data <- preprocess_data(isotope_data = example_isotope_data,
                         trophic_discrimination_factor = c(0.8, 3.4),
-                        literature_prior = literature_prior,
+                        literature_configuration = literature_configuration,
                         stomach_data = example_stomach_data)
 ```
 
@@ -129,7 +129,7 @@ Now, the new topological matrix can be entered as an argument of the `preprocess
 ```{r}
 data <- preprocess_data(isotope_data = example_isotope_data,
                         trophic_discrimination_factor = c(0.8, 3.4),
-                        literature_prior = literature_prior,
+                        literature_configuration = literature_configuration,
                         topology = topology,
                         stomach_data = example_stomach_data)
 ```
@@ -177,11 +177,11 @@ literature_slope = 0.5
 The `preprocess_data` function then checks and rearranges the data in a specific format so that the EcoDiet model can be run:
 
 ```{r}
-literature_prior <- TRUE
+literature_configuration <- TRUE
 
 data <- preprocess_data(isotope_data = example_isotope_data,
                         trophic_discrimination_factor = c(0.8, 3.4),
-                        literature_prior = literature_prior,
+                        literature_configuration = literature_configuration,
                         stomach_data = example_stomach_data,
                         literature_diets = example_literature_diets,
                         nb_literature = 10,
@@ -210,7 +210,7 @@ Now the new topological matrix can be entered as an argument of the `preprocess_
 ```{r}
 data <- preprocess_data(isotope_data = example_isotope_data,
                         trophic_discrimination_factor = c(0.8, 3.4),
-                        literature_prior = literature_prior,
+                        literature_configuration = literature_configuration,
                         topology = topology,
                         stomach_data = example_stomach_data,
                         literature_diets = example_literature_diets,
@@ -223,13 +223,13 @@ data <- preprocess_data(isotope_data = example_isotope_data,
 Whether the priors are informed by the literature or non-informative, you can plot the mean of the prior distributions for the trophic link probabilities $\eta$ and the diet proportions $\Pi$:
 
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
-plot_prior(data, literature_prior)
+plot_prior(data, literature_configuration)
 ```
 
 You can also see the prior distributions for one trophic group (or predator):
 
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
-plot_prior(data, literature_prior, pred = "huge")
+plot_prior(data, literature_configuration, pred = "huge")
 ```
 
 This way, you can change the prior parameters and see how it affects the prior distributions. Here, we will change the `nb_literature` parameter from 10 to 2:
@@ -237,14 +237,14 @@ This way, you can change the prior parameters and see how it affects the prior d
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 data <- preprocess_data(isotope_data = example_isotope_data,
                         trophic_discrimination_factor = c(0.8, 3.4),
-                        literature_prior = literature_prior,
+                        literature_configuration = literature_configuration,
                         topology = topology,
                         stomach_data = example_stomach_data,
                         literature_diets = example_literature_diets,
                         nb_literature = 2,
                         literature_slope = 0.5)
 
-plot_prior(data, literature_prior, pred = "huge", variable = "eta")
+plot_prior(data, literature_configuration, pred = "huge", variable = "eta")
 ```
 
 
@@ -253,7 +253,7 @@ plot_prior(data, literature_prior, pred = "huge", variable = "eta")
 The `write_model` function writes the model in the BUGS syntax. You need to specify the option non informative priors / informative priors:
 
 ```{r}
-model_string <- write_model(literature_prior = literature_prior)
+model_string <- write_model(literature_configuration = literature_configuration)
 ```
 
 You can see the model with this command:

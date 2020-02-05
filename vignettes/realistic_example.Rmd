@@ -42,22 +42,22 @@ plot_data(isotope_data = realistic_isotope_data,
 ## The case without priors from the literature
 
 ```{r}
-literature_prior <- FALSE
+literature_configuration <- FALSE
 
 data <- preprocess_data(isotope_data = realistic_isotope_data,
                         trophic_discrimination_factor = c(0.8, 3.4),
-                        literature_prior = literature_prior,
+                        literature_configuration = literature_configuration,
                         stomach_data = realistic_stomach_data)
 ```
 
 As you can see the priors are non-informative:
 
 ```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
-plot_prior(data, literature_prior)
+plot_prior(data, literature_configuration)
 ```
 
 ```{r}
-model_string <- write_model(literature_prior = literature_prior)
+model_string <- write_model(literature_configuration = literature_configuration)
 
 mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e1, nb_iter = 1e2)
 ```

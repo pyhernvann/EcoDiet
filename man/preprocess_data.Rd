@@ -7,7 +7,7 @@
 preprocess_data(
   isotope_data,
   trophic_discrimination_factor,
-  literature_prior = FALSE,
+  literature_configuration = FALSE,
   topology = NULL,
   element_concentration = 1,
   stomach_data = NULL,
@@ -23,8 +23,8 @@ preprocess_data(
 to each biotracer found in the biotracer data
 corresponding to each column of the isotope data table (except the group column)}
 
-\item{literature_prior}{a boolean (TRUE or FALSE) indicating whether the model will have
-prior distributions defined by a study of the literature}
+\item{literature_configuration}{a boolean (TRUE or FALSE) indicating whether the model will have
+prior distributions informed by a literature study}
 
 \item{topology}{a matrix that the user may input if she wants the model to
 investigate some additionnal trophic links (by default it is NULL and defined from the stomach

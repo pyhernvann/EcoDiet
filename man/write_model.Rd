@@ -4,11 +4,11 @@
 \alias{write_model}
 \title{Write a string containing the EcoDiet model in the BUGS syntax}
 \usage{
-write_model(literature_prior = FALSE)
+write_model(literature_configuration = FALSE)
 }
 \arguments{
-\item{literature_prior}{a boolean (TRUE or FALSE) indicating whether the model will have 
-prior distributions defined by a study of the literature}
+\item{literature_configuration}{a boolean (TRUE or FALSE) indicating whether the model will have
+prior distributions informed by a literature study}
 }
 \value{
 a string containing the model definition written in BUGS syntax

@@ -142,26 +142,26 @@ check_tef_data <- function(trophic_discrimination_factor, isotope_data){
   }
 }
 
-#' Check the literature_prior argument
+#' Check the literature_configuration argument
 #'
-#' @param literature_prior the entered literature prior argument
+#' @param literature_configuration the entered literature configuration argument
 #'
 #' @keywords internal
 #' @noRd
 
-check_literature_prior <- function(literature_prior){
+check_literature_configuration <- function(literature_configuration){
 
   # Check that this is a logical vector
-  if (!is.logical(literature_prior)){
-    stop("The literature_prior should be TRUE or FALSE, not anything else.")
+  if (!is.logical(literature_configuration)){
+    stop("The literature_configuration should be TRUE or FALSE, not anything else.")
   }
 
   # Check that this is a vector of length one
-  if (length(literature_prior) != 1){
-    stop("The literature_prior should have only one element and not many.\n",
-         "  But here it is a vector of lenght ", length(literature_prior), ".\n",
-         "  Please do not enter a literature_prior argument or use either:",
-         " \"literature_prior = TRUE\" or \"literature_prior = FALSE\".")
+  if (length(literature_configuration) != 1){
+    stop("The literature_configuration should have only one element and not many.\n",
+         "  But here it is a vector of lenght ", length(literature_configuration), ".\n",
+         "  Please do not enter a literature_configuration argument or use either:",
+         " \"literature_configuration = TRUE\" or \"literature_configuration = FALSE\".")
   }
 
 }
@@ -272,8 +272,8 @@ check_numeric_parameter <- function(numeric_parameter, parameter_name){
 #' @param trophic_discrimination_factor a vector containing the trophic discrimination factors corresponding
 #' to each biotracer found in the biotracer data
 #' corresponding to each column of the isotope data table (except the group column)
-#' @param literature_prior a boolean (TRUE or FALSE) indicating whether the model will have
-#' prior distributions defined by a study of the literature
+#' @param literature_configuration a boolean (TRUE or FALSE) indicating whether the model will have
+#' prior distributions informed by a literature study
 #' @param topology a matrix that the user may input if she wants the model to
 #' investigate some additionnal trophic links (by default it is NULL and defined from the stomach
 #' data and the alpha priors if they are defined)
@@ -288,7 +288,7 @@ check_numeric_parameter <- function(numeric_parameter, parameter_name){
 #' @export
 
 preprocess_data <- function(isotope_data, trophic_discrimination_factor,
-                            literature_prior = FALSE,
+                            literature_configuration = FALSE,
                             topology = NULL,
                             element_concentration = 1,
                             stomach_data = NULL,
@@ -335,13 +335,13 @@ preprocess_data <- function(isotope_data, trophic_discrimination_factor,
     element_concentration <- matrix(element_concentration, nrow = nb_elem, ncol = nb_group)
   }
 
-  check_literature_prior(literature_prior)
+  check_literature_configuration(literature_configuration)
 
-  if (literature_prior){
+  if (literature_configuration){
     # Check that the user entered a literature diets matrix
     if (is.null(literature_diets)){
       stop("You need to enter a literature diets matrix if you want to use ",
-           "the function `preprocess_data` with the argument `literature_prior = TRUE`.")
+           "the function `preprocess_data` with the argument `literature_configuration = TRUE`.")
     }
 
     # Re-arrange the literature diets matrix
@@ -365,7 +365,7 @@ preprocess_data <- function(isotope_data, trophic_discrimination_factor,
 
   # Construct the binary web matrix from the stomachal data (and the literature diets if it is defined)
   if (is.null(topology)){
-    if (literature_prior){
+    if (literature_configuration){
       topology <- 1 * ((stomach_data > 0) | (literature_diets > 0))
     } else {
       topology <- 1 * (stomach_data > 0)
@@ -406,7 +406,7 @@ preprocess_data <- function(isotope_data, trophic_discrimination_factor,
     ID         = diag(nb_elem)
   )
 
-  if (literature_prior){
+  if (literature_configuration){
 
     check_numeric_parameter(nb_literature, "nb_literature")
 
