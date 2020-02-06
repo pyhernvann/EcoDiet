@@ -16,7 +16,9 @@ knitr::opts_chunk$set(
 )
 ```
 
-We first load and plot the data:
+We will use a more realistic example (although still artificial!) to run the different EcoDiet configurations and compare their results.
+
+## The configuration without literature data
 
 ```{r}
 realistic_stomach_data_path <- system.file("extdata", "realistic_stomach_data.csv",
@@ -38,8 +40,6 @@ library(EcoDiet)
 plot_data(biotracer_data = realistic_biotracer_data,
           stomach_data = realistic_stomach_data)
 ```
-
-## The case without priors from the literature
 
 ```{r}
 literature_configuration <- FALSE
@@ -81,7 +81,7 @@ You can also precise for which variable and preys you want to plot the probabili
 plot_results(mcmc_output, data, variable = "PI", pred = "Pout", prey = c("Bivalves", "Worms"))
 ```
 
-## The case with priors from the literature
+## The configuration with literature data
 
 ```{r}
 realistic_literature_diets_path <- system.file("extdata", "realistic_literature_diets.csv",

@@ -48,8 +48,11 @@ devtools::install_github("pyhernvann/EcoDiet", build_vignettes = TRUE)
 
 ## Learn how to use EcoDiet
 
-Several vignettes will then explain to you how to use the package. To access the vignettes run the following in R:
+Several vignettes explain how to use the package. Run the following in R and click on the HTML button next to "1. Introduction - How to use EcoDiet":
 ```
 browseVignettes("EcoDiet")
 ```
-Then click on the HTML button next to the vignette you are interested in, like "1. Introduction - How to use EcoDiet".
+Or use this if the former does not work:
+```
+vignette("introduction_EcoDiet")
+```

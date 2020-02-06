@@ -40,7 +40,7 @@ mcmc_output <- run_model(textConnection(model_string), data)
 The first thing that should be tried is to put a high number of iterations and/or adaptation steps to run the model. Depending on your data, this can take **hours or days** to run:
 
 ```{r, eval = FALSE}
-mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e3, nb_iter = 1e6)
+mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e4, nb_iter = 1e7)
 ```
 
 If you have already tried this and that increasing again these numbers may take several days or weeks, try the following.
@@ -70,4 +70,4 @@ Or you can try to manually set a good set of fixed initial values, i.e., fixed v
 
 If you still have an 'adaptation incomplete' warning or 'Stopping adaptation' note, you can just live with the sub-optimal sampler efficiency and run the model for a higher number of iterations.
 
-But if you still have a 'convergence problem' message, you really need a solution. You cannot use the obtained results as they are clearly incorrect.
+If you still have a 'convergence problem' message, you cannot use the obtained results as they are clearly incorrect.

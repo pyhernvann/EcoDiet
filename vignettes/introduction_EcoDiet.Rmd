@@ -26,15 +26,13 @@ There are different ways of using this package:
 
 The following example is an artificial dataset, created to be simple to visualize and understand. Note that the biotracers data used here are stable isotopes, but EcoDiet could be used to treat other analyses such as fatty acids or specific-compounds stable isotopes.
 
-## Load the package
-
-Follow the [README](https://github.com/pyhernvann/EcoDiet/blob/master/README.md)'s instructions, and then load the EcoDiet package:
+First follow the [README](https://github.com/pyhernvann/EcoDiet/blob/master/README.md)'s instructions, and load the EcoDiet package:
 
 ```{r}
 library(EcoDiet)
 ```
 
-## Load and check your data
+## 1. Load and check your data
 
 Your data should be in a specific format, similar to those of following example. You can load your data by importing it from `.csv` files or directly as R data.frames.
 
@@ -73,32 +71,27 @@ knitr::kable(example_biotracer_data)
 
 You should have the same trophic groups in your stomach and biotracer data. Thus, if you have a group with stomach content analyses but without biotracer data, you should still enter it as one line in the biotracer data with "NA" values (as it is the case for the "huge" group).
 
-You also need to define the trophic discrimination factors corresponding to your biotracer data. In this example, because we have data for the d13C and d15N isotopes, we use the following trophic discrimination factors:
+You also need to define the trophic discrimination factors corresponding to your biotracer data. In this example, we use the following trophic discrimination factors:
 
 ```{r, eval = FALSE}
 trophic_discrimination_factor = c(0.8, 3.4)
 ```
 
-## Plot the data
+## 2. Preprocess your data without literature data (*Default option*)
 
-You can visualize your data with the `plot_data` function:
+**If you have data extracted from the literature, skip this and go to section 3.**
 
-```{r, fig1, fig.height = 4, fig.width = 6, fig.align = "center"}
-plot_data(biotracer_data = example_biotracer_data,
-          stomach_data = example_stomach_data)
+If you don't have literature data, read this section.
+
+```{r}
+literature_configuration <- FALSE
 ```
-
-## Preprocess your data without prior (*Default option*)
-
-**Skip this part if you want to use EcoDiet with prior from the literature.**
 
 ### Preprocess the data
 
 The `preprocess_data` function checks and rearranges the data in a specific format so that the EcoDiet model can be run:
 
 ```{r}
-literature_configuration <- FALSE
-
 data <- preprocess_data(biotracer_data = example_biotracer_data,
                         trophic_discrimination_factor = c(0.8, 3.4),
                         literature_configuration = literature_configuration,
@@ -109,23 +102,21 @@ If any error appears, it means your data is not in the correct format. Please re
 
 ### Check the trophic links
 
-The last message tells you to check the trophic links that will be investigated by the model. It is generally not wise to assume that all the trophic links are possible ( = a matrix filled with only ones), as the model will likely be over-paramaterized and have problems to converge. You therefore need to keep only the reasonnable trophic links (e.g., a shrimp cannot eat a whale).
-
-The matrix displayed by the `preprocess_data` function is based on the stomach content data, so by-default EcoDiet will investigate trophic links only based on what you have found in stomachs analyses (`data$o`):
+These are the links that will be investigated by the model. It is not wise to assume that all the trophic links are possible. You therefore need to keep only the reasonnable trophic links (e.g., a shrimp cannot eat a whale). The matrix displayed by the `preprocess_data` function is based by default on the stomach content data (`data$o`):
 
 ```{r}
 topology <- 1 * (data$o > 0)
 print(topology)
 ```
 
-If you want to add another trophic link, you can modify directly the topological matrix. This can be useful if your stomach sampling size is too low and you missed a prey you are definitely sure that the predator feeds on, or if the prey is difficulty identifiable is stomachs (e.g., really small and highly digestible prey). For example, to specify that the "huge" animal can also eat "small" animals despite none was found in the huge's stomachs, you can do:  
+If you want to add another trophic link, you can modify directly the topology matrix. It can be useful if you are sure that a prey is consumed by a given predator. However your stomach sampling size is too small to allow any observation. To specify that the "huge" animal can also eat "small" animals, you can do: 
 
 ```{r}
 topology["small", "huge"] <- 1
 print(topology)
 ```
 
-Now, the new topological matrix can be entered as an argument of the `preprocess_data` function, and you can see that the new trophic links matrix will be investigated by the model:
+Now the new topology matrix can be entered as an argument of the `preprocess_data` function, and you can see that the new trophic links matrix will be investigated by the model:
 ```{r}
 data <- preprocess_data(biotracer_data = example_biotracer_data,
                         trophic_discrimination_factor = c(0.8, 3.4),
@@ -135,15 +126,21 @@ data <- preprocess_data(biotracer_data = example_biotracer_data,
 ```
 
 
-## Preprocess your data with prior (*Literature option*)
+## 3. Preprocess your data with literature data (*Literature option*)
 
-**Skip this part if you want to use EcoDiet without prior from the literature.**
+**If you don't have data extracted from the literature, skip this and go to section 4.**
+
+If you have literature data, read this section.
+
+```{r}
+literature_configuration <- TRUE
+```
 
 ### Define the priors
 
-You will use a literature diet table to set priors on the trophic link probabilities $\eta$ and the diet proportions $\Pi$. This table is similar to the stomach contents table, as all trophic groups must be included in the columns and rows. The numbers are the the average diets proportions found in the literature. Here, the selected studies have identified that "huge" animals eat equally "large" and "medium" animals (thus the 0.5 and 0.5 numbers in the first column). The proportions for a given predator (i.e., within a given column) must sum to 1. The "small" animals are at the base of the ecosystem, so the column is filled with zeros.
+A literature diet table is used to set priors on the trophic link probabilities $\eta$ and the diet proportions $\Pi$. This table is similar to the stomach contents table, as all trophic groups must be included in the columns and rows. The numbers are the average diet proportions found in the literature. Here, the selected studies have identified that "huge" animals eat equally "large" and "medium" animals (thus the 0.5 and 0.5 numbers in the first column). The proportions for a given predator (i.e., within a given column) must sum to 1. The "small" animals are at the base of the ecosystem, so the column is filled with zeros.
 
-The last row of the table corresponds to the literature pedigree score. This score (a number from 0 to 1) quantifies the literature reliability on each predator's diet. Here the dietary proportions from the literature are estimated very reliable for the "huge" animals, so the pedigree score associated is high (0.9). On the contrary, the diet proportions for the "medium" animals come from an old article focusing on a very different ecosystem so the pedigree score associated is low (0.2). Because the diet proportions won't be estimated for the "small" animals, we have put the by-default value for the pedigree (1).
+The last row of the table corresponds to the literature pedigree score. This score (a number from 0 to 1) quantifies the literature reliability on each predator's diet. Here the dietary proportions from the literature are used to produce reliable estimates for the "huge" animals, e.g., the pedigree score associated is high (0.9). On the contrary, the diet proportions for the "medium" animals come from an older article focusing on a very different ecosystem so estimates produced are less reliable, e.g, the pedigree score is low (0.2). The pedigree score for the "small" animals is set at 1, because this group eats nothing.
 
 ```{r}
 example_literature_diets_path <- system.file("extdata", "example_literature_diets.csv",
@@ -152,21 +149,21 @@ example_literature_diets <- read.csv(example_literature_diets_path)
 knitr::kable(example_literature_diets)
 ```
 
-This summary of the literature knowledge will be used to formulate:
+This summary of the literature data will be used to formulate:
 
 1. The prior on the trophic link probabilities $\eta$. If the literature diet proportion is zero, the prior Beta distribution of $\eta$ will be shifted to 0. If the proportion is positive, the distribution will be shifted toward 1.
 
 2. The priors on the diet proportions $\Pi$. The literature diet proportions are entered as the hyperparameters of the prior Dirichlet distribution of $\Pi$.
 
-The Pedigree scores are used to determine these priors' precision. Other parameters can be used to adjust the prior distributions:
+The Pedigree scores are used to determine the priors' precision. Other parameters can be used to adjust the prior distributions:
 
-* the `nb_literature` parameter (an integer higher than 2). The higher this nummber, the stronger will be the weight of the literature in the final inference on $\eta$. Setting this parameter to 10 is like saying that the prior from the literature will weight as much as additional data from 10 stomachs. Thus for any particular application, `nb_literature` should be set to a value smaller than the sample size in the available stomachal data.
+* the `nb_literature` parameter (an integer higher than 2). The higher the number, the stronger the weight will be of the literature in the final inference on $\eta$. Setting this parameter to 10 is like saying that the prior from the literature will weigh as much as the additional data from 10 stomachs. Thus for any particular application, `nb_literature` should be set to a value smaller than the sample size in the available stomach content data.
 
 ```{r}
 nb_literature = 10
 ```
 
-* the `literature_slope` parameter (a value between 0 and 1). The higher this number, the stronger will be the weight of the literature in the final inference on $\Pi$. You should set this value depending on the value of your data (number of biotracers, etc).
+* the `literature_slope` parameter (a value between 0 and 1). The higher the number, the stronger the weight will be of the literature in the final inference on $\Pi$. You should set this value depending on the value of your data (number of biotracers, etc).
 
 ```{r}
 literature_slope = 0.5
@@ -177,8 +174,6 @@ literature_slope = 0.5
 The `preprocess_data` function then checks and rearranges the data in a specific format so that the EcoDiet model can be run:
 
 ```{r}
-literature_configuration <- TRUE
-
 data <- preprocess_data(biotracer_data = example_biotracer_data,
                         trophic_discrimination_factor = c(0.8, 3.4),
                         literature_configuration = literature_configuration,
@@ -192,21 +187,21 @@ If any error appears, it means your data is not in the correct format. Please re
 
 ### Check the trophic links
 
-These are the links that will be investigated by the model. The matrix displayed by the `preprocess_data` function is based by default on the stomach content data (`data$o`) and on the literature diets matrix (`data$alpha_lit`):
+These are the links that will be investigated by the model. It is not wise to assume that all the trophic links are possible. You therefore need to keep only the reasonnable trophic links (e.g., a shrimp cannot eat a whale). The matrix displayed by the `preprocess_data` function is based by default on the stomach content data (`data$o`) and on the literature diet matrix (`data$alpha_lit`):
 
 ```{r}
 topology <- 1 * ((data$o > 0) | (data$alpha_lit > 0))
 print(topology)
 ```
 
-If you want to add another trophic link, you can modify directly the topological matrix. For instance, it can be useful if you are definitely sure that a prey is consumed by a given predator but your stomach sampling size is too small to allow any observation and the study extracted from the literature did not identify the prey because the prey is absent of the ecosystem where it was conducted. In our study case, to specify that the "huge" animal can also eat "small" animals (even if none was found in the huge's stomachs), you can do:
+If you want to add another trophic link, you can modify directly the topology matrix. It can be useful if you are sure that a prey is consumed by a given predator. However your stomach sampling size is too small to allow any observation, and the study extracted from the literature did not identify the prey. To specify that the "huge" animal can also eat "small" animals, you can do:
 
 ```{r}
 topology["small", "huge"] <- 1
 print(topology)
 ```
 
-Now the new topological matrix can be entered as an argument of the `preprocess_data` function, and you can see that the new trophic links matrix will be investigated by the model:
+Now the new topology matrix can be entered as an argument of the `preprocess_data` function, and you can see that the new trophic links matrix will be investigated by the model:
 ```{r}
 data <- preprocess_data(biotracer_data = example_biotracer_data,
                         trophic_discrimination_factor = c(0.8, 3.4),
@@ -218,7 +213,14 @@ data <- preprocess_data(biotracer_data = example_biotracer_data,
                         literature_slope = 0.5)
 ```
 
-## Plot the priors
+## 4. Plot the data and the priors
+
+You can visualize your data with the `plot_data` function:
+
+```{r, fig1, fig.height = 4, fig.width = 6, fig.align = "center"}
+plot_data(biotracer_data = example_biotracer_data,
+          stomach_data = example_stomach_data)
+```
 
 Whether the priors are informed by the literature or non-informative, you can plot the mean of the prior distributions for the trophic link probabilities $\eta$ and the diet proportions $\Pi$:
 
@@ -248,7 +250,7 @@ plot_prior(data, literature_configuration, pred = "huge", variable = "eta")
 ```
 
 
-## Write the model
+## 5. Run the model
 
 The `write_model` function writes the model in the BUGS syntax. You need to specify the option non informative priors / informative priors:
 
@@ -260,8 +262,6 @@ You can see the model with this command:
 ```{r, eval = FALSE}
 cat(model_string)
 ```
-
-## Run the model
 
 You can run the model first with very low adaption step and iteration number to test if it is compiling properly:
 
@@ -280,9 +280,11 @@ mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e3, nb_
 mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e3, nb_iter = 1e6)
 ```
 
-See this vignette if you have convergence problems: `vignette("convergence_problems")`.
+The `run_model` function automatically saves the results in a file named `mcmc_ouput.Rdata`.
 
-## Plot and save the model's mean results
+## 6. Plot and save the results
+
+### The mean results
 
 The model's outputs are the approximated a posteriori distributions for the trophic links probabilities $\eta$ and the diet propotions $\Pi$. You can visualize the mean of these distribitions with the `plot_results` function:
 
@@ -300,7 +302,7 @@ load("eta_mean.Rdata")
 write.table(mean, file = "eta_mean.csv", sep = ",", col.names = NA)
 ```
 
-## Plot the probability distributions
+### The probability distributions
 
 The probability distributions can be plotted for one predator:
 
@@ -322,24 +324,14 @@ Thus only values far from 0 and 1 can inform us on the "real" values for the die
 
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 len <- dim(mcmc_output)[2]
-mcmc_output[, 1:(len/2)] <- ifelse(mcmc_output[, 1:(len/2)] < 0.05 |
+mcmc_output2[, 1:(len/2)] <- ifelse(mcmc_output[, 1:(len/2)] < 0.05 |
                                      mcmc_output[, 1:(len/2)] > 0.95,
                                    NA, mcmc_output[, 1:(len/2)])
 
-plot_results(mcmc_output, data, variable = "PI", pred = "large", prey = c("medium", "small"))
+plot_results(mcmc_output2, data, variable = "PI", pred = "large", prey = c("medium", "small"))
 ```
 
-## Save the full results
-
-The model's full results are automatically saved in a file named `mcmc_ouput` so you can access them using:
-
-```{r}
-load("mcmc_output.Rdata")
-mcmc_output <- signif(mcmc_output, digits = 2)
-knitr::kable(head(mcmc_output))
-```
-
-You can now compute any summary statistics that you need. If you want the median (thus the 50% quantile), and the 5% and the 95% quantiles of your distribution, you can use:
+You can also compute any summary statistics that you need. If you want the median (thus the 50% quantile), and the 5% and the 95% quantiles of your distribution, you can use:
 
 ```{r}
 quantiles <- apply(mcmc_output, 2, function(X) quantile(X, probs = c(0.05, 0.5, 0.95)))
@@ -352,7 +344,7 @@ The quantiles can finally be saved as `.csv` tables:
 write.table(quantiles, file = "quantiles.csv", sep = ",", col.names = NA)
 ```
 
-## Save another variable than $\Pi$ and $\eta$
+## 7. Save another variable than $\Pi$ and $\eta$
 
 You have the possibility to access all the model parameters. For example you may be interested by the variable $\delta$ that represents the trophic discrimination factor. In the EcoDiet model, a different trophic discrimination factor is used for each trophic group and for each element, allowing some differences between species. We can save these parameters using the `variables_to_save` argument:
 
@@ -361,7 +353,7 @@ mcmc_output <- run_model(textConnection(model_string), data, variables_to_save =
                          nb_adapt = 1e1, nb_iter = 1e2)
 ```
 
-And now you can access its mean value using:
+And now you can access the mean value using:
 
 ```{r}
 print(colMeans(mcmc_output))
