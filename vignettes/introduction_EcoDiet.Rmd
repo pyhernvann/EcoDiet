@@ -69,7 +69,7 @@ example_biotracer_data <- read.csv(example_biotracer_data_path)
 knitr::kable(example_biotracer_data)
 ```
 
-You should have the same trophic groups in your stomach and biotracer data. Thus, if you have a group with stomach content analyses but without biotracer data, you should still enter it as one line in the biotracer data with "NA" values (as it is the case for the "huge" group).
+You should have the same trophic groups in your stomach content and biotracer data. Thus, if you have a group with stomach content analyses but without biotracer data, you should still enter it as one line in the biotracer data with "NA" values (as it is the case for the "huge" group).
 
 You also need to define the trophic discrimination factors corresponding to your biotracer data. In this example, we use the following trophic discrimination factors:
 

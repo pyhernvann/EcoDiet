@@ -87,6 +87,17 @@ plot_results(mcmc_output, data, variable = "PI", pred = "Pout", prey = c("Bivalv
 realistic_literature_diets_path <- system.file("extdata", "realistic_literature_diets.csv",
                                                package = "EcoDiet")
 realistic_literature_diets <- read.csv(realistic_literature_diets_path)
-realistic_literature_diets[, -1] <- round(realistic_literature_diets[, -1], 2)
 knitr::kable(realistic_literature_diets)
+```
+
+```{r}
+literature_configuration <- TRUE
+
+data <- preprocess_data(biotracer_data = realistic_biotracer_data,
+                        trophic_discrimination_factor = c(0.8, 3.4),
+                        literature_configuration = literature_configuration,
+                        stomach_data = realistic_stomach_data,
+                        literature_diets = realistic_literature_diets,
+                        nb_literature = 10,
+                        literature_slope = 0.5)
 ```
