@@ -425,8 +425,8 @@ preprocess_data <- function(biotracer_data, trophic_discrimination_factor,
     eta_hyperparam_2 <- matrix(data = NA, nrow = nb_group, ncol = nb_group)
     for (i in list_pred){
       for (k in list_prey[i, 1:nb_prey[i]]){
-        eta_hyperparam_1[k, i] <- ifelse(literature_diets[k,i] == 0, 1, (dzeta[i]))
-        eta_hyperparam_2[k, i] <- dzeta[i] + 1 - eta_hyperparam_1[k, i]
+        eta_hyperparam_1[k, i] <- ifelse(literature_diets[k,i] == 0, 1, (dzeta[i] - 1))
+        eta_hyperparam_2[k, i] <- dzeta[i] - eta_hyperparam_1[k, i]
       }
     }
 
