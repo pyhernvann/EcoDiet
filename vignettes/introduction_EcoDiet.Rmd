@@ -324,9 +324,10 @@ Thus only values far from 0 and 1 can inform us on the "real" values for the die
 
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 len <- dim(mcmc_output)[2]
+mcmc_output2 <- mcmc_output
 mcmc_output2[, 1:(len/2)] <- ifelse(mcmc_output[, 1:(len/2)] < 0.05 |
-                                     mcmc_output[, 1:(len/2)] > 0.95,
-                                   NA, mcmc_output[, 1:(len/2)])
+                                      mcmc_output[, 1:(len/2)] > 0.95,
+                                    NA, mcmc_output[, 1:(len/2)])
 
 plot_results(mcmc_output2, data, variable = "PI", pred = "large", prey = c("medium", "small"))
 ```
