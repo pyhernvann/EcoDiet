@@ -99,6 +99,14 @@ check_biotracer_data <- function(biotracer_data, stomach_data){
     stop("The biotracer data should only contain numbers, and not text.\n",
          "  Please remove the values that do not correspond to an biotracer measurement.")
   }
+  
+  na_count <- sapply(biotracer_data[, -1], function(x) sum(is.na(x)))
+  if (!all(na_count == na_count[1])){
+    stop("The biotracer data should not contain individuals with both NA and regular measures.\n",
+         "  But we have found a different number of NA for the biotracers: \n",
+         paste(capture.output(na_count), collapse = "\n"),
+         "\n  Please remove the individuals for which not all the biotracer measures were done.")
+  }
 }
 
 
