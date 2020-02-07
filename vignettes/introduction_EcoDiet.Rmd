@@ -278,6 +278,9 @@ mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e2, nb_
 mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e3, nb_iter = 1e4)
 mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e3, nb_iter = 1e5)
 mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e3, nb_iter = 1e6)
+
+mcmc_output_example <- mcmc_output
+save(mcmc_output_example, file = "./data/mcmc_output_example.rda")
 ```
 
 The `run_model` function automatically saves the results in a file named `mcmc_ouput.Rdata`.
@@ -289,7 +292,7 @@ The `run_model` function automatically saves the results in a file named `mcmc_o
 The model's outputs are the approximated a posteriori distributions for the trophic links probabilities $\eta$ and the diet proportions $\Pi$. You can visualize the mean of these distribitions with the `plot_results` function:
 
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
-plot_results(mcmc_output, data)
+plot_results(mcmc_output_example, data)
 ```
 
 The means are automatically saved when running this function. You can load and save them as `.csv` tables:
@@ -307,7 +310,7 @@ write.table(mean, file = "eta_mean.csv", sep = ",", col.names = NA)
 The probability distributions can be plotted for one predator:
 
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
-plot_results(mcmc_output, data, pred = "large")
+plot_results(mcmc_output_example, data, pred = "large")
 ```
 
 As you can see, the shape of the posterior distributions of the $\Pi$ are unusual (with spikes at 0 and 1), and must be **carefully interpreted** in the model context. Indeed, $\Pi$ is conditionned by the trophic link existence $\Lambda$, a random Bernoulli variable taking the value 1 (the trophic link exists) or 0 (the trophic link does not exist):
@@ -318,11 +321,11 @@ As you can see, the shape of the posterior distributions of the $\Pi$ are unusua
 The marginal distributions of $\Pi$ thus have a spike at zero combined with a more habitual dome shape centered on the value estimated through the mixture model. You can see the conditional distribution of $\Pi$ when the trophic link exist this way:
 
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
-len <- dim(mcmc_output)[2]
-mcmc_output2 <- mcmc_output
-mcmc_output2[, 1:(len/2)] <- ifelse(mcmc_output[, 1:(len/2)] < 0.03 |
-                                      mcmc_output[, 1:(len/2)] > 0.97,
-                                    NA, mcmc_output[, 1:(len/2)])
+len <- dim(mcmc_output_example)[2]
+mcmc_output2 <- mcmc_output_example
+mcmc_output2[, 1:(len/2)] <- ifelse(mcmc_output_example[, 1:(len/2)] < 0.03 |
+                                      mcmc_output_example[, 1:(len/2)] > 0.97,
+                                    NA, mcmc_output_example[, 1:(len/2)])
 
 plot_results(mcmc_output2, data, variable = "PI", pred = "large", prey = c("medium", "small"))
 ```
@@ -330,7 +333,7 @@ plot_results(mcmc_output2, data, variable = "PI", pred = "large", prey = c("medi
 You can also compute any summary statistics that you need. If you want the median (thus the 50% quantile), and the 5% and the 95% quantiles of your distribution, you can use:
 
 ```{r}
-quantiles <- apply(mcmc_output, 2, function(X) quantile(X, probs = c(0.05, 0.5, 0.95)))
+quantiles <- apply(mcmc_output_example, 2, function(X) quantile(X, probs = c(0.05, 0.5, 0.95)))
 quantiles <- signif(quantiles, digits = 2)
 knitr::kable(quantiles)
 ```

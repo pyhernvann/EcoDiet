@@ -43,6 +43,17 @@ NULL
 #'@name example_literature_diets
 NULL
 
+#' The MCMC output for running the example dataset
+#'
+#' This is the MCMC output for running the example dataset as illustrated in the introduction 
+#' vignette (with 1e6 iterations, 1e3 adaptation steps) and with priors informed 
+#' from the literature study.
+#' This data is here so that the plot_results fonction can be illustrated on 
+#' results that have converged.
+#'
+#'@examples data("mcmc_output_example")
+"mcmc_output_example"
+
 
 #' Realistic stomach data
 #'
