@@ -9,7 +9,7 @@ Description: The goal of the package is to estimate a probabilistic topology mat
 Version: 1.0.0
 Authors@R: c(
     person("Heloise", "Thero", role = "aut"),
-    person("Pierre-Yves", "Hernvann", email = "pierre.yves.hernvann@gmail.com", role = "cre"),
+    person("Pierre-Yves", "Hernvann", email = "pierre.yves.hernvann@gmail.com", role = c("cre", "aut")),
     person("Didier", "Gascuel", role = "aut"),
     person("Dorothee", "Kopp", role = "aut"),
     person("Marianne", "Robert", role = "aut"),
