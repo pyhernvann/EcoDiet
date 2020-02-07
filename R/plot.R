@@ -231,11 +231,10 @@ plot_prior <- function(data, literature_configuration, pred = NULL, prey = NULL,
 
   for (var in variable){
 
-    title <- switch(var,
-                    PI = "Prior diet proportions",
-                    eta = "Prior trophic links probabilities")
-
     if (is.null(pred) & is.null(prey)){
+      title <- switch(var,
+                      PI = "Mean of the prior diet proportions",
+                      eta = "Mean of the prior trophic link probabilities")
 
       mean_prior <- matrix(0, ncol = data$nb_group, nrow = data$nb_group)
       colnames(mean_prior) <- rownames(mean_prior) <- colnames(data$o)
@@ -259,9 +258,12 @@ plot_prior <- function(data, literature_configuration, pred = NULL, prey = NULL,
         }
       }
 
-      plot_matrix(mean_prior, title = paste(title, "(means)"))
+      plot_matrix(mean_prior, title)
 
     } else {
+      title <- switch(var,
+                      PI = "Marginal prior distribution of the diet proportions",
+                      eta = "Marginal prior distribution of the trophic link probabilities")
 
       plot_prior_distribution(data, literature_configuration, pred, prey, var, title)
 
@@ -415,19 +417,22 @@ plot_results <- function(mcmc_output, data, pred = NULL, prey = NULL, variable =
 
   for (var in variable){
 
-    title <- switch(var,
-                    PI = "Posterior diet proportions",
-                    eta = "Posterior trophic links probabilities")
-
     if (is.null(pred) & is.null(prey)){
+      title <- switch(var,
+                      PI = "Mean of the posterior diet proportions",
+                      eta = "Mean of the posterior trophic link probabilities")
 
       mean <- extract_mean(mcmc_output, data, variable_to_extract = var)
-      plot_matrix(mean, title = paste(title, "(means)"))
+      plot_matrix(mean, title)
       save(mean, file = paste0(var, "_mean.Rdata"))
 
     } else {
+      title <- switch(var,
+                      PI = "Marginal posterior distribution of the diet proportions",
+                      eta = "Marginal posterior distribution of the trophic link probabilities")
+      
       plot_posterior_distribution(mcmc_output, data, pred, prey,
-                                  variable_to_extract = var, title = title)
+                                  variable_to_extract = var, title)
     }
   }
 
