@@ -168,9 +168,14 @@ plot_prior_distribution <- function(data, literature_configuration, pred, prey, 
            paste(colnames(data$o), collapse = "\", \""), "\".\n",
            "  Please put correct names in the `prey` argument.")
     }
-    if (sum(prey_index %in% data$list_prey[pred_index, ]) == 0){
-      stop("None of the input preys you have entered (\"", paste(prey, collapse = "\", \""),
-           "\") are considered as eaten by the input predator (\"", pred ,"\").")
+    if (!all(prey_index %in% data$list_prey[pred_index, ])){
+      stop("You have entered at least one prey that is not eaten by the predator \"", 
+           pred ,"\".\n", "    Here are the preys you have entered: \"", 
+           paste(prey, collapse = "\", \""),
+           "\".\n    And here are the predator's preys: \"", 
+           paste(colnames(data$o)[data$list_prey[pred_index, 1:data$nb_prey[pred_index]]], 
+                 collapse = "\", \""), 
+           "\".\n    Please rename your prey input to be consistent.")
     }
   }
 
@@ -341,9 +346,14 @@ plot_posterior_distribution <- function(mcmc_output, data, pred, prey,
            paste(colnames(data$o), collapse = "\", \""), "\".\n",
            "  Please put correct names in the `prey` argument.")
     }
-    if (sum(prey_index %in% data$list_prey[pred_index, ]) == 0){
-      stop("None of the input preys you have entered (\"", paste(prey, collapse = "\", \""),
-           "\") are considered as eaten by the input predator (\"", pred ,"\").")
+    if (!all(prey_index %in% data$list_prey[pred_index, ])){
+      stop("You have entered at least one prey that is not eaten by the predator \"", 
+           pred ,"\".\n", "    Here are the preys you have entered: \"", 
+           paste(prey, collapse = "\", \""),
+           "\".\n    And here are the predator's preys: \"", 
+           paste(colnames(data$o)[data$list_prey[pred_index, 1:data$nb_prey[pred_index]]], 
+                 collapse = "\", \""), 
+           "\".\n    Please rename your prey input to be consistent.")
     }
   }
 
