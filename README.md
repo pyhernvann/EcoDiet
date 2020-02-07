@@ -10,7 +10,7 @@ EcoDiet is an R package, so first and foremost, you should download and install/
 
 ## JAGS installation
 
-EcoDiet relies on the JAGS software, so you also need to download and install/update JAGS.
+EcoDiet relies on the JAGS software, so you also need to download and install/update JAGS. You should install the last version of JAGS so that your model will run at maximal speed.
 
 #### For Windows users
 
