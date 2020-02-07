@@ -310,23 +310,18 @@ The probability distributions can be plotted for one predator:
 plot_results(mcmc_output, data, pred = "large")
 ```
 
-You can see that the a posteriori $\Pi$ distributions are mostly concentrated around 0 and 1. **But you should not interpret this as most of the "large" predators eating 100 % "medium" animals and  0 % "small" animals, with very few indivudals having a balanced diet.**
+As you can see, the shape of the posterior distributions of the $\Pi$ are unusual (with spikes at 0 and 1), and must be **carefully interpreted** in the model context. Indeed, $\Pi$ is conditionned by the trophic link existence $\Lambda$, a random Bernoulli variable taking the value 1 (the trophic link exists) or 0 (the trophic link does not exist):
 
-The $\Pi$ distributions are peaked around 0 and 1 because of the way that the variables are modelled in EcoDiet. It is a model with probabilistic topology matrix, so:
+* When $\Lambda$ = 0, $\Pi$ is drawn from a prior distribution with a spike at zero, with very low updating by the data. 
+* When $\Lambda$ = 1, $\Pi$ is updated by the data through the isotope mixture model. 
 
-* The model evaluates whether the trophic link exists or not between a predator and his prey (based on the $\eta$ variables).
-
-* The $\Pi$ will be updated with the biotracer data *only if the link is considered present*. If the link is evaluted as non-existent, the $\Pi$ will be set at a quasi-null value.
-
-Because the sum of the diet proportions equals 1, if there are only 2 preys and one $\Pi$ is fixed at 0, then the other $\Pi$ will automatically be fixed at 1.
-
-Thus only values far from 0 and 1 can inform us on the "real" values for the diet propotions $\Pi$. Here is how to plot these values:
+The marginal distributions of $\Pi$ thus have a spike at zero combined with a more habitual dome shape centered on the value estimated through the mixture model. You can see the conditional distribution of $\Pi$ when the trophic link exist this way:
 
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 len <- dim(mcmc_output)[2]
 mcmc_output2 <- mcmc_output
-mcmc_output2[, 1:(len/2)] <- ifelse(mcmc_output[, 1:(len/2)] < 0.05 |
-                                      mcmc_output[, 1:(len/2)] > 0.95,
+mcmc_output2[, 1:(len/2)] <- ifelse(mcmc_output[, 1:(len/2)] < 0.03 |
+                                      mcmc_output[, 1:(len/2)] > 0.97,
                                     NA, mcmc_output[, 1:(len/2)])
 
 plot_results(mcmc_output2, data, variable = "PI", pred = "large", prey = c("medium", "small"))
