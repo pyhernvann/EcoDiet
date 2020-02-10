@@ -391,9 +391,9 @@ plot_posterior_distribution <- function(mcmc_output, data, pred, prey,
   # Plot these values to represent the approximated probability densities
   figure <- ggplot(df_to_plot) +
     geom_density(aes(x = variable_to_plot, y=..scaled.., fill = Prey),
-                 alpha = .3, adjust = 1/5, na.rm = TRUE) +
+                 alpha = .3, adjust = 1/2, na.rm = TRUE) +
     geom_density(aes(x = variable_to_plot, y=..scaled.., color = Prey),
-                 size = 1.25, adjust = 1/5, na.rm = TRUE) +
+                 size = 1.25, adjust = 1/2, na.rm = TRUE) +
     ggtitle(paste(title, "\nfor the", colnames(data$o)[pred_index], "predator")) +
     ylab("Density") +
     scale_shape_manual(values = c(seq(1:10))) +
