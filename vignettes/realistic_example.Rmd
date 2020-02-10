@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 We will use a more realistic example (although still artificial!) to run the different EcoDiet configurations and compare their results.
 
-## The configuration without literature data
+The data corresponds to 10 trophic groups with stomach content data, and very clear isotopic measures.
 
 ```{r}
 realistic_stomach_data_path <- system.file("extdata", "realistic_stomach_data.csv",
@@ -41,6 +41,12 @@ plot_data(biotracer_data = realistic_biotracer_data,
           stomach_data = realistic_stomach_data)
 ```
 
+Yes, we are aware that isotopic data is usually messier, but isn't it a beautiful plot?
+
+## The configuration without literature data
+
+We define the configuration we are in, and preprocess the data:
+
 ```{r}
 literature_configuration <- FALSE
 
@@ -50,11 +56,23 @@ data <- preprocess_data(biotracer_data = realistic_biotracer_data,
                         stomach_data = realistic_stomach_data)
 ```
 
-As you can see the priors are non-informative:
+In this configuration, the priors are not informed by literature data, and are thus uninformative:
 
 ```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
 plot_prior(data, literature_configuration)
 ```
+
+The marginal prior distributions have different shape depending on the variables:
+
+* it is flat or uniform for $\eta$ the probabilities that a trophic link exists (all the probabilities of existence are thus equiprobable),
+
+* the marginal distributions for each diet proportion $\Pi$ are peaking at zero, although the joint distribution for $\Pi$s is a flat Dirichlet prior, because all the diet proportions must sum to one.
+
+```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
+plot_prior(data, literature_configuration, pred = "Pout")
+```
+
+We define the model, and test if it compiles well with a few iterations and adaptation steps:
 
 ```{r}
 model_string <- write_model(literature_configuration = literature_configuration)
@@ -62,10 +80,12 @@ model_string <- write_model(literature_configuration = literature_configuration)
 mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e1, nb_iter = 1e2)
 ```
 
-You should try to run the model until it converges (it can take a few **hours**):
+You should now try to run the model until it converges (it should take around **half an hour** to run, so we won't do it in this vignette):
 ```{r, eval = FALSE}
-mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e3, nb_iter = 1e4)
+mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e3, nb_iter = 1e5)
 ```
+
+The results are rough because they are only based on a few iterations but you should try these commands after the model has converged:
 
 ```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
 plot_results(mcmc_output, data)
@@ -75,13 +95,18 @@ plot_results(mcmc_output, data)
 plot_results(mcmc_output, data, pred = "Pout")
 ```
 
-You can also precise for which variable and preys you want to plot the probability distributions:
-
+You can also plot the results for just some preys if you want a clearer figure:
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
-plot_results(mcmc_output, data, variable = "PI", pred = "Pout", prey = c("Bivalves", "Worms"))
+plot_results(mcmc_output, data, pred = "Pout", 
+             variable = "PI", prey = c("Bivalves", "Worms"))
 ```
 
 ## The configuration with literature data
+
+We change the configuration to add literature data to the model:
+```{r}
+literature_configuration <- TRUE
+```
 
 ```{r}
 realistic_literature_diets_path <- system.file("extdata", "realistic_literature_diets.csv",
@@ -91,8 +116,6 @@ knitr::kable(realistic_literature_diets)
 ```
 
 ```{r}
-literature_configuration <- TRUE
-
 data <- preprocess_data(biotracer_data = realistic_biotracer_data,
                         trophic_discrimination_factor = c(0.8, 3.4),
                         literature_configuration = literature_configuration,
@@ -100,4 +123,33 @@ data <- preprocess_data(biotracer_data = realistic_biotracer_data,
                         literature_diets = realistic_literature_diets,
                         nb_literature = 10,
                         literature_slope = 0.5)
+```
+
+Now we see that the prior distributions are informed by the literature data:
+
+```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
+plot_prior(data, literature_configuration)
+```
+
+```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
+plot_prior(data, literature_configuration, pred = "Pout")
+```
+
+```{r}
+model_string <- write_model(literature_configuration = literature_configuration)
+
+mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e1, nb_iter = 1e2)
+```
+
+You should now try to run the model until it converges (it should take around **half an hour** to run, so we won't do it in this vignette):
+```{r, eval = FALSE}
+mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e3, nb_iter = 1e5)
+```
+
+```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
+plot_results(mcmc_output, data)
+```
+
+```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
+plot_results(mcmc_output, data, pred = "Pout")
 ```
