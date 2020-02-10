@@ -121,11 +121,15 @@ data <- preprocess_data(biotracer_data = realistic_biotracer_data,
                         literature_configuration = literature_configuration,
                         stomach_data = realistic_stomach_data,
                         literature_diets = realistic_literature_diets,
-                        nb_literature = 10,
+                        nb_literature = 25,
                         literature_slope = 0.5)
 ```
 
 Now we see that the prior distributions are informed by the literature data:
+
+* when the literature diet input is > 0, the trophic link probabilities $\eta$ are shifted toward one.
+
+* the average prior for the diet proportions $\Pi$ is the literature diet input.
 
 ```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
 plot_prior(data, literature_configuration)
@@ -134,6 +138,8 @@ plot_prior(data, literature_configuration)
 ```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
 plot_prior(data, literature_configuration, pred = "Pout")
 ```
+
+We again verify that the model compiles well:
 
 ```{r}
 model_string <- write_model(literature_configuration = literature_configuration)
