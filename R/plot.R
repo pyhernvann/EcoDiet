@@ -81,9 +81,9 @@ plot_matrix <- function(matrix, title){
           axis.text.y = element_text(size = 12),
           legend.title = element_blank(),
           plot.title = element_text(hjust = 0.5))
-
-  if (ncol(matrix) < 15){
-    figure <- figure + geom_text(data = df[df$value > 0, ], aes(label = round(value, 2)))
+  
+  if (ncol(matrix) < 15){ 
+    figure <- figure + geom_text(data = df[!is.na(df$value), ], aes(label = round(value, 2)))
   }
 
   plot(figure)
@@ -116,6 +116,8 @@ plot_data <- function(biotracer_data = NULL, stomach_data = NULL){
     stomach_data <- stomach_data[-nrow(stomach_data), ]
     stomach_data <- stomach_data[, order(colnames(stomach_data))]
     stomach_data <- stomach_data[order(rownames(stomach_data)), ]
+    
+    stomach_data[stomach_data == 0] <- NA
 
     plot_matrix(stomach_data, title = "Proportion of occurences in stomachs")
   }
@@ -241,7 +243,7 @@ plot_prior <- function(data, literature_configuration, pred = NULL, prey = NULL,
                       PI = "Mean of the prior diet proportions",
                       eta = "Mean of the prior trophic link probabilities")
 
-      mean_prior <- matrix(0, ncol = data$nb_group, nrow = data$nb_group)
+      mean_prior <- matrix(NA, ncol = data$nb_group, nrow = data$nb_group)
       colnames(mean_prior) <- rownames(mean_prior) <- colnames(data$o)
 
       for (i in data$list_pred){
@@ -295,7 +297,7 @@ extract_mean <- function(mcmc_output, data, variable_to_extract = "PI"){
   raw_means <- raw_means[startsWith(names(raw_means), variable_to_extract)]
 
   # prepare an empty matrix with the correct format
-  matrix_mean <- matrix(0, data$nb_group, data$nb_group)
+  matrix_mean <- matrix(NA, data$nb_group, data$nb_group)
   colnames(matrix_mean) <- rownames(matrix_mean) <- colnames(data$o)
 
   for (i in seq_along(raw_means)){
