@@ -85,21 +85,32 @@ You should now try to run the model until it converges (it should take around **
 mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e3, nb_iter = 1e5)
 ```
 
-The results are rough because they are only based on a few iterations but you should try these commands after the model has converged:
+The results are rough because they are only based on a few iterations but you should try the following commands after the model has converged. In this vignette we will plot the figures corresponding to converged results.
 
-```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
+```{r, eval = FALSE}
 plot_results(mcmc_output, data)
 ```
 
-```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
+![](../man/figures/figure_Mean_of_the_posterior_trophic_link_probabilities_2020-02-11_16-08-12.png){width=700px}
+
+![](../man/figures/figure_Mean_of_the_posterior_diet_proportions_2020-02-11_16-08-13.png){width=700px}
+
+```{r, eval = FALSE}
 plot_results(mcmc_output, data, pred = "Pout")
 ```
 
+![](../man/figures/figure_Marginal_posterior_distribution_of_the_trophic_link_probabilities_for_the_Pout_predator_2020-02-11_16-21-32.png){width=550px}
+
+![](../man/figures/figure_Marginal_posterior_distribution_of_the_diet_proportions_for_the_Pout_predator_2020-02-11_16-21-33.png){width=550px}
+
 You can also plot the results for just some preys if you want a clearer figure:
-```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
+```{r, eval = FALSE}
 plot_results(mcmc_output, data, pred = "Pout", 
              variable = "PI", prey = c("Bivalves", "Worms"))
 ```
+
+![](../man/figures/figure_Marginal_posterior_distribution_of_the_diet_proportions_for_the_Pout_predator_2020-02-11_16-25-40.png){width=550px}
+
 
 ## The configuration with literature data
 
@@ -152,13 +163,21 @@ You should now try to run the model until it converges (it should take around **
 mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e3, nb_iter = 1e5)
 ```
 
-```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
+```{r, eval = FALSE}
 plot_results(mcmc_output, data)
 ```
 
-```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
+![](../man/figures/figure_Mean_of_the_posterior_trophic_link_probabilities_2020-02-11_16-28-35.png){width=550px}
+
+![](../man/figures/figure_Mean_of_the_posterior_diet_proportions_2020-02-11_16-28-36.png){width=550px}
+
+```{r, eval = FALSE}
 plot_results(mcmc_output, data, pred = "Pout")
 ```
+
+![](../man/figures/figure_Marginal_posterior_distribution_of_the_trophic_link_probabilities_for_the_Pout_predator_2020-02-11_16-29-24.png){width=550px}
+
+![](../man/figures/figure_Marginal_posterior_distribution_of_the_diet_proportions_for_the_Pout_predator_2020-02-11_16-29-24.png){width=550px}
 
 You can save the figures as PNG using:
 
