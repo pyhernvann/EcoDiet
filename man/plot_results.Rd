@@ -9,7 +9,8 @@ plot_results(
   data,
   pred = NULL,
   prey = NULL,
-  variable = c("eta", "PI")
+  variable = c("eta", "PI"),
+  save = FALSE
 )
 }
 \arguments{
@@ -23,11 +24,16 @@ plot_results(
 
 \item{variable}{the variable(s) for which we want to plot the probability densities. By default
 we will plot the two variables of interest: eta and PI.}
+
+\item{save}{A boolean describing whether the figure should be saved as PNG. 
+By default the figures are not saved.}
 }
 \description{
 This function plots the posterior means or probability distribution(s) for one 
 or the two variable(s) of interest : the trophic link probabilities ("eta") and/or 
 the diet proportions ("PI").
+
+The figure(s) can be saved as PNG using: \code{save = TRUE}.
 
 If no "pred" nor "prey" parameter is entered, the plot will be a raster plot with the mean priors for 
 all the trophic groups.

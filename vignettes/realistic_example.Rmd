@@ -159,3 +159,9 @@ plot_results(mcmc_output, data)
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 plot_results(mcmc_output, data, pred = "Pout")
 ```
+
+You can save the figures as PNG using:
+
+```{r, eval = FALSE}
+plot_results(mcmc_output, data, pred = "Pout", save = TRUE)
+```

@@ -222,6 +222,14 @@ plot_data(biotracer_data = example_biotracer_data,
           stomach_data = example_stomach_data)
 ```
 
+You can save the figures as PNG using: 
+
+```{r, eval = FALSE}
+plot_data(biotracer_data = example_biotracer_data,
+          stomach_data = example_stomach_data,
+          save = TRUE)
+```
+
 Whether the priors are non-informative or informed by the literature, you can plot the mean of the prior distributions for the trophic link probabilities $\eta$ and the diet proportions $\Pi$:
 
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}

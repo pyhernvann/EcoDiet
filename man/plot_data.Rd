@@ -4,7 +4,7 @@
 \alias{plot_data}
 \title{Plot the input data}
 \usage{
-plot_data(biotracer_data = NULL, stomach_data = NULL)
+plot_data(biotracer_data = NULL, stomach_data = NULL, save = FALSE)
 }
 \arguments{
 \item{biotracer_data}{A dataframe containing the biotracer data in the specific format: the first column
@@ -16,10 +16,15 @@ contains the names of the prey trophic groups, the headers contains the names of
 predator trophic groups, and the rest are the number of the predator's stomachs in which this prey
 was found. The last row contains the total number of non-empty stomach for the corresponding
 predator.}
+
+\item{save}{A boolean describing whether the figure should be saved as PNG. 
+By default the figures are not saved.}
 }
 \description{
 This function is used to plot the input biotracer and/or the stomach content data.
 You can use the function with only one parameter to plot only one kind of data.
+
+The figure(s) can be saved as PNG using: \code{save = TRUE}.
 
 If only the stomach content data is entered, there will be a single raster plot containing the proportions
 of occurences in the stomachs. 
