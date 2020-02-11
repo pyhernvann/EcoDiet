@@ -16,9 +16,9 @@ knitr::opts_chunk$set(
 )
 ```
 
-We will use a more realistic example (although still artificial!) to run the different EcoDiet configurations and compare their results.
+The introduction employed a simplistic expemple of food web to familiarize the user with the basic commands and options of the EcoDiet package. Here we will use a more realistic example (although still artificial!) to run the different EcoDiet configurations, compare their results and hence higlight the complementarity in the different data used. 
 
-The data corresponds to 10 trophic groups with stomach content data, and very clear isotopic measures.
+The data corresponds to 10 trophic groups with stomach content data, and very distinct isotopic measures.
 
 ```{r}
 realistic_stomach_data_path <- system.file("extdata", "realistic_stomach_data.csv",
@@ -56,7 +56,7 @@ data <- preprocess_data(biotracer_data = realistic_biotracer_data,
                         stomach_data = realistic_stomach_data)
 ```
 
-In this configuration, the priors are not informed by literature data, and are thus uninformative:
+In this configuration, priors are set for each trophic link identified as plausible by the user but the priors are not informed by literature data, and are thus uninformative:
 
 ```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
 plot_prior(data, literature_configuration)
@@ -64,7 +64,7 @@ plot_prior(data, literature_configuration)
 
 The marginal prior distributions have different shape depending on the variables:
 
-* it is flat or uniform for $\eta$ the probabilities that a trophic link exists (all the probabilities of existence are thus equiprobable),
+* it is flat or uniform for $\eta$, the probabilities that a trophic link exists (all the probabilities of existence are thus equiprobable),
 
 * the marginal distributions for each diet proportion $\Pi$ are peaking at zero, although the joint distribution for $\Pi$s is a flat Dirichlet prior, because all the diet proportions must sum to one.
 
@@ -85,36 +85,25 @@ You should now try to run the model until it converges (it should take around **
 mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e3, nb_iter = 1e5)
 ```
 
-The results are rough because they are only based on a few iterations but you should try the following commands after the model has converged. In this vignette we will plot the figures corresponding to converged results.
+The results are rough because they are only based on a few iterations but you should try these commands after the model has converged:
 
-```{r, eval = FALSE}
+```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
 plot_results(mcmc_output, data)
 ```
 
-![](../man/figures/figure_Mean_of_the_posterior_trophic_link_probabilities_2020-02-11_16-08-12.png){width=700px}
-
-![](../man/figures/figure_Mean_of_the_posterior_diet_proportions_2020-02-11_16-08-13.png){width=700px}
-
-```{r, eval = FALSE}
+```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 plot_results(mcmc_output, data, pred = "Pout")
 ```
 
-![](../man/figures/figure_Marginal_posterior_distribution_of_the_trophic_link_probabilities_for_the_Pout_predator_2020-02-11_16-21-32.png){width=550px}
-
-![](../man/figures/figure_Marginal_posterior_distribution_of_the_diet_proportions_for_the_Pout_predator_2020-02-11_16-21-33.png){width=550px}
-
-You can also plot the results for just some preys if you want a clearer figure:
-```{r, eval = FALSE}
+You can also plot the results for specific prey if you want a clearer figure:
+```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 plot_results(mcmc_output, data, pred = "Pout", 
              variable = "PI", prey = c("Bivalves", "Worms"))
 ```
 
-![](../man/figures/figure_Marginal_posterior_distribution_of_the_diet_proportions_for_the_Pout_predator_2020-02-11_16-25-40.png){width=550px}
-
-
 ## The configuration with literature data
 
-We change the configuration to add literature data to the model:
+We now change the configuration to add literature data to the model:
 ```{r}
 literature_configuration <- TRUE
 ```
@@ -138,9 +127,9 @@ data <- preprocess_data(biotracer_data = realistic_biotracer_data,
 
 Now we see that the prior distributions are informed by the literature data:
 
-* when the literature diet input is > 0, the trophic link probabilities $\eta$ are shifted toward one.
+* when the literature diet input is > 0, the trophic link probabilities $\eta$ are shifted toward one. Here this is the case for all prey but we could imagine that the user identify a species as a plausible prey whereas it has not been observed being consumed by the predator in the literature. In that case, the literature diet of 0 would drive $\eta$ toward 0.
 
-* the average prior for the diet proportions $\Pi$ is the literature diet input.
+* the average prior for the diet proportions $\Pi$ is directly the literature diet input.
 
 ```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
 plot_prior(data, literature_configuration)
@@ -150,7 +139,7 @@ plot_prior(data, literature_configuration)
 plot_prior(data, literature_configuration, pred = "Pout")
 ```
 
-We again verify that the model compiles well:
+Again, we verify that the model compiles well:
 
 ```{r}
 model_string <- write_model(literature_configuration = literature_configuration)
@@ -163,21 +152,13 @@ You should now try to run the model until it converges (it should take around **
 mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e3, nb_iter = 1e5)
 ```
 
-```{r, eval = FALSE}
+```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
 plot_results(mcmc_output, data)
 ```
 
-![](../man/figures/figure_Mean_of_the_posterior_trophic_link_probabilities_2020-02-11_16-28-35.png){width=550px}
-
-![](../man/figures/figure_Mean_of_the_posterior_diet_proportions_2020-02-11_16-28-36.png){width=550px}
-
-```{r, eval = FALSE}
+```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 plot_results(mcmc_output, data, pred = "Pout")
 ```
-
-![](../man/figures/figure_Marginal_posterior_distribution_of_the_trophic_link_probabilities_for_the_Pout_predator_2020-02-11_16-29-24.png){width=550px}
-
-![](../man/figures/figure_Marginal_posterior_distribution_of_the_diet_proportions_for_the_Pout_predator_2020-02-11_16-29-24.png){width=550px}
 
 You can save the figures as PNG using:
 
