@@ -43,7 +43,7 @@ install.packages("devtools")
 Once `devtools` has been installed, you can load the EcoDiet package:
 
 ```{r, eval = FALSE}
-devtools::install_github("pyhernvann/EcoDiet", build_vignettes = TRUE)
+devtools::install_github("pyhernvann/EcoDiet", build_vignettes = TRUE, dependencies = TRUE)
 ```
 
 ## Learn how to use EcoDiet
