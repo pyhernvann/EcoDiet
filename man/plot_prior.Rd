@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.R
 \name{plot_prior}
 \alias{plot_prior}
-\title{Plot the prior means or distributions for the eta and/or PI parameters}
+\title{Plot the prior means or probability distribution(s)}
 \usage{
 plot_prior(
   data,
@@ -13,17 +13,52 @@ plot_prior(
 )
 }
 \arguments{
-\item{data}{the preprocessed data list outputed by the preprocess_data() function}
+\item{data}{the preprocessed data list output by the preprocess_data() function}
 
-\item{literature_configuration}{a boolean (TRUE or FALSE) indicating whether the model will have
+\item{literature_configuration}{A boolean (TRUE or FALSE) indicating whether the model will have
 prior distributions informed by a literature study}
 
 \item{pred}{the predator name for which we want to plot the probability densities}
 
-\item{prey}{the prey(s) name for which we want to plot the probability densities}
+\item{prey}{the prey(s) name(s) for which we want to plot the probability densities}
 
-\item{variable}{the variable(s) for which we want to plot the probability densities}
+\item{variable}{the variable(s) for which we want to plot the probability densities. By default
+we will plot the two variables of interest: eta and PI.}
 }
 \description{
-Plot the prior means or distributions for the eta and/or PI parameters
+This function plots the prior means or probability distribution(s) for one or the two
+variable(s) of interest : the trophic link probabilities ("eta") and/or the diet proportions ("PI").
+
+If no "pred" nor "prey" parameter is entered, the plot will be a raster plot with the mean priors for 
+all the trophic groups.
+
+If one predator name is entered as "pred", the probability distribution(s) will be plotted for all its 
+prey(s) by default. Some specific prey(s) name(s) can also be entered because if a predator has 
+22 preys, plotting them all will make the plot hard to read. So you can specify the one or many prey(s) 
+of interest and only display their corresponding probability distribution(s).
+
+The "variable" parameter can be specified if one wants to plot the priors for only one variable 
+("PI" or "eta").
+}
+\examples{
+
+realistic_biotracer_data <- read.csv(system.file("extdata", "realistic_biotracer_data.csv",
+                                               package = "EcoDiet"))
+realistic_stomach_data <- read.csv(system.file("extdata", "realistic_stomach_data.csv",
+                                             package = "EcoDiet"))
+
+data <- preprocess_data(biotracer_data = realistic_biotracer_data,
+                        trophic_discrimination_factor = c(0.8, 3.4),
+                        literature_configuration = FALSE,
+                        stomach_data = realistic_stomach_data)
+                        
+plot_prior(data, literature_configuration = FALSE)
+plot_prior(data, literature_configuration = FALSE, pred = "Cod")
+plot_prior(data, literature_configuration = FALSE, pred = "Cod", 
+           prey = c("Crabs", "Shrimps"), variable = "eta")
+           
+}
+\seealso{
+\code{\link{plot_results}} to plot the posterior means or probability distribution(s),
+  \code{\link{plot_data}} to plot the input data
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/preprocess_data.R
 \name{preprocess_data}
 \alias{preprocess_data}
-\title{Load and preprocess the data to feed the EcoDiet model}
+\title{Check and preprocess the data}
 \usage{
 preprocess_data(
   biotracer_data,
@@ -17,30 +17,76 @@ preprocess_data(
 )
 }
 \arguments{
-\item{biotracer_data}{the table containing the biotracer data in the specific format}
+\item{biotracer_data}{A dataframe containing the biotracer data in the specific format: the first column
+corresponds to the trophic group or latin species and the remaining columns contains the biotracer
+measures}
 
-\item{trophic_discrimination_factor}{a vector containing the trophic discrimination factors corresponding
-to each column found in the biotracer data (except the group column of course)}
+\item{trophic_discrimination_factor}{A vector containing the trophic discrimination factors 
+corresponding to each column found in the biotracer data (except the group column of course)}
 
-\item{literature_configuration}{a boolean (TRUE or FALSE) indicating whether the model will have
+\item{literature_configuration}{A boolean (TRUE or FALSE) indicating whether the model will have
 prior distributions informed by a literature study}
 
-\item{topology}{a matrix that the user may input if she wants the model to
-investigate some additionnal trophic links (by default it is NULL and defined from the stomach
-data and the alpha priors if they are defined)}
+\item{topology}{A matrix that the user may input if she wants the model to investigate some 
+additionnal trophic links (by-default it is set on NULL and defined later from the stomach content 
+data and the literature diets if present)}
 
-\item{stomach_data}{the table containing the stomachal data in a specific format}
+\item{element_concentration}{A matrix containing the element concentration for each trophic group and
+each biotracer element (listed in the biotracer data). It is a matrix with as many columns
+as the number of trophic groups and as many rows as the number of elements. By default the matrix
+is filled with ones.}
 
-\item{literature_diets}{the diet proportions and their associated pedigrees found in the literature}
+\item{stomach_data}{A dataframe containing the stomach content data in a specific format: the first row
+contains the names of the prey trophic groups, the headers contains the names of the consumer / 
+predator trophic groups, and the rest are the number of the predator's stomachs in which this prey
+was found. The last row contains the total number of non-empty stomach for the corresponding
+predator.}
 
-\item{nb_literature}{the equivalent number of stomach for the literature priors}
+\item{literature_diets}{A dataframe containing the diet proportions found in the literature
+in a format similar to the stomach content data: the first row contains the names of the prey 
+trophic groups, the headers contains the names of the consumer / predator trophic groups, 
+and the rest are the average proportions of this prey in the predator's diet according to a 
+literature study. The last row contains the pedigree score associated to the literature findings 
+for each predators, a number between 0 and 1 indicating how much the literature findings are relevant
+estimates for the input data.}
 
-\item{literature_slope}{the slope of the linear relationship between the pedigrees
-and the PIs' coefficients of variation (CVs)}
+\item{nb_literature}{A vector of one number containing the equivalent number of stomach 
+for the literature priors on the eta variable}
+
+\item{literature_slope}{A vector of one number containing the slope of the linear relationship 
+between the pedigree scores and the PIs' coefficients of variation (CVs)}
 }
 \value{
-a list of preprocessed data, ready to be run by the EcoDiet model
+A list of preprocessed data, ready to be fed to the EcoDiet model
 }
 \description{
-Load and preprocess the data to feed the EcoDiet model
+This function preprocesses the data input by the user, checks that the different inputs 
+have the right format, and creates the data list that will feed the JAGS model.
+
+If an error appears with a clear message, it means that the input needs to be reformatted. Please 
+follow the instructions in the error message. You can also look at the data examples to guide you.
+}
+\examples{
+
+example_biotracer_data <- read.csv(system.file("extdata", "example_biotracer_data.csv",
+                                               package = "EcoDiet"))
+example_stomach_data <- read.csv(system.file("extdata", "example_stomach_data.csv",
+                                             package = "EcoDiet"))
+
+data <- preprocess_data(biotracer_data = example_biotracer_data,
+                        trophic_discrimination_factor = c(0.8, 3.4),
+                        literature_configuration = FALSE,
+                        stomach_data = example_stomach_data)
+                        
+example_literature_diets <- read.csv(system.file("extdata", "example_literature_diets.csv",
+                                                 package = "EcoDiet"))
+                        
+data2 <- preprocess_data(biotracer_data = example_biotracer_data,
+                         trophic_discrimination_factor = c(0.8, 3.4),
+                         literature_configuration = literature_configuration,
+                         stomach_data = example_stomach_data,
+                         literature_diets = example_literature_diets,
+                         nb_literature = 10,
+                         literature_slope = 0.5)
+
 }

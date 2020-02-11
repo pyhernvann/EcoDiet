@@ -1,12 +1,26 @@
-#' Write a string containing the EcoDiet model in the BUGS syntax
+#' Write the EcoDiet model in BUGS
+#' 
+#' @description 
+#' 
+#' This function writes the EcoDiet model in the BUGS syntax as a several line long string.
+#' 
+#' The model definition depends on whether or not literature data will be used to inform the priors,
+#' hence the parameter \code{literature_configuration}.
+#' 
+#' To know more about what is inside the model, please read the reference article.
 #'
-#' @param literature_configuration a boolean (TRUE or FALSE) indicating whether the model will have
-#' prior distributions informed by a literature study
-#' @return a string containing the model definition written in BUGS syntax
+#'
+#' @inheritParams preprocess_data
+#' @return A string containing the model definition in BUGS
 #'
 #' @examples
-#' model_string <- write_model(TRUE)
-#' model_string <- write_model(FALSE)
+#' model_string_1 <- write_model(literature_configuration = TRUE)
+#' cat(model_string_1)
+#' 
+#' model_string_2 <- write_model(literature_configuration = FALSE)
+#' cat(model_string_2)
+#' 
+#' @seealso \code{\link{run_model}} to run the model after it has been defined
 #'
 #' @export
 

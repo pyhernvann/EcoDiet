@@ -1,7 +1,6 @@
-#' Check the format of the stomachal and biotracer data and print an error message
-#' if something is not correct
+#' Check the stomach content data
 #'
-#' @param stomach_data the almost raw stomachal data
+#' @param stomach_data the preprocessed stomach content data
 #'
 #' @keywords internal
 #' @noRd
@@ -61,10 +60,12 @@ check_stomach_data <- function(stomach_data){
 }
 
 
-#' Check that the biotracer data is in a correct format and print an error message if not.
+#' Check the biotracer data
 #'
 #' @param biotracer_data the input biotracer data
-#' @param stomach_data the preprocessed stomachal data
+#' @param stomach_data the preprocessed stomach content data 
+#'   to verify the consistence between the biotracer and stomach
+#'   data
 #'
 #' @keywords internal
 #' @noRd
@@ -110,10 +111,10 @@ check_biotracer_data <- function(biotracer_data, stomach_data){
 }
 
 
-#' Check that the trophic discrimination factor is in a correct format and print an error message if not.
+#' Check the trophic discrimination facto
 #'
-#' @param trophic_discrimination_factor the raw trophic discrimination factor data
-#' @param biotracer_data the raw biotracer data
+#' @param trophic_discrimination_factor the input trophic discrimination factor data
+#' @param biotracer_data the input biotracer data as a reference
 #'
 #' @keywords internal
 #' @noRd
@@ -150,9 +151,9 @@ check_tef_data <- function(trophic_discrimination_factor, biotracer_data){
   }
 }
 
-#' Check the literature_configuration argument
+#' Check the literature configuration
 #'
-#' @param literature_configuration the entered literature configuration argument
+#' @param literature_configuration the input literature configuration argument
 #'
 #' @keywords internal
 #' @noRd
@@ -175,10 +176,10 @@ check_literature_configuration <- function(literature_configuration){
 }
 
 
-#' Check that the literature diets matrix is in a correct format and print an error message if not.
+#' Check the literature diet matrix
 #'
-#' @param literature_diets the preprocessed literature diets matrix
-#' @param biotracer_data the preprocessed biotracer data
+#' @param literature_diets the preprocessed literature diet matrix
+#' @param biotracer_data the preprocessed biotracer data as a reference
 #'
 #' @keywords internal
 #' @noRd
@@ -251,7 +252,7 @@ check_literature_diets <- function(literature_diets, biotracer_data){
   }
 }
 
-#' Check that the numeric parameter entered has the correct format
+#' Check an input numeric parameter
 #'
 #' @param numeric_parameter the numeric parameter to check
 #' @param parameter_name its name
@@ -274,23 +275,69 @@ check_numeric_parameter <- function(numeric_parameter, parameter_name){
 }
 
 
-#' Load and preprocess the data to feed the EcoDiet model
+#' Check and preprocess the data
+#' 
+#' @description This function preprocesses the data input by the user, checks that the different inputs 
+#' have the right format, and creates the data list that will feed the JAGS model.
+#' 
+#' If an error appears with a clear message, it means that the input needs to be reformatted. Please 
+#' follow the instructions in the error message. You can also look at the data examples to guide you.
 #'
-#' @param biotracer_data the table containing the biotracer data in the specific format
-#' @param trophic_discrimination_factor a vector containing the trophic discrimination factors corresponding
-#' to each column found in the biotracer data (except the group column of course)
-#' @param literature_configuration a boolean (TRUE or FALSE) indicating whether the model will have
-#' prior distributions informed by a literature study
-#' @param topology a matrix that the user may input if she wants the model to
-#' investigate some additionnal trophic links (by default it is NULL and defined from the stomach
-#' data and the alpha priors if they are defined)
-#' @param stomach_data the table containing the stomachal data in a specific format
-#' @param literature_diets the diet proportions and their associated pedigrees found in the literature
-#' @param nb_literature the equivalent number of stomach for the literature priors
-#' @param literature_slope the slope of the linear relationship between the pedigrees
-#' and the PIs' coefficients of variation (CVs)
+#' @param biotracer_data A dataframe containing the biotracer data in the specific format: the first column
+#'   corresponds to the trophic group or latin species and the remaining columns contains the biotracer
+#'   measures
+#' @param trophic_discrimination_factor A vector containing the trophic discrimination factors 
+#'   corresponding to each column found in the biotracer data (except the group column of course)
+#' @param literature_configuration A boolean (TRUE or FALSE) indicating whether the model will have
+#'   prior distributions informed by a literature study
+#' @param topology A matrix that the user may input if she wants the model to investigate some 
+#'   additionnal trophic links (by-default it is set on NULL and defined later from the stomach content 
+#'   data and the literature diets if present)
+#' @param element_concentration A matrix containing the element concentration for each trophic group and
+#'   each biotracer element (listed in the biotracer data). It is a matrix with as many columns
+#'   as the number of trophic groups and as many rows as the number of elements. By default the matrix
+#'   is filled with ones.
+#' @param stomach_data A dataframe containing the stomach content data in a specific format: the first row
+#'   contains the names of the prey trophic groups, the headers contains the names of the consumer / 
+#'   predator trophic groups, and the rest are the number of the predator's stomachs in which this prey
+#'   was found. The last row contains the total number of non-empty stomach for the corresponding
+#'   predator.
+#' @param literature_diets A dataframe containing the diet proportions found in the literature
+#'   in a format similar to the stomach content data: the first row contains the names of the prey 
+#'   trophic groups, the headers contains the names of the consumer / predator trophic groups, 
+#'   and the rest are the average proportions of this prey in the predator's diet according to a 
+#'   literature study. The last row contains the pedigree score associated to the literature findings 
+#'   for each predators, a number between 0 and 1 indicating how much the literature findings are relevant
+#'   estimates for the input data.
+#' @param nb_literature A vector of one number containing the equivalent number of stomach 
+#' for the literature priors on the eta variable
+#' @param literature_slope A vector of one number containing the slope of the linear relationship 
+#'   between the pedigree scores and the PIs' coefficients of variation (CVs)
 #'
-#' @return a list of preprocessed data, ready to be run by the EcoDiet model
+#' @return A list of preprocessed data, ready to be fed to the EcoDiet model
+#' 
+#' @examples
+#' 
+#' example_biotracer_data <- read.csv(system.file("extdata", "example_biotracer_data.csv",
+#'                                                package = "EcoDiet"))
+#' example_stomach_data <- read.csv(system.file("extdata", "example_stomach_data.csv",
+#'                                              package = "EcoDiet"))
+#'
+#' data <- preprocess_data(biotracer_data = example_biotracer_data,
+#'                         trophic_discrimination_factor = c(0.8, 3.4),
+#'                         literature_configuration = FALSE,
+#'                         stomach_data = example_stomach_data)
+#'                         
+#' example_literature_diets <- read.csv(system.file("extdata", "example_literature_diets.csv",
+#'                                                  package = "EcoDiet"))
+#'                         
+#' data2 <- preprocess_data(biotracer_data = example_biotracer_data,
+#'                          trophic_discrimination_factor = c(0.8, 3.4),
+#'                          literature_configuration = literature_configuration,
+#'                          stomach_data = example_stomach_data,
+#'                          literature_diets = example_literature_diets,
+#'                          nb_literature = 10,
+#'                          literature_slope = 0.5)
 #'
 #' @export
 

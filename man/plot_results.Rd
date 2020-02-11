@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.R
 \name{plot_results}
 \alias{plot_results}
-\title{Plot the main results of the EcoDiet model (the means of each variable)}
+\title{Plot the posterior means or probability distribution(s)}
 \usage{
 plot_results(
   mcmc_output,
@@ -13,16 +13,58 @@ plot_results(
 )
 }
 \arguments{
-\item{mcmc_output}{the mcmc.list object outputed by the run_model() function}
+\item{mcmc_output}{the mcmc.list object output by the run_model() function}
 
-\item{data}{the preprocessed data outputed by the preprocess_data() function}
+\item{data}{the preprocessed data list output by the preprocess_data() function}
 
 \item{pred}{the predator name for which we want to plot the probability densities}
 
-\item{prey}{the prey(s) name for which we want to plot the probability densities}
+\item{prey}{the prey(s) name(s) for which we want to plot the probability densities}
 
-\item{variable}{the variable(s) for which we want to plot the probability densities}
+\item{variable}{the variable(s) for which we want to plot the probability densities. By default
+we will plot the two variables of interest: eta and PI.}
 }
 \description{
-Plot the main results of the EcoDiet model (the means of each variable)
+This function plots the posterior means or probability distribution(s) for one 
+or the two variable(s) of interest : the trophic link probabilities ("eta") and/or 
+the diet proportions ("PI").
+
+If no "pred" nor "prey" parameter is entered, the plot will be a raster plot with the mean priors for 
+all the trophic groups.
+
+If one predator name is entered as "pred", the probability distribution(s) will be plotted for all its 
+prey(s) by default. Some specific prey(s) name(s) can also be entered because if a predator has 
+22 preys, plotting them all will make the plot hard to read. So you can specify the one or many prey(s) 
+of interest and only display their corresponding probability distribution(s).
+
+The "variable" parameter can be specified if one wants to plot the priors for only one variable 
+("PI" or "eta").
+}
+\examples{
+
+\dontrun{
+realistic_biotracer_data <- read.csv(system.file("extdata", "realistic_biotracer_data.csv",
+                                               package = "EcoDiet"))
+realistic_stomach_data <- read.csv(system.file("extdata", "realistic_stomach_data.csv",
+                                             package = "EcoDiet"))
+
+data <- preprocess_data(biotracer_data = realistic_biotracer_data,
+                        trophic_discrimination_factor = c(0.8, 3.4),
+                        literature_configuration = FALSE,
+                        stomach_data = realistic_stomach_data)
+                        
+model_string <- write_model(literature_configuration = FALSE)
+
+mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e1, nb_iter = 1e2)
+                        
+plot_results(mcmc_output, data)
+plot_results(mcmc_output, data, pred = "Crabs")
+plot_results(mcmc_output, data, pred = "Crabs",
+             variable = "PI", prey = c("Bivalves", "Shrimps"))
+}
+
+}
+\seealso{
+\code{\link{plot_prior}} to plot the prior means or probability distribution(s),
+  \code{\link{plot_data}} to plot the input data
 }

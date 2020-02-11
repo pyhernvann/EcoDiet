@@ -2,22 +2,33 @@
 % Please edit documentation in R/write_model.R
 \name{write_model}
 \alias{write_model}
-\title{Write a string containing the EcoDiet model in the BUGS syntax}
+\title{Write the EcoDiet model in BUGS}
 \usage{
 write_model(literature_configuration = FALSE)
 }
 \arguments{
-\item{literature_configuration}{a boolean (TRUE or FALSE) indicating whether the model will have
+\item{literature_configuration}{A boolean (TRUE or FALSE) indicating whether the model will have
 prior distributions informed by a literature study}
 }
 \value{
-a string containing the model definition written in BUGS syntax
+A string containing the model definition in BUGS
 }
 \description{
-Write a string containing the EcoDiet model in the BUGS syntax
+This function writes the EcoDiet model in the BUGS syntax as a several line long string.
+
+The model definition depends on whether or not literature data will be used to inform the priors,
+hence the parameter \code{literature_configuration}.
+
+To know more about what is inside the model, please read the reference article.
 }
 \examples{
-model_string <- write_model(TRUE)
-model_string <- write_model(FALSE)
+model_string_1 <- write_model(literature_configuration = TRUE)
+cat(model_string_1)
 
+model_string_2 <- write_model(literature_configuration = FALSE)
+cat(model_string_2)
+
+}
+\seealso{
+\code{\link{run_model}} to run the model after it has been defined
 }
