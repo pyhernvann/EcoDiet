@@ -11,9 +11,9 @@ vignette: >
 
 This vignette help you deal with troubling messages from the `run_model` function.
 
-* The 'adaptation incomplete' warning or 'Stopping adaptation' note means that the samplers aren't optimised for your model after the adaptation phase. JAGS doesn't think that the model will run with the optimal state. This tends to happen in complex models for a too small number of adaptation steps (`nb_adapt`).
+* The 'adaptation incomplete' warning or 'Stopping adaptation' note mean that the samplers aren't optimised for your model after the adaptation phase. JAGS doesn't estimate that the model will run with the optimal state. This tends to happen in complex models for a too small number of adaptation steps (`nb_adapt`).
 
-* The 'convergence problem' warning means that the Gelman-Rubin diagnostic stayed above 1.1 for at least one variable. The Gelman-Rubin statistic is used to measure convergence for each variable. This tends to happen in complex models for a too small number of iteration (`nb_iter`).
+* The 'convergence problem' warning means that the Gelman-Rubin diagnostic stayed above 1.1 for at least one variable. The Gelman-Rubin statistic measures the convergence for each variable. Convergence problems can occur in complex models with too small number of iterations (`nb_iter`).
 
 As a prerequisite, the `preprocess_data`, `write_model` and `run_model` functions must have been run without errors before trying to solve the convergence problems:
 
@@ -37,7 +37,7 @@ mcmc_output <- run_model(textConnection(model_string), data)
 
 ## Increase the number of iterations and/or adaptation steps
 
-The first thing that should be tried is to put a high number of iterations and/or adaptation steps to run the model. Depending on your data, this can take **hours or days** to run:
+The first thing that you should try is setting a higher number of iterations and/or adaptation steps to run the model. Depending on your data (e.g., food-web complexity, data informativeness), this can take **hours or days** to run:
 
 ```{r, eval = FALSE}
 mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e4, nb_iter = 1e7)
@@ -54,7 +54,7 @@ load("convergence_diagnostic.Rdata")
 View(gelman)
 ```
 
-It will allow you to understand which variables has not converged properly (the closer to 1, the better it has converged).
+It will allow you to identify which variables have not converged properly (the closer to 1, the better it has converged) and understand the potential origins of the convergence failure.
 
 If the `PI` and `eta` variables has both trouble converging for a specific trophic link between a predator and a prey, you can look at the corresponding data to see if there is not an error somewhere (maybe a biotracer measurement was entered as 104 instead of 1.04 for this prey or predator).
 
@@ -62,9 +62,9 @@ If the `PI` and `eta` variables has both trouble converging for a specific troph
 
 The next step might be to define starting values from which to run the MCMC chains. By default JAGS will use the prior distributions to randomly fix the starting values of the chains, which can cause problems.
 
-First try to change the prior distributions used through the `literature_diets` table, the `nb_literature` and the `literature_slope` parameters to make the literature priors less inconsistent with the data (if you used priors from the literature).
+A large inconsistency between the literature priors and the data can eventually create convergence problems. Thus, first check and eventually modify the prior distributions used through the `literature_diets` table, the `nb_literature` and the `literature_slope` parameters (if you used priors from the literature).
 
-Or you can try to manually set a good set of fixed initial values, i.e., fixed values that you know are close to the values you want the model to converge to. This way the model should be faster to converge because it is given a good start.
+Or you can try to manually set a good set of fixed values for initializing MCMC chains, i.e., fixed values that you know are close to the values you want the model to converge to. This way the model is given a good start and it should be faster to converge.
 
 ## Conclusions
 
