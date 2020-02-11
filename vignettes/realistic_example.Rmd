@@ -121,7 +121,7 @@ data <- preprocess_data(biotracer_data = realistic_biotracer_data,
                         literature_configuration = literature_configuration,
                         stomach_data = realistic_stomach_data,
                         literature_diets = realistic_literature_diets,
-                        nb_literature = 25,
+                        nb_literature = 12,
                         literature_slope = 0.5)
 ```
 

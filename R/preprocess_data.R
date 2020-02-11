@@ -271,6 +271,11 @@ check_numeric_parameter <- function(numeric_parameter, parameter_name){
     stop("You can enter only one number for the \"", parameter_name, "\" parameter.\n",
          "  Please put only one value for this parameter.")
   }
+  
+  if (numeric_parameter < 0){
+    stop("You have entered a negative number for the \"", parameter_name, "\" parameter.\n",
+         "  Please use only a null or positive number.")
+  }
 
 }
 
@@ -472,12 +477,17 @@ preprocess_data <- function(biotracer_data, trophic_discrimination_factor,
     eta_hyperparam_2 <- matrix(data = NA, nrow = nb_group, ncol = nb_group)
     for (i in list_pred){
       for (k in list_prey[i, 1:nb_prey[i]]){
-        eta_hyperparam_1[k, i] <- ifelse(literature_diets[k,i] == 0, 1, (dzeta[i] - 1))
-        eta_hyperparam_2[k, i] <- dzeta[i] - eta_hyperparam_1[k, i]
+        eta_hyperparam_1[k, i] <- ifelse(literature_diets[k, i] == 0, 1, (dzeta[i] + 1))
+        eta_hyperparam_2[k, i] <- ifelse(literature_diets[k, i] == 0, (dzeta[i] + 1), 1)
       }
     }
 
     check_numeric_parameter(literature_slope, "literature_slope")
+    
+    if (literature_slope > 1){
+      stop("You cannot use a number above 1 for the \"literature_slope\" parameter.\n",
+           "  Please put only a number between 0 and 1.")
+      }
     # Create the coefficients of variation from the literature pedigree and the slope parameter
     CVs_literature <- 1 - literature_pedigrees * literature_slope
 
