@@ -1,3 +1,29 @@
+#' Check an input boolean parameter
+#'
+#' @param boolean_parameter the boolean parameter to check
+#' @param parameter_name its name
+#'
+#' @keywords internal
+#' @noRd
+
+check_boolean_parameter <- function(boolean_parameter, parameter_name){
+  
+  # Check that this is a logical vector
+  if (!is.logical(boolean_parameter)){
+    stop("The ", parameter_name, " parameter should be TRUE or FALSE, not anything else.")
+  }
+  
+  # Check that this is a vector of length one
+  if (length(boolean_parameter) != 1){
+    stop("The ", parameter_name, " parameter should have only one element and not many.\n",
+         "  But here it is a vector of lenght ", length(boolean_parameter), ".\n",
+         "  Please do not enter a ", parameter_name, " argument or use either:",
+         " \"", parameter_name, " = TRUE\" or \"", parameter_name, " = FALSE\".")
+  }
+  
+}
+
+
 #' Check the stomach content data
 #'
 #' @param stomach_data the preprocessed stomach content data
@@ -151,30 +177,6 @@ check_tef_data <- function(trophic_discrimination_factor, biotracer_data){
   }
 }
 
-#' Check the literature configuration
-#'
-#' @param literature_configuration the input literature configuration argument
-#'
-#' @keywords internal
-#' @noRd
-
-check_literature_configuration <- function(literature_configuration){
-
-  # Check that this is a logical vector
-  if (!is.logical(literature_configuration)){
-    stop("The literature_configuration should be TRUE or FALSE, not anything else.")
-  }
-
-  # Check that this is a vector of length one
-  if (length(literature_configuration) != 1){
-    stop("The literature_configuration should have only one element and not many.\n",
-         "  But here it is a vector of lenght ", length(literature_configuration), ".\n",
-         "  Please do not enter a literature_configuration argument or use either:",
-         " \"literature_configuration = TRUE\" or \"literature_configuration = FALSE\".")
-  }
-
-}
-
 
 #' Check the literature diet matrix
 #'
@@ -307,6 +309,9 @@ check_numeric_parameter <- function(numeric_parameter, parameter_name){
 #'   predator trophic groups, and the rest are the number of the predator's stomachs in which this prey
 #'   was found. The last row contains the total number of non-empty stomach for the corresponding
 #'   predator.
+#' @param rescale_stomach A boolean (TRUE or FALSE) indicating whether the stomach content data will be rescaled.
+#'   If TRUE, the stomach occurences are upscaled by dividing them by the maximum occurrences / the number
+#'   of non-empty stomach.
 #' @param literature_diets A dataframe containing the diet proportions found in the literature
 #'   in a format similar to the stomach content data: the first row contains the names of the prey 
 #'   trophic groups, the headers contains the names of the consumer / predator trophic groups, 
@@ -351,8 +356,12 @@ preprocess_data <- function(biotracer_data, trophic_discrimination_factor,
                             topology = NULL,
                             element_concentration = 1,
                             stomach_data = NULL,
+                            rescale_stomach = FALSE,
                             literature_diets = NULL,
                             nb_literature, literature_slope){
+  
+  check_boolean_parameter(literature_configuration, "literature_configuration")
+  check_boolean_parameter(rescale_stomach,          "rescale_stomach")
 
   # Rearrange the stomachal data
   if (colnames(stomach_data)[1] == "X"){
@@ -369,6 +378,19 @@ preprocess_data <- function(biotracer_data, trophic_discrimination_factor,
 
   nb_o <- stomach_data[nrow(stomach_data), ]
   stomach_data <- stomach_data[-nrow(stomach_data), ]
+  
+  # Upscale the stomach occurences if rescale_stomach is TRUE
+  if (rescale_stomach){
+    max_occurences <- apply(stomach_data, FUN = max, 2, na.rm = TRUE)
+    for (j in 1:ncol(stomach_data)) {
+      if (max_occurences[j] != 0) {
+        scaled <- round(stomach_data[, j] * nb_o[j] / max_occurences[j])
+      }
+      for (i in 1:nrow(stomach_data)) {
+        stomach_data[i, j] <- min(scaled[i], nb_o[j])
+      }
+    }
+  }
 
   # Check the biotracer and trophic enrichement factor data
   check_biotracer_data(biotracer_data, stomach_data)
@@ -393,8 +415,6 @@ preprocess_data <- function(biotracer_data, trophic_discrimination_factor,
   if (length(element_concentration) == 1){
     element_concentration <- matrix(element_concentration, nrow = nb_elem, ncol = nb_group)
   }
-
-  check_literature_configuration(literature_configuration)
 
   if (literature_configuration){
     # Check that the user entered a literature diets matrix

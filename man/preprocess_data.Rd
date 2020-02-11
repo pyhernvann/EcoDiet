@@ -11,6 +11,7 @@ preprocess_data(
   topology = NULL,
   element_concentration = 1,
   stomach_data = NULL,
+  rescale_stomach = FALSE,
   literature_diets = NULL,
   nb_literature,
   literature_slope
@@ -41,6 +42,10 @@ contains the names of the prey trophic groups, the headers contains the names of
 predator trophic groups, and the rest are the number of the predator's stomachs in which this prey
 was found. The last row contains the total number of non-empty stomach for the corresponding
 predator.}
+
+\item{rescale_stomach}{A boolean (TRUE or FALSE) indicating whether the stomach content data will be rescaled.
+If TRUE, the stomach occurences are upscaled by dividing them by the maximum occurrences / the number
+of non-empty stomach.}
 
 \item{literature_diets}{A dataframe containing the diet proportions found in the literature
 in a format similar to the stomach content data: the first row contains the names of the prey 
