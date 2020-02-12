@@ -343,7 +343,7 @@ check_numeric_parameter <- function(numeric_parameter, parameter_name){
 #'                         
 #' data2 <- preprocess_data(biotracer_data = example_biotracer_data,
 #'                          trophic_discrimination_factor = c(0.8, 3.4),
-#'                          literature_configuration = literature_configuration,
+#'                          literature_configuration = TRUE,
 #'                          stomach_data = example_stomach_data,
 #'                          literature_diets = example_literature_diets,
 #'                          nb_literature = 10,

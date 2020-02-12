@@ -65,7 +65,7 @@ print_convergence_diagnostic <- function(mcmc_output){
 #'   are not too influenced by the first initial random values. 
 #'   By default we use the same strategy as the rjags package and define the number of iterations to be
 #'   burnt to be as high as the number of iterations to be kept.
-#' @param variable_to_save A vector of variable names defining the variables to output. 
+#' @param variables_to_save A vector of variable names defining the variables to output. 
 #'   The number has a big number of variables but by default we only save the variables of interest
 #'   that are the trophic link probabilities \code{eta} and the diet proportions \code{PI}.
 #'   Only these saved variables are used to compute the Gelman-Rubin statistics that indicate whether

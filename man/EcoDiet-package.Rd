@@ -4,7 +4,7 @@
 \name{EcoDiet-package}
 \alias{EcoDiet}
 \alias{EcoDiet-package}
-\title{EcoDiet: Estimating a diet matrix from biotracer and stomach content data.}
+\title{EcoDiet: Estimating a diet matrix from biotracer and stomach content data}
 \description{
 \if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
 

@@ -1,6 +1,6 @@
 Package: EcoDiet
 Type: Package
-Title: Estimating a diet matrix from biotracer and stomach content data.
+Title: Estimating a diet matrix from biotracer and stomach content data
 Description: The goal of the package is to estimate a probabilistic topology matrix 
     (all trophic link probabilities) and a diet matrix (all diet propotions) by combining biotracers 
     and stomach content analyses in a Bayesian hierarchical model.
@@ -19,7 +19,8 @@ Depends:
     R (>= 3.5)
 Imports:
     ggplot2 (>= 3.2),
-    rjags (>= 4.10)
+    rjags (>= 4.10),
+    coda (>= 0.19)
 Suggests: 
     knitr,
     rmarkdown,
