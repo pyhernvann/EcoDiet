@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-EcoDiet is a new tool for assimilating data in food-web studies. The goal of the package is to simultaneously estimate a probabilistic topology matrix and a diet matrix by combining biotracers and stomach content analyses in a Bayesian hierarchical model. The topology matrix contains all trophic link probabilities $\eta$, hence it gives for any prey the probability to be eaten by a given predator. The diet matrix contains all diet proportions $\Pi$, hence it gives for any prey the percentage of its contribution to a given predator's diet. The full model and its application on a real dataset are described in *Hernvann et al.* (under review).
+EcoDiet is a new tool for assimilating data in food-web studies. The goal of the package is to simultaneously estimate a probabilistic topology matrix and a diet matrix by combining biotracers and stomach content analyses in a Bayesian hierarchical model. The topology matrix contains all trophic link probabilities $\eta$, hence it gives for any prey the probability to be eaten by a given predator. The diet matrix contains all diet proportions $\Pi$, hence it gives for any prey the percentage of its contribution to a given predator's diet. The full model and its application on a real dataset are described in *Hernvann et al.* (under review). Use `citation("EcoDiet")` to get the full reference.
 
 There are different ways of using this package:
 
@@ -45,7 +45,7 @@ example_biotracer_data <- read.csv("./data/my_biotracer_data.csv", sep = ";")
 
 ### Stomach content data
 
-The stomach content table gathers the sum of occurrences of each prey type in the stomachs of each trophic group. The first column of the table contains the names of the prey type and the headers of the following columns contain the names of all the trophic groups. The last row of the table should be named "full", and indicates how many (non-empty) stomachs have been analyzed for each trophic group.
+The stomach content table gathers the sum of occurrences of each prey species (or trophic group) in the stomachs of each trophic group. The first column of the table contains the names of the prey trophic group and the headers of the following columns contain the names of all the predator trophic groups. The last row of the table should be named "full", and indicates how many (non-empty) stomachs have been analyzed for each trophic group.
 
 ```{r}
 example_stomach_data_path <- system.file("extdata", "example_stomach_data.csv",
@@ -60,7 +60,7 @@ If you have trophic groups for which no stomach content analyses were done, you 
 
 ### Biotracer data
 
-Each line of the table represents one individual on which were conducted stable isotope analyses for various elements (carbon and nitrogen here). The first column of the table should be called "group" and indicates to which trophic group the individual belongs. The other columns contain the measures.
+Each line of the table represents one individual on which were conducted biotracer analyses for various elements (here stable isotope analyses for carbon and nitrogen). The first column of the table should be called "group" and indicates to which species or trophic group the individual belongs. The other columns contain the measures.
 
 ```{r}
 example_biotracer_data_path <- system.file("extdata", "example_biotracer_data.csv",
@@ -69,7 +69,7 @@ example_biotracer_data <- read.csv(example_biotracer_data_path)
 knitr::kable(example_biotracer_data)
 ```
 
-You should have the same trophic groups in your stomach content and biotracer data. Thus, if you have a group with stomach content analyses but without biotracer data, you should still enter it as one line in the biotracer data with "NA" values (as it is the case for the "huge" group).
+You should have the same list of trophic groups in your stomach content and biotracer data. Thus, if you have a group with stomach content analyses but without biotracer data, you should still enter it as one line in the biotracer data with "NA" values (as it is the case for the "huge" group).
 
 You also need to define the trophic discrimination factors corresponding to your biotracer data. In this example, we use the following trophic discrimination factors:
 
@@ -111,14 +111,14 @@ data <- preprocess_data(biotracer_data = example_biotracer_data,
 
 ### Check the trophic links
 
-These are the links that will be investigated by the model. It is not wise to assume that all the trophic links are possible. You therefore need to keep only the reasonnable trophic links (e.g., a shrimp cannot eat a whale). The matrix displayed by the `preprocess_data` function is based by default on the stomach content data (`data$o`):
+These are the links that will be investigated by the model. It is not wise to assume that all the trophic links are possible. You therefore need to consider only the reasonnable and important trophic links (e.g., a shrimp cannot eat a whale), as adding weak trophic links may introduce too much uncertainty in EcoDiet estimates. The matrix displayed by the `preprocess_data` function is based by default on the stomach content data (`data$o`):
 
 ```{r}
 topology <- 1 * (data$o > 0)
 print(topology)
 ```
 
-If you want to add another trophic link, you can modify directly the binary topology matrix. It can be useful if your stomach sampling size is too low and you missed a prey you are definitely sure that the predator feeds on, or if the prey is difficulty identifiable is stomachs (e.g., really small and highly digestible prey). To specify that the "huge" animal can also eat "small" animals, you can do:
+If you want to add another trophic link, you can modify directly the binary topology matrix. It can be useful if your stomach sampling size is too low and you missed a prey you are definitely sure that the predator feeds on, or if the prey is little identifiable in stomachs (e.g., really small and highly digestible prey). To specify that the "huge" animal can also eat "small" animals, you can do:
 
 ```{r}
 topology["small", "huge"] <- 1
@@ -149,7 +149,7 @@ literature_configuration <- TRUE
 
 A literature diet table is used to set priors on the trophic link probabilities $\eta$ and the diet proportions $\Pi$. This table is similar to the stomach contents table, as all trophic groups must be included in the columns and rows. The numbers are the average diet proportions found in the literature. Here, the selected studies have identified that "huge" animals eat equally "large" and "medium" animals (thus the 0.5 and 0.5 numbers in the first column). The proportions for a given predator (i.e., within a given column) must sum to 1. The "small" animals are at the base of the ecosystem, so the column is filled with zeros.
 
-The last row of the table corresponds to the literature pedigree score. This score (a number from 0 to 1) quantifies the literature reliability on each predator's diet. Here the dietary proportions from the literature are used to produce reliable estimates for the "huge" animals, e.g., the pedigree score associated is high (0.9). On the contrary, the diet proportions for the "medium" animals come from an older article focusing on a very different ecosystem so estimates produced are less reliable, e.g, the pedigree score is low (0.2). The pedigree score for the "small" animals is set at 1, because this group eats nothing.
+The last row of the table corresponds to the literature pedigree score. This score (a number from 0 to 1) quantifies the literature reliability on each predator's diet. Here the dietary proportions from the literature are used to produce reliable estimates for the "huge" animals, e.g., the pedigree score associated is high (0.9). On the contrary, the diet proportions for the "medium" animals come from an older article focusing on a very different ecosystem so estimates produced are less reliable, e.g, the pedigree score is low (0.2). The pedigree score for the "small" animals is set at 1, because this group eats nothing. For more details please read the reference article.
 
 ```{r}
 example_literature_diets_path <- system.file("extdata", "example_literature_diets.csv",
@@ -166,7 +166,7 @@ This summary of the literature data will be used to formulate:
 
 The Pedigree scores are used to determine the priors' precision. Other parameters can be used to adjust the prior distributions:
 
-* the `nb_literature` parameter (an integer higher than 2). The higher the number, the stronger the weight will be of the literature in the final inference on $\eta$. Setting this parameter to 10 is like saying that the prior from the literature will weigh as much as the additional data from 10 stomachs. Thus for any particular application, `nb_literature` should be set to a value smaller than the sample size in the available stomach content data.
+* the `nb_literature` parameter. The higher the number, the stronger the weight will be of the literature in the final inference on $\eta$. Setting this parameter to 10 is like saying that the prior from the literature will weigh as much as the additional data from 10 stomachs. Thus for any particular application, `nb_literature` should be set to a value smaller than the sample size in the available stomach content data.
 
 ```{r}
 nb_literature = 10
@@ -292,13 +292,13 @@ You can see the model with this command:
 cat(model_string)
 ```
 
-You can run the model first with very low adaption step and iteration number to test if it is compiling properly:
+First run the model with low adaption and iteration numbers to test if it is compiling properly:
 
 ```{r}
 mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e1, nb_iter = 1e2)
 ```
 
-This low number of iterations will surely not be enough to achieve a satisfactory model convergence. You should progressively increase the number of adaptation steps `nb_adapt` and of iterations `nb_iter` until you no longer see an "adaptation incomplete" warning, or a "convergence problem" message.
+The low numbers will surely not be enough to achieve a satisfactory model convergence. You should progressively increase the number of adaptation steps `nb_adapt` and of iterations `nb_iter` until you no longer see an "adaptation incomplete" warning, or a "convergence problem" message.
 
 Depending on your data, the model can take **hours or days** to run:
 
