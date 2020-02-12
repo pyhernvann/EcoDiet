@@ -100,6 +100,15 @@ data <- preprocess_data(biotracer_data = example_biotracer_data,
 
 If any error appears, it means your data is not in the correct format. Please read the error message and rearrange your data in the correct format.
 
+If you have a lot of small values in the stomach occurences, you can choose to upscale the stomach content data:
+```{r}
+data <- preprocess_data(biotracer_data = example_biotracer_data,
+                        trophic_discrimination_factor = c(0.8, 3.4),
+                        literature_configuration = literature_configuration,
+                        stomach_data = example_stomach_data,
+                        rescale_stomach = TRUE)
+```
+
 ### Check the trophic links
 
 These are the links that will be investigated by the model. It is not wise to assume that all the trophic links are possible. You therefore need to keep only the reasonnable trophic links (e.g., a shrimp cannot eat a whale). The matrix displayed by the `preprocess_data` function is based by default on the stomach content data (`data$o`):
@@ -184,6 +193,18 @@ data <- preprocess_data(biotracer_data = example_biotracer_data,
 ```
 
 If any error appears, it means your data is not in the correct format. Please read the error message and try to rearrange the data in the correct format.
+
+If you have a lot of small values in the stomach occurences, you can choose to upscale the stomach content data:
+```{r}
+data <- preprocess_data(biotracer_data = example_biotracer_data,
+                        trophic_discrimination_factor = c(0.8, 3.4),
+                        literature_configuration = literature_configuration,
+                        stomach_data = example_stomach_data,
+                        rescale_stomach = TRUE,
+                        literature_diets = example_literature_diets,
+                        nb_literature = 10,
+                        literature_slope = 0.5)
+```
 
 ### Check the trophic links to investigate
 
