@@ -20,7 +20,9 @@ Depends:
 Imports:
     ggplot2 (>= 3.2),
     rjags (>= 4.10),
-    coda (>= 0.19)
+    coda (>= 0.19),
+    stats (>= 3.6),
+    utils (>= 3.6)
 Suggests: 
     knitr,
     rmarkdown,

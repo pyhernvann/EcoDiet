@@ -124,7 +124,7 @@ run_model <- function(model_file, data, inits = NULL,
   
   start_run <- Sys.time()
   
-  update(jags_model, n.iter = nb_burnin)
+  stats::update(jags_model, n.iter = nb_burnin)
 
   mcmc_output <- rjags::coda.samples(
     model = jags_model,

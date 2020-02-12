@@ -339,6 +339,10 @@ write.table(mean, file = "eta_mean.csv", sep = ",", col.names = NA)
 The probability distributions can be plotted for one predator:
 
 ```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
+plot_results(mcmc_output_example, data, pred = "huge")
+```
+
+```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
 plot_results(mcmc_output_example, data, pred = "large")
 ```
 

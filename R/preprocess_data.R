@@ -131,7 +131,7 @@ check_biotracer_data <- function(biotracer_data, stomach_data){
   if (!all(na_count == na_count[1])){
     stop("The biotracer data should not contain individuals with both NA and regular measures.\n",
          "  But we have found a different number of NA for the biotracers: \n",
-         paste(capture.output(na_count), collapse = "\n"),
+         paste(utils::capture.output(na_count), collapse = "\n"),
          "\n  Please remove the individuals for which not all the biotracer measures were done.")
   }
 }
@@ -453,7 +453,7 @@ preprocess_data <- function(biotracer_data, trophic_discrimination_factor,
 
   # Print the trophic links
   message("The model will investigate the following trophic links:\n",
-          paste(capture.output(topology), "\n", sep=""))
+          paste(utils::capture.output(topology), "\n", sep=""))
 
   # Constructs the model indices from the binary web matrix
   nb_prey  <- colSums(topology)

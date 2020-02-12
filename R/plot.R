@@ -26,7 +26,7 @@ plot_biotracer_data <- function(biotracer_data, save){
         figure <- ggplot(biotracer_data,
                          aes(x = biotracer_data[, element1 + 1],
                              y = biotracer_data[, element2 + 1],
-                             colour = group)) +
+                             colour = biotracer_data$group)) +
           ggtitle("Isotopic measurements") +
           xlab(names(biotracer_data)[element1 + 1]) +
           ylab(names(biotracer_data)[element2 + 1]) +
@@ -40,7 +40,7 @@ plot_biotracer_data <- function(biotracer_data, save){
                 axis.text.x = element_text(margin = margin(3, 0, 0, 0), size = 12),
                 plot.title = element_text(hjust = 0.5))
 
-        plot(figure)
+        print(figure)
         
         if (save){
           ggsave(paste0("figure_biotracer_", element1, "_", element2,
@@ -72,10 +72,11 @@ plot_matrix <- function(matrix, title, save){
                    rep(rownames(matrix), nrow(matrix)),
                    unlist(matrix))
   colnames(df) <- c("pred", "prey", "value")
+  df$value <- round(df$value, 2)
   df$pred <- as.numeric(df$pred)
   df$prey <- rev(as.numeric(df$prey))
 
-  figure <- ggplot(df, aes(x = pred, y = prey, fill = value)) + geom_raster() + theme_bw() +
+  figure <- ggplot(df, aes_string(x = "pred", y = "prey", fill = "value")) + geom_raster() + theme_bw() +
     scale_x_continuous(labels = colnames(matrix), breaks = seq(1, ncol(matrix))) +
     scale_y_continuous(labels = rev(rownames(matrix)), breaks = seq(1, nrow(matrix))) +
     scale_fill_gradient(low = "white", high = "blue3", limit = c(0, 1)) +
@@ -91,15 +92,15 @@ plot_matrix <- function(matrix, title, save){
           plot.title = element_text(hjust = 0.5))
   
   if (ncol(matrix) < 15){ 
-    figure <- figure + geom_text(data = df[!is.na(df$value), ], aes(label = round(value, 2)))
+    figure <- figure + geom_text(data = df[!is.na(df$value), ], aes_string(label = "value"))
   }
+  
+  print(figure)
   
   if (save){
     ggsave(paste0("figure_", gsub(" ", "_", title), format(Sys.time(),'_%Y-%m-%d_%H-%M-%S'), ".png"), 
            height = 4.4, width = 6.2)
   }
-
-  plot(figure)
 
 }
 
@@ -185,6 +186,7 @@ plot_data <- function(biotracer_data = NULL, stomach_data = NULL, save = FALSE){
 plot_prior_distribution <- function(data, literature_configuration, pred, prey, 
                                     variable, title, save){
 
+  # Check that the entered predator is correct
   pred_index <- which(colnames(data$o) == pred)
   if (length(pred_index) == 0){
     stop("You did not put a correct predator name in the `pred` argument.\n",
@@ -196,6 +198,7 @@ plot_prior_distribution <- function(data, literature_configuration, pred, prey,
     stop("The predator you have chosen (\"", pred, "\") has no prey and thus cannot be plotted.")
   }
 
+  # Check that the entered prey(s) is/are correct
   if (is.null(prey)){
     prey_index <- data$list_prey[pred_index, ]
     prey_index <- prey_index[!is.na(prey_index)]
@@ -220,6 +223,7 @@ plot_prior_distribution <- function(data, literature_configuration, pred, prey,
     }
   }
 
+  # Construct the corresponding data frame
   x <-  seq(0, 1, length = 101)
   df_to_plot <- data.frame(Prey = c(), x = c(), Density = c())
 
@@ -228,31 +232,34 @@ plot_prior_distribution <- function(data, literature_configuration, pred, prey,
     if (prey_idx %in% data$list_prey[pred_index, ]){
       if (variable == "PI"){
         if (literature_configuration) {
-          Density <- dbeta(x, data$alpha_lit[prey_idx, pred_index],
-                           colSums(data$alpha_lit)[pred_index] - data$alpha_lit[prey_idx, pred_index])
+          Density <- stats::dbeta(x, data$alpha_lit[prey_idx, pred_index],
+                                  colSums(data$alpha_lit)[pred_index] - 
+                                    data$alpha_lit[prey_idx, pred_index])
         } else {
-          Density <- dbeta(x, 1, data$nb_prey[pred_index] - 1)
+          Density <- stats::dbeta(x, 1, data$nb_prey[pred_index] - 1)
         }
       } else if (variable == "eta"){
         if (literature_configuration) {
-          Density <- dbeta(x, data$eta_hyperparam_1[prey_idx, pred_index],
-                           data$eta_hyperparam_2[prey_idx, pred_index])
+          Density <- stats::dbeta(x, data$eta_hyperparam_1[prey_idx, pred_index],
+                                  data$eta_hyperparam_2[prey_idx, pred_index])
         } else {
-          Density <- dbeta(x, 1, 1)
+          Density <- stats::dbeta(x, 1, 1)
         }
       }
       df_to_plot <- rbind(df_to_plot, data.frame(Prey = rep(each_prey, 101), x = x, Density = Density))
     }
   }
 
-  figure <- ggplot(df_to_plot, aes(x = x, y = Density, colour = Prey, linetype = Prey)) +
+  # Plot the figure
+  figure <- ggplot(df_to_plot, aes_string(x = "x", y = "Density", colour = "Prey", linetype = "Prey")) +
     geom_line(size = 1.25) +
     ggtitle(paste(title, "\nfor the", pred, "predator")) +
     xlim(0, 1) +
     theme_bw() +
     theme(axis.title.x = element_blank(),
           plot.title = element_text(hjust = 0.5))
-  plot(figure)
+  
+  print(figure)
   
   if (save){
     ggsave(paste0("figure_", gsub(" ", "_", title), "_for_the_", pred, "_predator",
@@ -411,6 +418,7 @@ extract_mean <- function(mcmc_output, data, variable = "PI"){
 plot_posterior_distribution <- function(mcmc_output, data, pred, prey,
                                         variable, title, save){
 
+  # Check that the entered predator is correct
   pred_index <- which(colnames(data$o) == pred)
   if (length(pred_index) == 0){
     stop("You did not put a correct predator name in the `pred` argument.\n",
@@ -422,6 +430,7 @@ plot_posterior_distribution <- function(mcmc_output, data, pred, prey,
     stop("The predator you have chosen (\"", pred, "\") has no prey and thus cannot be plotted.")
   }
 
+  # Check that the entered prey(s) is/are correct
   if (!is.null(prey)){
     prey_index <- which(colnames(data$o) %in% prey)
     if (length(prey) != length(prey_index)){
@@ -475,9 +484,9 @@ plot_posterior_distribution <- function(mcmc_output, data, pred, prey,
 
   # Plot these values to represent the approximated probability densities
   figure <- ggplot(df_to_plot) +
-    geom_density(aes(x = variable_to_plot, y=..scaled.., fill = Prey),
+    geom_density(aes_string("variable_to_plot", fill = "Prey"),
                  alpha = .3, adjust = 1/2, na.rm = TRUE) +
-    geom_density(aes(x = variable_to_plot, y=..scaled.., color = Prey),
+    geom_density(aes_string("variable_to_plot", color = "Prey"),
                  size = 1.25, adjust = 1/2, na.rm = TRUE) +
     ggtitle(paste(title, "\nfor the", colnames(data$o)[pred_index], "predator")) +
     ylab("Density") +
@@ -488,7 +497,7 @@ plot_posterior_distribution <- function(mcmc_output, data, pred, prey,
     theme(axis.title.x = element_blank(),
           plot.title = element_text(hjust = 0.5))
 
-  plot(figure)
+  print(figure)
   
   if (save){
     ggsave(paste0("figure_", gsub(" ", "_", title), "_for_the_", colnames(data$o)[pred_index], "_predator",
