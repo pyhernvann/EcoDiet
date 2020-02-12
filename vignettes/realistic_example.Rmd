@@ -85,21 +85,33 @@ You should now try to run the model until it converges (it should take around **
 mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e3, nb_iter = 1e5)
 ```
 
-The results are rough because they are only based on a few iterations but you should try these commands after the model has converged:
+Here are the figures corresponding to the results that have converged:
 
-```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
+```{r, eval = FALSE}
 plot_results(mcmc_output, data)
 ```
 
-```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
+![](../man/figures/eta_mean_without_lit.png){width=700px}
+
+![](../man/figures/PI_mean_without_lit.png){width=700px}
+
+
+
+```{r, eval = FALSE}
 plot_results(mcmc_output, data, pred = "Pout")
 ```
 
+![](../man/figures/eta_pouts_without_lit.png){width=550px}
+
+![](../man/figures/PI_pouts_without_lit.png){width=550px}
+
 You can also plot the results for specific prey if you want a clearer figure:
-```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
+```{r, eval = FALSE}
 plot_results(mcmc_output, data, pred = "Pout", 
              variable = "PI", prey = c("Bivalves", "Worms"))
 ```
+
+![](../man/figures/PI_pouts_without_lit_details.png){width=550px}
 
 ## The configuration with literature data
 
@@ -152,13 +164,23 @@ You should now try to run the model until it converges (it should take around **
 mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e3, nb_iter = 1e5)
 ```
 
-```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
+Here are the figures corresponding to the results that have converged:
+
+```{r, eval = FALSE}
 plot_results(mcmc_output, data)
 ```
 
-```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
+![](../man/figures/eta_mean_with_lit.png){width=700px}
+
+![](../man/figures/PI_mean_with_lit.png){width=700px}
+
+```{r, eval = FALSE}
 plot_results(mcmc_output, data, pred = "Pout")
 ```
+
+![](../man/figures/eta_pouts_with_lit.png){width=550px}
+
+![](../man/figures/PI_pouts_with_lit.png){width=550px}
 
 You can save the figures as PNG using:
 
