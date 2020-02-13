@@ -4,12 +4,12 @@
 \name{EcoDiet-package}
 \alias{EcoDiet}
 \alias{EcoDiet-package}
-\title{EcoDiet: Estimating a diet matrix from biotracer and stomach content data}
+\title{EcoDiet: Estimating a Diet Matrix from Biotracer and Stomach Content Data}
 \description{
 \if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
 
 The goal of the package is to estimate a probabilistic topology matrix 
-    (all trophic link probabilities) and a diet matrix (all diet propotions) by combining biotracers 
+    (all trophic link probabilities) and a diet matrix (all diet proportions) by combining biotracers 
     and stomach content analyses in a Bayesian hierarchical model.
     The package relies on the JAGS software and the rjags package to run a Markov chain Monte Carlo 
     approximation of the different variables.
