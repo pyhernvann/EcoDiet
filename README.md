@@ -1,6 +1,6 @@
 # EcoDiet <img src="man/figures/logo.PNG" align="right" width="120" />
 
-The goal of the package is to estimate a probabilistic topology matrix (all trophic link probabilities) and a diet matrix (all diet propotions) by combining biotracers and stomach content analyses in a Bayesian hierarchical model.
+The goal of the package is to estimate a probabilistic topology matrix (all trophic link probabilities) and a diet matrix (all diet proportions) by combining biotracers and stomach content analyses in a Bayesian hierarchical model.
 
 The full model and its application on a real dataset are described in *Hernvann et al.* (under review). Use `citation("EcoDiet")` to get the full reference.
 
