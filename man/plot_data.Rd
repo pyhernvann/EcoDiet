@@ -4,7 +4,12 @@
 \alias{plot_data}
 \title{Plot the input data}
 \usage{
-plot_data(biotracer_data = NULL, stomach_data = NULL, save = FALSE)
+plot_data(
+  biotracer_data = NULL,
+  stomach_data = NULL,
+  save = FALSE,
+  save_path = "."
+)
 }
 \arguments{
 \item{biotracer_data}{A dataframe containing the biotracer data in the specific format: the first column
@@ -19,12 +24,16 @@ predator.}
 
 \item{save}{A boolean describing whether the figure should be saved as PNG. 
 By default the figures are not saved.}
+
+\item{save_path}{A string describing the path to which the figures should be saved.
+By default the figures are saved in a temporary directory.}
 }
 \description{
 This function is used to plot the input biotracer and/or the stomach content data.
 You can use the function with only one parameter to plot only one kind of data.
 
-The figure(s) can be saved as PNG using: \code{save = TRUE}.
+The figure(s) can be saved as PNG using: \code{save = TRUE}, and the directory path to which
+the figures are saved can be precised with: \code{save_path = "."}.
 
 If only the stomach content data is entered, there will be a single raster plot containing the proportions
 of occurences in the stomachs. 
@@ -46,7 +55,10 @@ plot_data(stomach_data = example_stomach_data)
 
 plot_data(biotracer_data = example_biotracer_data,
           stomach_data = example_stomach_data)
-
+          
+plot_data(biotracer_data = example_biotracer_data,
+          stomach_data = example_stomach_data,
+          save = TRUE, save_path = tempdir())
      
 }
 \seealso{

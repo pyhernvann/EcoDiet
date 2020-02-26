@@ -243,12 +243,12 @@ plot_data(biotracer_data = example_biotracer_data,
           stomach_data = example_stomach_data)
 ```
 
-You can save the figures as PNG using: 
+You can save the figures as PNG in the current folder using: 
 
 ```{r, eval = FALSE}
 plot_data(biotracer_data = example_biotracer_data,
           stomach_data = example_stomach_data,
-          save = TRUE)
+          save = TRUE, save_path = ".")
 ```
 
 Whether the priors are non-informative or informed by the literature, you can plot the mean of the prior distributions for the trophic link probabilities $\eta$ and the diet proportions $\Pi$:
@@ -312,7 +312,7 @@ mcmc_output_example <- run_model(textConnection(model_string), data,
 save(mcmc_output_example, file = "./data/mcmc_output_example.rda")
 ```
 
-The `run_model` function automatically saves the results in a file named `mcmc_ouput.Rdata`.
+Don't forget to save the results before quitting R to not lose them.
 
 ## 6. Plot and save the results
 
@@ -324,14 +324,10 @@ The model's outputs are the approximated a posteriori distributions for the trop
 plot_results(mcmc_output_example, data)
 ```
 
-The means are automatically saved when running this function. You can load and save them as `.csv` tables:
+You can access the mean value for each variable with the following:
 
-```{r, eval = FALSE}
-load("PI_mean.Rdata")
-write.table(mean,  file = "PI_mean.csv",  sep = ",", col.names = NA)
-
-load("eta_mean.Rdata")
-write.table(mean, file = "eta_mean.csv", sep = ",", col.names = NA)
+```{r}
+print(colMeans(mcmc_output_example))
 ```
 
 ### The probability distributions
@@ -371,14 +367,9 @@ quantiles <- signif(quantiles, digits = 2)
 knitr::kable(quantiles)
 ```
 
-The quantiles can finally be saved as `.csv` tables:
-```{r, eval = FALSE}
-write.table(quantiles, file = "quantiles.csv", sep = ",", col.names = NA)
-```
-
 ## 7. Save another variable than $\Pi$ and $\eta$
 
-You have the possibility to access all the model parameters. For example you may be interested by the variable $\delta$ that represents the trophic discrimination factor. In the EcoDiet model, a different trophic discrimination factor is used for each trophic group and for each element, allowing some differences between species. We can save these parameters using the `variables_to_save` argument:
+You have the possibility to access all the model parameters. For example you may be interested by the variable $\delta$ that represents the trophic discrimination factor. In the EcoDiet model, a different trophic discrimination factor is used for each trophic group and for each element, allowing some differences between species. We can get these parameters using the `variables_to_save` argument:
 
 ```{r}
 mcmc_output <- run_model(textConnection(model_string), data, 

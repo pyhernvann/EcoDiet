@@ -10,7 +10,8 @@ plot_prior(
   pred = NULL,
   prey = NULL,
   variable = c("eta", "PI"),
-  save = FALSE
+  save = FALSE,
+  save_path = "."
 )
 }
 \arguments{
@@ -28,12 +29,16 @@ we will plot the two variables of interest: eta and PI.}
 
 \item{save}{A boolean describing whether the figure should be saved as PNG. 
 By default the figures are not saved.}
+
+\item{save_path}{A string describing the path to which the figures should be saved.
+By default the figures are saved in a temporary directory.}
 }
 \description{
 This function plots the prior means or probability distribution(s) for one or the two
 variable(s) of interest : the trophic link probabilities ("eta") and/or the diet proportions ("PI").
 
-The figure(s) can be saved as PNG using: \code{save = TRUE}.
+The figure(s) can be saved as PNG using: \code{save = TRUE}, and the directory path to which
+the figures are saved can be precised with: \code{save_path = "."}.
 
 If no "pred" nor "prey" parameter is entered, the plot will be a raster plot with the mean priors for 
 all the trophic groups.
@@ -62,6 +67,8 @@ plot_prior(data, literature_configuration = FALSE)
 plot_prior(data, literature_configuration = FALSE, pred = "Cod")
 plot_prior(data, literature_configuration = FALSE, pred = "Cod", 
            prey = c("Crabs", "Shrimps"), variable = "eta")
+           
+plot_prior(data, literature_configuration = FALSE, save = TRUE, save_path = tempdir())
            
 }
 \seealso{

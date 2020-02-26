@@ -43,21 +43,6 @@ The first thing that you should try is setting a higher number of iterations and
 mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e4, nb_iter = 1e7)
 ```
 
-If you have already tried this and that increasing again these numbers may take several days or weeks, try the following.
-
-## Understand which variable is problematic
-
-The full Gelman-Rubin diagnostic for each variable is saved everytime the `run_model` function is used, and you can acess it using:
-
-```{r, eval = FALSE}
-load("convergence_diagnostic.Rdata")
-View(gelman)
-```
-
-It will allow you to identify which variables have not converged properly (the closer to 1, the better it has converged) and understand the potential origins of the convergence failure.
-
-If the `PI` and `eta` variables has both trouble converging for a specific trophic link between a predator and a prey, you can look at the corresponding data to see if there is not an error somewhere (maybe a biotracer measurement was entered as 104 instead of 1.04 for this prey or predator).
-
 ## Specify initial values for the model
 
 The next step might be to define starting values from which to run the MCMC chains. By default JAGS will use the prior distributions to randomly fix the starting values of the chains, which can cause problems.
