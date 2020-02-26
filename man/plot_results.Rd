@@ -48,7 +48,7 @@ The "variable" parameter can be specified if one wants to plot the priors for on
 }
 \examples{
 
-\dontrun{
+\donttest{
 realistic_biotracer_data <- read.csv(system.file("extdata", "realistic_biotracer_data.csv",
                                                package = "EcoDiet"))
 realistic_stomach_data <- read.csv(system.file("extdata", "realistic_stomach_data.csv",

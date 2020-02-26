@@ -76,7 +76,7 @@ print_convergence_diagnostic <- function(mcmc_output){
 #' 
 #' @examples
 #' 
-#' \dontrun{
+#' \donttest{
 #' realistic_biotracer_data <- read.csv(system.file("extdata", "realistic_biotracer_data.csv",
 #'                                                package = "EcoDiet"))
 #' realistic_stomach_data <- read.csv(system.file("extdata", "realistic_stomach_data.csv",
