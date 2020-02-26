@@ -62,7 +62,9 @@ for the literature priors on the eta variable}
 between the pedigree scores and the PIs' coefficients of variation (CVs)}
 }
 \value{
-A list of preprocessed data, ready to be fed to the EcoDiet model
+A list of preprocessed data, ready to be fed to the EcoDiet model through the
+  'rjags' package. This list contains a different number of elements, depending on
+  which configuration is chosen by the user (literature_configuration = TRUE or FALSE).
 }
 \description{
 This function preprocesses the data input by the user, checks that the different inputs 

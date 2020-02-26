@@ -324,7 +324,9 @@ check_numeric_parameter <- function(numeric_parameter, parameter_name){
 #' @param literature_slope A vector of one number containing the slope of the linear relationship 
 #'   between the pedigree scores and the PIs' coefficients of variation (CVs)
 #'
-#' @return A list of preprocessed data, ready to be fed to the EcoDiet model
+#' @return A list of preprocessed data, ready to be fed to the EcoDiet model through the
+#'   'rjags' package. This list contains a different number of elements, depending on
+#'   which configuration is chosen by the user (literature_configuration = TRUE or FALSE). 
 #' 
 #' @examples
 #' 
