@@ -8,10 +8,10 @@
 \description{
 \if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
 
-The goal of the package is to estimate a probabilistic topology matrix 
-    (all trophic link probabilities) and a diet matrix (all diet proportions) by combining biotracers 
-    and stomach content analyses in a Bayesian hierarchical model.
-    The package relies on the JAGS software and the rjags package to run a Markov chain Monte Carlo 
+Biotracers and stomach content analyses are combined in a Bayesian hierarchical model
+    to estimate a probabilistic topology matrix (all trophic link probabilities) and a diet matrix 
+    (all diet proportions).
+    The package relies on the JAGS software and the 'rjags' package to run a Markov chain Monte Carlo 
     approximation of the different variables.
 }
 \seealso{

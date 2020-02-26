@@ -7,7 +7,7 @@
 #' @keywords internal
 #' @noRd
 
-plot_biotracer_data <- function(biotracer_data, save){
+plot_biotracer_data <- function(biotracer_data, save, save_path){
 
   # If the biotracer data contains 3 elements called d13C, d15N and d125I, then we will plot 3 figures,
   # because there are 3 ways to choose an unordered subset of 2 elements from a fixed set of 3 elements:
@@ -45,7 +45,7 @@ plot_biotracer_data <- function(biotracer_data, save){
         if (save){
           ggsave(paste0("figure_biotracer_", element1, "_", element2,
                         format(Sys.time(),'_%Y-%m-%d_%H-%M-%S'), ".png"),
-                 height = 4.4, width = 6.2)
+                 height = 4.4, width = 6.2, path = save_path)
         }
       }
     }
@@ -64,7 +64,7 @@ plot_biotracer_data <- function(biotracer_data, save){
 #' @keywords internal
 #' @noRd
 
-plot_matrix <- function(matrix, title, save){
+plot_matrix <- function(matrix, title, save, save_path){
 
   matrix <- as.data.frame(matrix)
 
@@ -99,7 +99,7 @@ plot_matrix <- function(matrix, title, save){
   
   if (save){
     ggsave(paste0("figure_", gsub(" ", "_", title), format(Sys.time(),'_%Y-%m-%d_%H-%M-%S'), ".png"), 
-           height = 4.4, width = 6.2)
+           height = 4.4, width = 6.2, path = save_path)
   }
 
 }
@@ -110,7 +110,8 @@ plot_matrix <- function(matrix, title, save){
 #' @description This function is used to plot the input biotracer and/or the stomach content data.
 #' You can use the function with only one parameter to plot only one kind of data.
 #' 
-#' The figure(s) can be saved as PNG using: \code{save = TRUE}.
+#' The figure(s) can be saved as PNG using: \code{save = TRUE}, and the directory path to which
+#' the figures are saved can be precised with: \code{save_path = "."}.
 #' 
 #' If only the stomach content data is entered, there will be a single raster plot containing the proportions
 #' of occurences in the stomachs. 
@@ -121,8 +122,7 @@ plot_matrix <- function(matrix, title, save){
 #' B vs. C and A vs. C.
 #'
 #' @inheritParams preprocess_data
-#' @param save A boolean describing whether the figure should be saved as PNG. 
-#'   By default the figures are not saved.
+#' @inheritParams plot_prior
 #' 
 #' @examples
 #' 
@@ -136,14 +136,18 @@ plot_matrix <- function(matrix, title, save){
 #' 
 #' plot_data(biotracer_data = example_biotracer_data,
 #'           stomach_data = example_stomach_data)
-#'
+#'           
+#' plot_data(biotracer_data = example_biotracer_data,
+#'           stomach_data = example_stomach_data,
+#'           save = TRUE, save_path = tempdir())
 #'      
 #' @seealso \code{\link{plot_prior}} to plot the prior means or probability distribution(s), 
 #'   \code{\link{plot_results}} to plot the posterior means or probability distribution(s)
 #'
 #' @export
 
-plot_data <- function(biotracer_data = NULL, stomach_data = NULL, save = FALSE){
+plot_data <- function(biotracer_data = NULL, stomach_data = NULL, 
+                      save = FALSE, save_path = "."){
 
   if (!is.null(stomach_data)){
     # Clean the stomach data similarly as in the preprocess_data function except for the commented parts
@@ -163,11 +167,12 @@ plot_data <- function(biotracer_data = NULL, stomach_data = NULL, save = FALSE){
     
     stomach_data[stomach_data == 0] <- NA
 
-    plot_matrix(stomach_data, title = "Proportion of occurences in stomachs", save)
+    plot_matrix(stomach_data, title = "Proportion of occurences in stomachs", 
+                save, save_path)
   }
 
   if (!is.null(biotracer_data)){
-    plot_biotracer_data(biotracer_data, save = save)
+    plot_biotracer_data(biotracer_data, save, save_path)
   }
 
 }
@@ -184,7 +189,7 @@ plot_data <- function(biotracer_data = NULL, stomach_data = NULL, save = FALSE){
 #' @noRd
 
 plot_prior_distribution <- function(data, literature_configuration, pred, prey, 
-                                    variable, title, save){
+                                    variable, title, save, save_path){
 
   # Check that the entered predator is correct
   pred_index <- which(colnames(data$o) == pred)
@@ -264,7 +269,7 @@ plot_prior_distribution <- function(data, literature_configuration, pred, prey,
   if (save){
     ggsave(paste0("figure_", gsub(" ", "_", title), "_for_the_", pred, "_predator",
                   format(Sys.time(),'_%Y-%m-%d_%H-%M-%S'), ".png"), 
-           height = 4.4, width = 6.2)
+           height = 4.4, width = 6.2, path = save_path)
   }
 
 }
@@ -274,7 +279,8 @@ plot_prior_distribution <- function(data, literature_configuration, pred, prey,
 #' @description This function plots the prior means or probability distribution(s) for one or the two
 #' variable(s) of interest : the trophic link probabilities ("eta") and/or the diet proportions ("PI").
 #' 
-#' The figure(s) can be saved as PNG using: \code{save = TRUE}.
+#' The figure(s) can be saved as PNG using: \code{save = TRUE}, and the directory path to which
+#' the figures are saved can be precised with: \code{save_path = "."}.
 #' 
 #' If no "pred" nor "prey" parameter is entered, the plot will be a raster plot with the mean priors for 
 #' all the trophic groups.
@@ -294,6 +300,8 @@ plot_prior_distribution <- function(data, literature_configuration, pred, prey,
 #'   we will plot the two variables of interest: eta and PI.
 #' @param save A boolean describing whether the figure should be saved as PNG. 
 #'   By default the figures are not saved.
+#' @param save_path A string describing the path to which the figures should be saved.
+#'   By default the figures are saved in a temporary directory.
 #' @inheritParams preprocess_data
 #' 
 #' @examples
@@ -313,6 +321,8 @@ plot_prior_distribution <- function(data, literature_configuration, pred, prey,
 #' plot_prior(data, literature_configuration = FALSE, pred = "Cod", 
 #'            prey = c("Crabs", "Shrimps"), variable = "eta")
 #'            
+#' plot_prior(data, literature_configuration = FALSE, save = TRUE, save_path = tempdir())
+#'            
 #' @seealso \code{\link{plot_results}} to plot the posterior means or probability distribution(s),
 #'   \code{\link{plot_data}} to plot the input data
 #'
@@ -321,7 +331,8 @@ plot_prior_distribution <- function(data, literature_configuration, pred, prey,
 plot_prior <- function(data, literature_configuration, 
                        pred = NULL, prey = NULL, 
                        variable = c("eta", "PI"),
-                       save = FALSE){
+                       save = FALSE,
+                       save_path = "."){
 
   if (!all(variable %in% c("eta", "PI"))){
     stop("This function can only print a figure for the PI or eta variable.\n",
@@ -358,7 +369,7 @@ plot_prior <- function(data, literature_configuration,
         }
       }
 
-      plot_matrix(mean_prior, title, save)
+      plot_matrix(mean_prior, title, save, save_path)
 
     } else {
       title <- switch(var,
@@ -366,7 +377,7 @@ plot_prior <- function(data, literature_configuration,
                       eta = "Marginal prior distribution of the trophic link probabilities")
 
       plot_prior_distribution(data, literature_configuration, pred, prey, 
-                              variable = var, title, save)
+                              variable = var, title, save, save_path)
 
     }
   }
@@ -416,7 +427,7 @@ extract_mean <- function(mcmc_output, data, variable = "PI"){
 #' @noRd
 
 plot_posterior_distribution <- function(mcmc_output, data, pred, prey,
-                                        variable, title, save){
+                                        variable, title, save, save_path){
 
   # Check that the entered predator is correct
   pred_index <- which(colnames(data$o) == pred)
@@ -507,7 +518,7 @@ plot_posterior_distribution <- function(mcmc_output, data, pred, prey,
   if (save){
     ggsave(paste0("figure_", gsub(" ", "_", title), "_for_the_", colnames(data$o)[pred_index], "_predator",
                   format(Sys.time(),'_%Y-%m-%d_%H-%M-%S'), ".png"), 
-           height = 4.4, width = 6.2)
+           height = 4.4, width = 6.2, path = save_path)
   }
 }
 
@@ -518,7 +529,8 @@ plot_posterior_distribution <- function(mcmc_output, data, pred, prey,
 #' or the two variable(s) of interest : the trophic link probabilities ("eta") and/or 
 #' the diet proportions ("PI").
 #' 
-#' The figure(s) can be saved as PNG using: \code{save = TRUE}.
+#' The figure(s) can be saved as PNG using: \code{save = TRUE}, and the directory path to which
+#' the figures are saved can be precised with: \code{save_path = "."}.
 #' 
 #' If no "pred" nor "prey" parameter is entered, the plot will be a raster plot with the mean priors for 
 #' all the trophic groups.
@@ -536,7 +548,7 @@ plot_posterior_distribution <- function(mcmc_output, data, pred, prey,
 #' 
 #' @examples
 #' 
-#' \dontrun{
+#' \donttest{
 #' realistic_biotracer_data <- read.csv(system.file("extdata", "realistic_biotracer_data.csv",
 #'                                                package = "EcoDiet"))
 #' realistic_stomach_data <- read.csv(system.file("extdata", "realistic_stomach_data.csv",
@@ -555,6 +567,8 @@ plot_posterior_distribution <- function(mcmc_output, data, pred, prey,
 #' plot_results(mcmc_output, data, pred = "Crabs")
 #' plot_results(mcmc_output, data, pred = "Crabs",
 #'              variable = "PI", prey = c("Bivalves", "Shrimps"))
+#'              
+#' plot_results(mcmc_output, data, save = TRUE, save_path = tempdir())
 #' }
 #' 
 #' @seealso \code{\link{plot_prior}} to plot the prior means or probability distribution(s),
@@ -565,7 +579,8 @@ plot_posterior_distribution <- function(mcmc_output, data, pred, prey,
 plot_results <- function(mcmc_output, data, 
                          pred = NULL, prey = NULL, 
                          variable = c("eta", "PI"),
-                         save = FALSE){
+                         save = FALSE,
+                         save_path = "."){
 
   if (!all(variable %in% c("eta", "PI"))){
     stop("This function can only print a figure for the PI or eta variable.\n",
@@ -581,8 +596,7 @@ plot_results <- function(mcmc_output, data,
                       eta = "Mean of the posterior trophic link probabilities")
 
       mean <- extract_mean(mcmc_output, data, variable = var)
-      plot_matrix(mean, title, save)
-      save(mean, file = paste0(var, "_mean.Rdata"))
+      plot_matrix(mean, title, save, save_path)
 
     } else {
       title <- switch(var,
@@ -590,7 +604,7 @@ plot_results <- function(mcmc_output, data,
                       eta = "Marginal posterior distribution of the trophic link probabilities")
       
       plot_posterior_distribution(mcmc_output, data, pred, prey,
-                                  variable = var, title, save)
+                                  variable = var, title, save, save_path)
     }
   }
 

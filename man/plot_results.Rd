@@ -10,7 +10,8 @@ plot_results(
   pred = NULL,
   prey = NULL,
   variable = c("eta", "PI"),
-  save = FALSE
+  save = FALSE,
+  save_path = "."
 )
 }
 \arguments{
@@ -27,13 +28,17 @@ we will plot the two variables of interest: eta and PI.}
 
 \item{save}{A boolean describing whether the figure should be saved as PNG. 
 By default the figures are not saved.}
+
+\item{save_path}{A string describing the path to which the figures should be saved.
+By default the figures are saved in a temporary directory.}
 }
 \description{
 This function plots the posterior means or probability distribution(s) for one 
 or the two variable(s) of interest : the trophic link probabilities ("eta") and/or 
 the diet proportions ("PI").
 
-The figure(s) can be saved as PNG using: \code{save = TRUE}.
+The figure(s) can be saved as PNG using: \code{save = TRUE}, and the directory path to which
+the figures are saved can be precised with: \code{save_path = "."}.
 
 If no "pred" nor "prey" parameter is entered, the plot will be a raster plot with the mean priors for 
 all the trophic groups.
@@ -48,7 +53,7 @@ The "variable" parameter can be specified if one wants to plot the priors for on
 }
 \examples{
 
-\dontrun{
+\donttest{
 realistic_biotracer_data <- read.csv(system.file("extdata", "realistic_biotracer_data.csv",
                                                package = "EcoDiet"))
 realistic_stomach_data <- read.csv(system.file("extdata", "realistic_stomach_data.csv",
@@ -67,6 +72,8 @@ plot_results(mcmc_output, data)
 plot_results(mcmc_output, data, pred = "Crabs")
 plot_results(mcmc_output, data, pred = "Crabs",
              variable = "PI", prey = c("Bivalves", "Shrimps"))
+             
+plot_results(mcmc_output, data, save = TRUE, save_path = tempdir())
 }
 
 }

@@ -9,8 +9,7 @@
 print_convergence_diagnostic <- function(mcmc_output){
   
   gelman <- coda::gelman.diag(mcmc_output, multivariate = FALSE)$psrf
-  save(gelman, file = "convergence_diagnostic.Rdata")
-  
+
   # We keep only the point estimates of the psrf
   gelman <- gelman[, 1] 
   variable_number <- length(gelman)
@@ -35,14 +34,14 @@ print_convergence_diagnostic <- function(mcmc_output){
 #' @description
 #' 
 #' This function runs the EcoDiet model using a Markov chain Monte Carlo approximation 
-#' through the rjags package to provide an approximated distribution for the variables of interest.
+#' through the 'rjags' package to provide an approximated distribution for the variables of interest.
 #' 
 #' Depending on the \code{nb_iter} and \code{nb_adapt} entered, this function may take hours, or even days 
 #' to run. We advise you to first test whether your model is compiling properly with the by-default parameters,
 #' as this should take 1-2 min to run depending on your data size.
 #' 
 #' A message is printed if the model has not converged in the end (if the Gelman-Rubin diagnostic
-#' of at least one variable is > 1.1). Other messages or notes may also be printed by the rjags package.
+#' of at least one variable is > 1.1). Other messages or notes may also be printed by the 'rjags' package.
 #' 
 #' You need to have run the \code{preprocess_data} and the \code{write_model} functions 
 #' before using this function, as their outputs are used as the inputs for \code{run_model}.
@@ -63,7 +62,7 @@ print_convergence_diagnostic <- function(mcmc_output){
 #' @param nb_burnin The number of burn in steps to run. Because the chains start at a random initial value,
 #'   it is good practice to "burn in" the first iterations of the chains so that the variable approximations
 #'   are not too influenced by the first initial random values. 
-#'   By default we use the same strategy as the rjags package and define the number of iterations to be
+#'   By default we use the same strategy as the 'rjags' package and define the number of iterations to be
 #'   burnt to be as high as the number of iterations to be kept.
 #' @param variables_to_save A vector of variable names defining the variables to output. 
 #'   The number has a big number of variables but by default we only save the variables of interest
@@ -76,7 +75,7 @@ print_convergence_diagnostic <- function(mcmc_output){
 #' 
 #' @examples
 #' 
-#' \dontrun{
+#' \donttest{
 #' realistic_biotracer_data <- read.csv(system.file("extdata", "realistic_biotracer_data.csv",
 #'                                                package = "EcoDiet"))
 #' realistic_stomach_data <- read.csv(system.file("extdata", "realistic_stomach_data.csv",
@@ -139,8 +138,5 @@ run_model <- function(model_file, data, inits = NULL,
   
   print_convergence_diagnostic(mcmc_output)
   
-  mcmc_output <- as.matrix(mcmc_output)
-  save(mcmc_output, file ="mcmc_output.Rdata")
-  
-  return(mcmc_output)
+  return(as.matrix(mcmc_output))
 }
