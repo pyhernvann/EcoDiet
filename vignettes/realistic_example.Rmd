@@ -185,5 +185,5 @@ plot_results(mcmc_output, data, pred = "Pout")
 You can save the figures as PNG using:
 
 ```{r, eval = FALSE}
-plot_results(mcmc_output, data, pred = "Pout", save = TRUE)
+plot_results(mcmc_output, data, pred = "Pout", save = TRUE, save_path = ".")
 ```
