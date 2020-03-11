@@ -1,4 +1,7 @@
-# EcoDiet <img src="man/figures/logo.PNG" align="right" width="120" />
+# EcoDiet <img src="man/figures/logo.PNG" align="right" width="220" />
+
+[![cran version](http://www.r-pkg.org/badges/version/EcoDiet)](https://cran.r-project.org/package=EcoDiet)
+[![downloads](http://cranlogs.r-pkg.org/badges/grand-total/EcoDiet?)](https://github.com/metacran/cranlogs.app)
 
 The goal of the package is to estimate a probabilistic topology matrix (all trophic link probabilities) and a diet matrix (all diet proportions) by combining biotracers and stomach content analyses in a Bayesian hierarchical model.
 
