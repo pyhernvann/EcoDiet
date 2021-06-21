@@ -3,13 +3,13 @@
 [![cran version](http://www.r-pkg.org/badges/version/EcoDiet)](https://cran.r-project.org/package=EcoDiet)
 [![downloads](http://cranlogs.r-pkg.org/badges/grand-total/EcoDiet?)](https://github.com/metacran/cranlogs.app)
 
-The goal of the package is to estimate a probabilistic topology matrix (all trophic link probabilities) and a diet matrix (all diet proportions) by combining biotracers and stomach content analyses in a Bayesian hierarchical model.
+The EcoDiet package estimates a probabilistic topology matrix (all trophic link probabilities) and a diet matrix (all diet proportions) for food webs by combining biotracer and stomach content analyses in a Bayesian hierarchical model.
 
-The full model and its application on a real dataset are described in *Hernvann et al.* (under review). Use `citation("EcoDiet")` to get the full reference.
+The full model and its application to a real dataset are described in *Hernvann et al.* (in press). Use `citation("EcoDiet")` to get the full reference.
 
 ## R installation
 
-EcoDiet is an R package, so first and foremost, you should download and install/update R.
+EcoDiet is a R package so, first and foremost, you should download and install/update R.
 
 ## JAGS installation
 
@@ -37,7 +37,7 @@ If you get an error message during installation, check [this post from Yu-Sung S
 
 ## EcoDiet installation
 
-To dowload the EcoDiet package from GitHub, you need to use the `install_github` function from the `devtools` package to load it. First, install the `devtools` package:
+To download the EcoDiet package from GitHub, you need to use the `install_github` function from the `devtools` package to load it. First, install the `devtools` package:
 
 ```{r, eval = FALSE}
 install.packages("devtools")
@@ -49,7 +49,7 @@ Once `devtools` has been installed, you can load the EcoDiet package:
 devtools::install_github("pyhernvann/EcoDiet", build_vignettes = TRUE, dependencies = TRUE)
 ```
 
-Since the 6th of May 2020 EcoDiet is also available on the CRAN. Thus, you can directly install it from R and load it:
+Since the 6th of May 2020 EcoDiet is also available on the CRAN. You can directly install it from R and load it:
 
 ```{r, eval = FALSE}
 install.packages("EcoDiet")
