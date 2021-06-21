@@ -6,8 +6,6 @@
 
 The EcoDiet package estimates a probabilistic topology matrix (all trophic link probabilities) and a diet matrix (all diet proportions) for food webs by combining biotracer and stomach content analyses in a Bayesian hierarchical model.
 
-<blockquote><p>Ceci est un texte cité. Vous pouvez répondre à cette citation en écrivant un paragraphe normal juste en-dessous !</p></blockquote>
-
 The full model and its application to a real dataset are described in *Hernvann et al.* (in press). When using EcoDiet, please cite both Hernvann et al. and the package (`citation("EcoDiet")` will be updated soon):
 
 <blockquote><p>Hernvann, P.Y., Gascuel, D., Kopp, D., Robert, M., et Rivot, E. (in press). EcoDiet: A hierarchical Bayesian model to combine stomach, biotracer and literature data into diet matrix estimation. Ecological applications. </p></blockquote>
