@@ -8,7 +8,7 @@ The EcoDiet package estimates a probabilistic topology matrix (all trophic link 
 
 The full model and its application to a real dataset are described in *Hernvann et al.* (in press). When using EcoDiet, please cite both Hernvann et al. and the package (`citation("EcoDiet")` will be updated soon):
 
-<blockquote><p>Hernvann, P.Y., Gascuel, D., Kopp, D., Robert, M., et Rivot, E. (in press). EcoDiet: A hierarchical Bayesian model to combine stomach, biotracer and literature data into diet matrix estimation. Ecological applications. </p></blockquote>
+<blockquote><p>Hernvann, P. Y., Gascuel, D., Kopp, D., Robert, M., & Rivot, E. (2022). EcoDiet: A hierarchical Bayesian model to combine stomach, biotracer, and literature data into diet matrix estimation. Ecological Applications, 32(2), e2521. </p></blockquote>
 
 <blockquote><p>Théro, H., Rivot, E., Robert, M., Guitton, J., Kopp, D., Gascuel, D., et Hernvann, P.Y. (2020) EcoDiet. R package. doi: 10.5281/zenodo.4081537 </p></blockquote>
 
