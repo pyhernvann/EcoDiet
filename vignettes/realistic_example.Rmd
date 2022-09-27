@@ -91,9 +91,9 @@ Here are the figures corresponding to the results that have converged:
 plot_results(mcmc_output, data)
 ```
 
-![](../man/figures/eta_mean_without_lit.png){width=700px}
+![](../man/figures/eta_mean_without_lit.png){width=700}
 
-![](../man/figures/PI_mean_without_lit.png){width=700px}
+![](../man/figures/PI_mean_without_lit.png){width=700}
 
 
 
@@ -101,9 +101,9 @@ plot_results(mcmc_output, data)
 plot_results(mcmc_output, data, pred = "Pout")
 ```
 
-![](../man/figures/eta_pouts_without_lit.png){width=550px}
+![](../man/figures/eta_pouts_without_lit.png){width=550}
 
-![](../man/figures/PI_pouts_without_lit.png){width=550px}
+![](../man/figures/PI_pouts_without_lit.png){width=550}
 
 You can also plot the results for specific prey if you want a clearer figure:
 ```{r, eval = FALSE}
@@ -111,7 +111,7 @@ plot_results(mcmc_output, data, pred = "Pout",
              variable = "PI", prey = c("Bivalves", "Worms"))
 ```
 
-![](../man/figures/PI_pouts_without_lit_details.png){width=550px}
+![](../man/figures/PI_pouts_without_lit_details.png){width=550}
 
 ## The configuration with literature data
 
@@ -170,17 +170,17 @@ Here are the figures corresponding to the results that have converged:
 plot_results(mcmc_output, data)
 ```
 
-![](../man/figures/eta_mean_with_lit.png){width=700px}
+![](../man/figures/eta_mean_with_lit.png){width=700}
 
-![](../man/figures/PI_mean_with_lit.png){width=700px}
+![](../man/figures/PI_mean_with_lit.png){width=700}
 
 ```{r, eval = FALSE}
 plot_results(mcmc_output, data, pred = "Pout")
 ```
 
-![](../man/figures/eta_pouts_with_lit.png){width=550px}
+![](../man/figures/eta_pouts_with_lit.png){width=550}
 
-![](../man/figures/PI_pouts_with_lit.png){width=550px}
+![](../man/figures/PI_pouts_with_lit.png){width=550}
 
 You can save the figures as PNG using:
 
