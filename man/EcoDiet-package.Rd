@@ -6,7 +6,7 @@
 \alias{EcoDiet-package}
 \title{EcoDiet: Estimating a Diet Matrix from Biotracer and Stomach Content Data}
 \description{
-\if{html}{\figure{logo.png}{options: style='text-align: right;' alt='logo' width='120'}}
+\if{html}{\figure{logo.png}{options:alt='logo' width='120'}}
 
 Biotracers and stomach content analyses are combined in a Bayesian hierarchical model
     to estimate a probabilistic topology matrix (all trophic link probabilities) and a diet matrix 
