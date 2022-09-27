@@ -1,4 +1,4 @@
-# EcoDiet <img src="man/figures/logo.PNG" style="text-align: right;" width="220" />
+# EcoDiet <img src="man/figures/logo.PNG" style="float: right;" width="220" />
 
 [![cran version](http://www.r-pkg.org/badges/version/EcoDiet)](https://cran.r-project.org/package=EcoDiet)
 [![downloads](http://cranlogs.r-pkg.org/badges/grand-total/EcoDiet?)](https://github.com/metacran/cranlogs.app)
