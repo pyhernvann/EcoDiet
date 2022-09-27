@@ -34,7 +34,7 @@ realistic_biotracer_data <- read.csv(realistic_biotracer_data_path)
 knitr::kable(realistic_biotracer_data[c(1:3, 31:33, 61:63), ])
 ```
 
-```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
+```{r, fig.height = 5, fig.width = 8}
 library(EcoDiet)
 
 plot_data(biotracer_data = realistic_biotracer_data,
@@ -58,7 +58,7 @@ data <- preprocess_data(biotracer_data = realistic_biotracer_data,
 
 In this configuration, priors are set for each trophic link identified as plausible by the user but the priors are not informed by literature data, and are thus uninformative:
 
-```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
+```{r, fig.height = 5, fig.width = 8}
 plot_prior(data, literature_configuration)
 ```
 
@@ -68,7 +68,7 @@ The marginal prior distributions have different shape depending on the variables
 
 * the marginal distributions for each diet proportion $\Pi$ are peaking at zero, although the joint distribution for $\Pi$s is a flat Dirichlet prior, because all the diet proportions must sum to one.
 
-```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
+```{r, fig.height = 5, fig.width = 8}
 plot_prior(data, literature_configuration, pred = "Pout")
 ```
 
@@ -143,11 +143,11 @@ Now we see that the prior distributions are informed by the literature data:
 
 * the average prior for the diet proportions $\Pi$ is directly the literature diet input.
 
-```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
+```{r, fig.height = 5, fig.width = 8}
 plot_prior(data, literature_configuration)
 ```
 
-```{r, fig.height = 5, fig.width = 8, fig.align = "center"}
+```{r, fig.height = 5, fig.width = 8}
 plot_prior(data, literature_configuration, pred = "Pout")
 ```
 
