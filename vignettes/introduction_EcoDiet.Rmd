@@ -238,7 +238,7 @@ data <- preprocess_data(biotracer_data = example_biotracer_data,
 
 You can visualize your data with the `plot_data` function:
 
-```{r, fig1, fig.height = 4, fig.width = 6, fig.align = "center"}
+```{r, fig1, fig.height = 4, fig.width = 6}
 plot_data(biotracer_data = example_biotracer_data,
           stomach_data = example_stomach_data)
 ```
@@ -253,19 +253,19 @@ plot_data(biotracer_data = example_biotracer_data,
 
 Whether the priors are non-informative or informed by the literature, you can plot the mean of the prior distributions for the trophic link probabilities $\eta$ and the diet proportions $\Pi$:
 
-```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
+```{r, fig.height = 4, fig.width = 6}
 plot_prior(data, literature_configuration)
 ```
 
 You can also see the prior distributions for one trophic group (or predator):
 
-```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
+```{r, fig.height = 4, fig.width = 6}
 plot_prior(data, literature_configuration, pred = "huge")
 ```
 
 This way, you can change the prior parameters and see how it affects the prior distributions. Here, we will change the `nb_literature` parameter from 10 to 2:
 
-```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
+```{r, fig.height = 4, fig.width = 6}
 data <- preprocess_data(biotracer_data = example_biotracer_data,
                         trophic_discrimination_factor = c(0.8, 3.4),
                         literature_configuration = literature_configuration,
@@ -320,7 +320,7 @@ Don't forget to save the results before quitting R to not lose them.
 
 The model's outputs are the approximated a posteriori distributions for the trophic links probabilities $\eta$ and the diet proportions $\Pi$. You can visualize the mean of these distribitions with the `plot_results` function:
 
-```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
+```{r, fig.height = 4, fig.width = 6}
 plot_results(mcmc_output_example, data)
 ```
 
@@ -334,11 +334,11 @@ print(colMeans(mcmc_output_example))
 
 The probability distributions can be plotted for one predator:
 
-```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
+```{r, fig.height = 4, fig.width = 6}
 plot_results(mcmc_output_example, data, pred = "huge")
 ```
 
-```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
+```{r, fig.height = 4, fig.width = 6}
 plot_results(mcmc_output_example, data, pred = "large")
 ```
 
@@ -349,7 +349,7 @@ As you can see, the shape of the posterior distributions of the $\Pi$ are unusua
 
 The marginal distributions of $\Pi$ thus have a spike at zero combined with a more habitual dome shape centered on the value estimated through the mixture model. You can see the conditional distribution of $\Pi$ when the trophic link exist this way:
 
-```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
+```{r, fig.height = 4, fig.width = 6}
 len <- dim(mcmc_output_example)[2]
 mcmc_output2 <- mcmc_output_example
 mcmc_output2[, 1:(len/2)] <- ifelse(mcmc_output_example[, 1:(len/2)] < 0.03 |
