@@ -1,20 +1,20 @@
 citHeader("To cite EcoDiet in publications use:")
 
 citEntry(entry = "Article",
-  title        = "EcoDiet: Integrating information from stomach contents, bio-tracers and the literature to estimate diet matrices",
+  title        = "EcoDiet: A hierarchical Bayesian model to combine stomach, biotracer, and literature data into diet matrix estimation",
   author       = personList(as.person("Pierre-Yves Hernvann"),
                    as.person("Didier Gascuel"),
                    as.person("Dorothee Kopp"),
                    as.person("Marianne Robert"),
                    as.person("Etienne Rivot")),
-  journal      = "Under review",
-  year         = "Forthcoming",
-  volume       = "",
-  number       = "",
-  pages        = "",
-  url          = "",
+  journal      = "Ecological Applications",
+  year         = "2022",
+  volume       = "32",
+  number       = "2",
+  pages        = "e2521",
+  url          = "https://doi.org/10.1002/eap.2521",
 
   textVersion  =
-  paste("Pierre-Yves Hernvann, Didier Gascuel, Dorothee Kopp, Marianne Robert, Etienne Rivot (Under review).",    "EcoDiet: Integrating information from stomach contents, bio-tracers and the literature to estimate diet matrices."))
+  paste("Pierre-Yves Hernvann, Didier Gascuel, Dorothee Kopp, Marianne Robert, Etienne Rivot (2022).",    "EcoDiet: A hierarchical Bayesian model to combine stomach, biotracer, and literature data into diet matrix estimation."))
         
 citFooter("To know more about the EcoDiet project, go see https://www.researchgate.net/project/EcoDiet-model-Incorporating-multiple-data-types-into-the-estimation-of-diet-matrices")
