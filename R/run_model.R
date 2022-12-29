@@ -91,7 +91,7 @@ print_convergence_diagnostic <- function(jags_output){
 #'                         
 #' write_model(literature_configuration = FALSE)
 #' 
-#' mcmc_output <- run_model("EcoDiet_model.txt", data, run_param="short", parallelize = TRUE)
+#' mcmc_output <- run_model("EcoDiet_model.txt", data, run_param="short")
 #' }
 #' 
 #' @seealso \code{\link{preprocess_data}} to preprocess the data, and 
@@ -99,7 +99,7 @@ print_convergence_diagnostic <- function(jags_output){
 #'
 #' @export
 
-run_model <- function(model_file, data, inits = NULL, run_param,
+run_model <- function(model_file, data, inits = NULL, run_param="test",
                       variables_to_save = c("eta", "PI"), parallelize = FALSE, DIC.out = TRUE){
   
   if(is.list(run_param)){
@@ -129,12 +129,12 @@ run_model <- function(model_file, data, inits = NULL, run_param,
     
     
     } else { # if the user has entered custom mcmc parameters, use them
-    if(run_param=="test") mcmc_param <- list(nb_chains=3, nb_iter=1000, nb_burnin=500, nb_thin=1, nb_adapt=nb_iter/2)
-    if(run_param=="very short") mcmc_param <- list(nb_chains=3, nb_iter=10000, nb_burnin=5000, nb_thin=5, nb_adapt=nb_iter/2)
-    if(run_param=="short") mcmc_param <- list(nb_chains=3, nb_iter=50000, nb_burnin=25000, nb_thin=25, nb_adapt=nb_iter/2)
-    if(run_param=="normal") mcmc_param <- list(nb_chains=3, nb_iter=100000, nb_burnin=50000, nb_thin=50, nb_adapt=nb_iter/2)
-    if(run_param=="long") mcmc_param <- list(nb_chains=3, nb_iter=300000, nb_burnin=200000, nb_thin=100, nb_adapt=nb_iter/3)
-    if(run_param=="very long") mcmc_param <- list(nb_chains=3, nb_iter=1000000, nb_burnin=500000, nb_thin=500, nb_adapt=nb_iter/3)
+    if(run_param=="test") mcmc_param <- list(nb_chains=3, nb_iter=1000, nb_burnin=500, nb_thin=1, nb_adapt=1000/2)
+    if(run_param=="very short") mcmc_param <- list(nb_chains=3, nb_iter=10000, nb_burnin=5000, nb_thin=5, nb_adapt=10000/2)
+    if(run_param=="short") mcmc_param <- list(nb_chains=3, nb_iter=50000, nb_burnin=25000, nb_thin=25, nb_adapt=50000/2)
+    if(run_param=="normal") mcmc_param <- list(nb_chains=3, nb_iter=100000, nb_burnin=50000, nb_thin=50, nb_adapt=100000/2)
+    if(run_param=="long") mcmc_param <- list(nb_chains=3, nb_iter=300000, nb_burnin=200000, nb_thin=100, nb_adapt=300000/3)
+    if(run_param=="very long") mcmc_param <- list(nb_chains=3, nb_iter=1000000, nb_burnin=500000, nb_thin=500, nb_adapt=1000000/3)
     }
   
 
