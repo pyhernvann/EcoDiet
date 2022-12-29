@@ -3,14 +3,16 @@
 \name{realistic_biotracer_data}
 \alias{realistic_biotracer_data}
 \title{Realistic biotracer data}
-\format{A table with 300 rows and 3 columns. Each row is an isotopic sample from one individual, and
+\format{
+A table with 300 rows and 3 columns. Each row is an isotopic sample from one individual, and
 there are 30 individuals sampled in each trophic group.
 The columns are:
 \describe{
   \item{group}{the trophic group the individual belonged to}
   \item{d13C}{the d13C measurement made on that individual}
   \item{d15N}{the d15N measurement made on that individual}
-}}
+}
+}
 \description{
 This is an artificial and realistic biotracer dataset, more specifically stable isotope analyses,
  made to illustrate the package on a complex dataset. All tables whose name start by "realistic" are
