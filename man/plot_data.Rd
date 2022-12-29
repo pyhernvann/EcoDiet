@@ -51,7 +51,11 @@ plot_data(biotracer_data = example_biotracer_data)
 
 example_stomach_data <- read.csv(system.file("extdata", "example_stomach_data.csv",
                                              package = "EcoDiet"))
-`
+plot_data(stomach_data = example_stomach_data)
+
+plot_data(biotracer_data = example_biotracer_data,
+          stomach_data = example_stomach_data)
+          
 plot_data(biotracer_data = example_biotracer_data,
           stomach_data = example_stomach_data,
           save = TRUE, save_path = tempdir())
