@@ -7,7 +7,7 @@
 #' @keywords internal
 #' @noRd
 
-plot_biotracer_data <- function(biotracer_data, save, save_path){
+plot_biotracer_data <- function(biotracer_data, save=FALSE, save_path){
 
   # If the biotracer data contains 3 elements called d13C, d15N and d125I, then we will plot 3 figures,
   # because there are 3 ways to choose an unordered subset of 2 elements from a fixed set of 3 elements:
@@ -17,40 +17,74 @@ plot_biotracer_data <- function(biotracer_data, save, save_path){
   #
   # With the following code, we select all the possible combinations without repetition:
 
-  nb_element <- ncol(biotracer_data) - 1
-
-  for (element1 in 1:nb_element){
-    for (element2 in 1:nb_element){
-
-      if (element2 > element1){
-        figure <- ggplot(biotracer_data,
+  nb_biotracers <- ncol(biotracer_data) - 1
+  
+  if(nb_biotracers==1){
+    
+    figure <- ggplot(biotracer_data,
+                     aes(x = group, y=get(names(biotracer_data)[2]),
+                         colour = group)) +
+      ggtitle("Isotopic measurements") +
+      geom_point(aes(x = group, y=get(names(biotracer_data)[2]), colour = group), position=position_jitter(width=.2,height=.1), show.legend=T) +
+      guides(colour = guide_legend()) +
+      theme_bw() +
+      #xlab(names(biotracer_data)[element1 + 1]) +
+      ylab(names(biotracer_data)[element1 + 1]) +
+      theme(panel.grid.major = element_line(colour = "grey"),
+            panel.grid.minor = element_blank(),
+            axis.title = element_text(size = 15),
+            axis.text.y = element_text(size = 12),
+            axis.text.x = element_text(margin = margin(3, 0, 0, 0), size = 12, angle=45, hjust=1),
+            plot.title = element_text(hjust = 0.5),
+            legend.position="none")
+    
+    print(figure)
+    
+    if (save == TRUE){
+      save_path <- ifelse(!missing(save_path), save_path, getwd())
+      ggsave(paste0(save_path, "/figure_biotracer_", colnames(biotracer_data)[element1],
+                    ".png"),
+             height = 4.4, width = 8)
+    }
+    
+    }else{
+      
+      for (element1 in 1:nb_biotracers){
+        
+        for (element2 in 1:nb_biotracers){
+          
+          if (element2 > element1){
+            
+            figure <- ggplot(biotracer_data,
                          aes(x = biotracer_data[, element1 + 1],
                              y = biotracer_data[, element2 + 1],
-                             colour = biotracer_data$group)) +
-          ggtitle("Isotopic measurements") +
-          xlab(names(biotracer_data)[element1 + 1]) +
-          ylab(names(biotracer_data)[element2 + 1]) +
-          geom_point(size = 3, na.rm = TRUE) +
-          guides(colour = guide_legend()) +
-          theme_bw() +
-          theme(panel.grid.major = element_line(colour = "grey"),
+                             colour = group)) +
+              ggtitle("Isotopic measurements") +
+              xlab(names(biotracer_data)[element1 + 1]) +
+              ylab(names(biotracer_data)[element2 + 1]) +
+              geom_point(size = 3, na.rm = TRUE) +
+              guides(colour = guide_legend()) +
+              theme_bw() +
+              theme(panel.grid.major = element_line(colour = "grey"),
                 panel.grid.minor = element_blank(),
                 axis.title = element_text(size = 15),
                 axis.text.y = element_text(size = 12),
                 axis.text.x = element_text(margin = margin(3, 0, 0, 0), size = 12),
                 plot.title = element_text(hjust = 0.5))
-
-        print(figure)
+          
+          print(figure)
         
-        if (save){
-          ggsave(paste0("figure_biotracer_", element1, "_", element2,
-                        format(Sys.time(),'_%Y-%m-%d_%H-%M-%S'), ".png"),
-                 height = 4.4, width = 6.2, path = save_path)
+          if (save == TRUE){
+            save_path <- ifelse(!missing(save_path), save_path, getwd())
+            ggsave(paste0(save_path, "/figure_biotracer_", colnames(biotracer_data)[element1+1], "_", colnames(biotracer_data)[element2+1],
+                          ".png"),
+                   height = 4.4, width = 8)
+          }
+          
+          }
         }
       }
     }
-  }
-
 }
 
 #' Plot any matrix data with a raster plot
@@ -64,7 +98,7 @@ plot_biotracer_data <- function(biotracer_data, save, save_path){
 #' @keywords internal
 #' @noRd
 
-plot_matrix <- function(matrix, title, save, save_path){
+plot_matrix <- function(matrix, title, save=FALSE, save_path){
 
   matrix <- as.data.frame(matrix)
 
@@ -73,12 +107,12 @@ plot_matrix <- function(matrix, title, save, save_path){
                    unlist(matrix))
   colnames(df) <- c("pred", "prey", "value")
   df$value <- round(df$value, 2)
-  df$pred <- as.numeric(df$pred)
-  df$prey <- rev(as.numeric(df$prey))
+  df$pred <- as.factor(df$pred)
+  df$prey <- rev(as.factor(df$prey))
 
   figure <- ggplot(df, aes_string(x = "pred", y = "prey", fill = "value")) + geom_raster() + theme_bw() +
-    scale_x_continuous(labels = colnames(matrix), breaks = seq(1, ncol(matrix))) +
-    scale_y_continuous(labels = rev(rownames(matrix)), breaks = seq(1, nrow(matrix))) +
+    #scale_x_continuous(labels = colnames(matrix)), breaks = seq(1, ncol(matrix))) +
+    scale_y_discrete(labels = rev(rownames(matrix)), limits=rev) +
     scale_fill_gradient(low = "white", high = "blue3", limit = c(0, 1)) +
     ggtitle(title) +
     ylab("Preys") +
@@ -86,8 +120,8 @@ plot_matrix <- function(matrix, title, save, save_path){
     theme(panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(),
           axis.title = element_text(size = 15),
-          axis.text.x = element_text(size = 12, angle = 20, vjust = 1, hjust = 1),
-          axis.text.y = element_text(size = 12),
+          axis.text.x = element_text(size = 12, angle = 45, vjust = 1, hjust = 1),
+          axis.text.y = element_text(size = 12, angle = 45, vjust = 1, hjust = 0),
           legend.title = element_blank(),
           plot.title = element_text(hjust = 0.5))
   
@@ -97,9 +131,11 @@ plot_matrix <- function(matrix, title, save, save_path){
   
   print(figure)
   
-  if (save){
-    ggsave(paste0("figure_", gsub(" ", "_", title), format(Sys.time(),'_%Y-%m-%d_%H-%M-%S'), ".png"), 
-           height = 4.4, width = 6.2, path = save_path)
+  if (save == TRUE){
+    save_path <- ifelse(!missing(save_path), save_path, getwd())
+    ggsave(paste0(save_path, "figure_", gsub(" ", "_", title),
+                  ".png"),
+           height = 4.4, width = 8)
   }
 
 }
@@ -151,13 +187,13 @@ plot_data <- function(biotracer_data = NULL, stomach_data = NULL,
 
   if (!is.null(stomach_data)){
     # Clean the stomach data similarly as in the preprocess_data function except for the commented parts
-    if (colnames(stomach_data)[1] == "X"){
+    if (!colnames(stomach_data)[1] %in% rownames(stomach_data)){
       row.names(stomach_data) <- stomach_data[, 1]
       stomach_data[, 1] <- NULL
     }
 
     # Divide the number of stomachs by the total number of full stomachs to obtain proportions
-    stomach_data[] <- lapply(stomach_data, function(X) X/X[nrow(stomach_data)])
+    stomach_data[] <- sapply(stomach_data, function(X) X/X[nrow(stomach_data)])
     # Remove the NA caused by division by zero for the trophic groups at the base of the ecosystem
     stomach_data[is.na(stomach_data)] <- 0
 
@@ -194,13 +230,12 @@ plot_prior_distribution <- function(data, literature_configuration, pred, prey,
   # Check that the entered predator is correct
   pred_index <- which(colnames(data$o) == pred)
   if (length(pred_index) == 0){
-    stop("You did not put a correct predator name in the `pred` argument.\n",
-         "  You entered the name \"", pred,"\", while the predator names are actually: \"",
-         paste(colnames(data$o), collapse = "\", \""), "\".\n",
-         "  Please use one of the above names in the `pred` argument.")
+    stop("You entered a wrong predator name in the `pred` argument.\n",
+         "Please check and ensure to pick one of the following: \"",
+         paste(colnames(data$o), collapse = "\", \""), "\".\n")
   }
   if (data$nb_prey[pred_index] == 0){
-    stop("The predator you have chosen (\"", pred, "\") has no prey and thus cannot be plotted.")
+    stop("The predator you have chosen (\"", pred, "\") has no prey.")
   }
 
   # Check that the entered prey(s) is/are correct
@@ -211,11 +246,10 @@ plot_prior_distribution <- function(data, literature_configuration, pred, prey,
   } else {
     prey_index <- which(colnames(data$o) %in% prey)
     if (length(prey) != length(prey_index)){
-      stop("You used an incorrect prey name in the `prey` argument.\n",
-           "  You have entered the names: \"", paste(prey, collapse = "\", \""),
+      stop("Please check the values entered in `prey` argument.\n",
+           "The following names don't correspond to any trophic groups: \n",
            "\".\n  But the prey names are actually: \"",
-           paste(colnames(data$o), collapse = "\", \""), "\".\n",
-           "  Please put correct names in the `prey` argument.")
+           paste(prey[which(!prey%in%colnames(data$o))], collapse = "\", \""), "\".\n")
     }
     if (!all(prey_index %in% data$list_prey[pred_index, ])){
       stop("You have entered at least one prey that is not eaten by the predator \"", 
@@ -229,20 +263,36 @@ plot_prior_distribution <- function(data, literature_configuration, pred, prey,
   }
 
   # Construct the corresponding data frame
-  x <-  seq(0, 1, length = 101)
-  df_to_plot <- data.frame(Prey = c(), x = c(), Density = c())
+  x <-  seq(0, 1, length = 512)
+  df_to_plot <- data.frame(Prey = c(), x = c(), Density = c(), type=c())
+  df_to_plot_cond <- data.frame(Prey = c(), x = c(), Density = c(), type=c())
 
+  if (variable == "PI"){
+    scalar <- ((length(which(!is.na(data$list_prey[pred_index, ]))) - 1) / (data$CV[pred_index]^2))-1
+    scalar <- ifelse(length(which(!is.na(data$list_prey[pred_index, ]))) == 1, 1, scalar)
+    df_cond_allprey <- sapply(data$alpha_lit[, pred_index], function(x){rgamma(1000000,x*scalar)})
+    df_cond_allprey <- apply(df_cond_allprey, 2, function(X) X/rowSums(df_cond_allprey))
+    df_cond_allprey <- apply(df_cond_allprey, 2, function(X) density(X, from=0, to=1)$y)
+  }
+  
   for (each_prey in prey){
-    prey_idx <- which(colnames(data$o) == each_prey)
+    prey_idx <- which(rownames(data$o) == each_prey)
     if (prey_idx %in% data$list_prey[pred_index, ]){
       if (variable == "PI"){
         if (literature_configuration) {
-          Density <- stats::dbeta(x, data$alpha_lit[prey_idx, pred_index],
-                                  colSums(data$alpha_lit)[pred_index] - 
-                                    data$alpha_lit[prey_idx, pred_index])
+
+          Density <- stats::dbeta(x, data$alpha_lit[prey_idx, pred_index] * scalar,
+                                  (colSums(data$alpha_lit)[pred_index] - 
+                                    data$alpha_lit[prey_idx, pred_index]) * scalar)
+          
+          df_to_plot_cond <- rbind(df_to_plot_cond, data.frame(Prey = rep(each_prey, 512), x = x, Density = df_cond_allprey[, prey_idx], type=" conditional"))
+          
         } else {
           Density <- stats::dbeta(x, 1, data$nb_prey[pred_index] - 1)
         }
+        
+        df_to_plot <- rbind(df_to_plot, data.frame(Prey = rep(each_prey, 512), x = x, Density = Density, type="marginal"))
+        
       } else if (variable == "eta"){
         if (literature_configuration) {
           Density <- stats::dbeta(x, data$eta_hyperparam_1[prey_idx, pred_index],
@@ -250,9 +300,18 @@ plot_prior_distribution <- function(data, literature_configuration, pred, prey,
         } else {
           Density <- stats::dbeta(x, 1, 1)
         }
+       
+        df_to_plot <- rbind(df_to_plot, data.frame(Prey = rep(each_prey, 512), x = x, Density = Density, type="marginal")) 
+        
       }
-      df_to_plot <- rbind(df_to_plot, data.frame(Prey = rep(each_prey, 101), x = x, Density = Density))
+      
     }
+  }
+  
+  if (variable == "PI" & literature_configuration==T){
+    
+    df_to_plot <- rbind(df_to_plot, df_to_plot_cond)
+    
   }
 
   # Plot the figure
@@ -262,11 +321,12 @@ plot_prior_distribution <- function(data, literature_configuration, pred, prey,
     xlim(0, 1) +
     theme_bw() +
     theme(axis.title.x = element_blank(),
-          plot.title = element_text(hjust = 0.5))
+          plot.title = element_text(hjust = 0.5)) +
+    facet_wrap(~type, scales="free_y")
   
   print(figure)
   
-  if (save){
+  if (save == TRUE){
     ggsave(paste0("figure_", gsub(" ", "_", title), "_for_the_", pred, "_predator",
                   format(Sys.time(),'_%Y-%m-%d_%H-%M-%S'), ".png"), 
            height = 4.4, width = 6.2, path = save_path)
@@ -335,9 +395,7 @@ plot_prior <- function(data, literature_configuration,
                        save_path = "."){
 
   if (!all(variable %in% c("eta", "PI"))){
-    stop("This function can only print a figure for the PI or eta variable.\n",
-         "  But you have entered this variable name: \"", variable, "\".\n",
-         "  Please use rather `variable = \"PI\"` or `variable = \"eta\"` for this function.")
+    stop("This function has only be designed to plot the priors of PI or eta.")
   }
 
   for (var in variable){
@@ -373,7 +431,7 @@ plot_prior <- function(data, literature_configuration,
 
     } else {
       title <- switch(var,
-                      PI = "Marginal prior distribution of the diet proportions",
+                      PI = "Marginal and Conditional prior distribution of the diet proportions",
                       eta = "Marginal prior distribution of the trophic link probabilities")
 
       plot_prior_distribution(data, literature_configuration, pred, prey, 
@@ -389,6 +447,7 @@ plot_prior <- function(data, literature_configuration,
 #' in a matrix format (with the predators in the columns, and the preys in the rows)
 #'
 #' @inheritParams plot_results
+#' @param mcmc_output A matrix generated in plot_results containing the MCMC samples
 #'
 #' @keywords internal
 #' @noRd
@@ -419,6 +478,7 @@ extract_mean <- function(mcmc_output, data, variable = "PI"){
 #' Plot the posterior probability density(ies) for a given variable and predator
 #'
 #' @inheritParams plot_results
+#' @param mcmc_output A matrix generated in plot_results containing the MCMC samples
 #' @param title the title to put (depends on the variable and the predator to plot)
 #'
 #' @import ggplot2
@@ -515,7 +575,7 @@ plot_posterior_distribution <- function(mcmc_output, data, pred, prey,
 
   print(figure)
   
-  if (save){
+  if (save == TRUE){
     ggsave(paste0("figure_", gsub(" ", "_", title), "_for_the_", colnames(data$o)[pred_index], "_predator",
                   format(Sys.time(),'_%Y-%m-%d_%H-%M-%S'), ".png"), 
            height = 4.4, width = 6.2, path = save_path)
@@ -543,7 +603,7 @@ plot_posterior_distribution <- function(mcmc_output, data, pred, prey,
 #' The "variable" parameter can be specified if one wants to plot the priors for only one variable 
 #' ("PI" or "eta").
 #' 
-#' @param mcmc_output the mcmc.list object output by the run_model() function
+#' @param jags_output the mcmc.list object output by the run_model() function
 #' @inheritParams plot_prior
 #' 
 #' @examples
@@ -576,7 +636,7 @@ plot_posterior_distribution <- function(mcmc_output, data, pred, prey,
 #'
 #' @export
 
-plot_results <- function(mcmc_output, data, 
+plot_results <- function(jags_output, data, 
                          pred = NULL, prey = NULL, 
                          variable = c("eta", "PI"),
                          save = FALSE,
@@ -588,6 +648,8 @@ plot_results <- function(mcmc_output, data,
          "  Please use rather `variable = \"PI\"` or `variable = \"eta\"` for this function.")
   }
 
+  mcmc_output <- as.matrix(jags_output$samples)
+  
   for (var in variable){
 
     if (is.null(pred) & is.null(prey)){
