@@ -91,7 +91,7 @@ print_convergence_diagnostic <- function(jags_output){
 #'                         
 #' write_model(literature_configuration = FALSE)
 #' 
-#' mcmc_output <- run_model("EcoDiet_model.txt", data, run_param="short")
+#' mcmc_output <- run_model("EcoDiet_model.txt", data, run_param="test")
 #' }
 #' 
 #' @seealso \code{\link{preprocess_data}} to preprocess the data, and 
