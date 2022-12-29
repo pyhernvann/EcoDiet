@@ -9,6 +9,14 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+options(rmarkdown.html_vignette.check_title = FALSE)
+```
+
 This vignette help you deal with troubling messages from the `run_model` function.
 
 Example of model (NB: the `preprocess_data`, `write_model` and `run_model` functions must have been run without errors before trying to solve the convergence problems):
