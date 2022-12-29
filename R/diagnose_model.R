@@ -1,0 +1,98 @@
+#' Diagnose EcoDiet model
+#' 
+#' @description
+#' 
+#' This function operates a diagnostic of the fit EcoDiet model.
+#' 
+#' A message is printed to provide the number of variables for which the Gelman-Rubin diagnostic exceeds
+#' specific thresholds (> 1.01, > 1.05, >1.1). The list of the 10 worst variables in terms of convergence
+#' is also printed.
+#' 
+#' You need to have run the \code{run_model} function before using this function.
+#' 
+#' The design of this function is substantially inspired from a function with a similar objective
+#' in the MixSIAR package [(Stock et al. 2018)](https://doi.org/10.7717/peerj.5096), for which code is available online on
+#' the [MixSIAR GitHub repository](https://github.com/brianstock/MixSIAR).
+#' The diagnostic plots are generated using the \code{ggmcmc} package [(Fernández-i-Marín, 2016)](https://CRAN.R-project.org/package=ggmcmc).
+#' 
+#'
+#' @param jags_output The MCMC output summarized in the class jagsUI object
+#'   output by \code{run_model} function 
+#' @param var.to.diag The list of variables for which diagnostic plots should be produced and save. By default, this
+#' argument is "all" hence is run for all the variables.
+#' @param save Indicates whether diagnostic plots should be produced and saved.
+#' @param save_path The path indicating where to save the diagnostic plots.
+#'
+#' @return A matrix containing the Gelman diagnostic for all the variables monitored by the \code{\link{run_model}} function (\code{variables_to_save argument}).
+#' 
+#' @examples
+#' 
+#' \donttest{
+#' realistic_biotracer_data <- read.csv(system.file("extdata", "realistic_biotracer_data.csv",
+#'                                                package = "EcoDiet"))
+#' realistic_stomach_data <- read.csv(system.file("extdata", "realistic_stomach_data.csv",
+#'                                              package = "EcoDiet"))
+#'
+#' data <- preprocess_data(biotracer_data = realistic_biotracer_data,
+#'                         trophic_discrimination_factor = c(0.8, 3.4),
+#'                         literature_configuration = FALSE,
+#'                         stomach_data = realistic_stomach_data)
+#'                         
+#' write_model(literature_configuration = FALSE)
+#' 
+#' mcmc_output <- run_model("EcoDiet_model.txt", data, run_param="short", parallelize = TRUE)
+#' 
+#' Gelman_test <- diagnose_model(mcmc_output)
+#' Gelman_test
+#' 
+#' }
+#' 
+#' @seealso \code{\link{run_model}} to run the model 
+#'
+#' @export
+
+diagnose_model <- function(jags_output, var.to.diag = "all", save = FALSE, save_path = "."){
+  
+  # mcmc infos
+  n.draws <- jags_output$mcmc.info$n.samples
+  n.var <- coda::nvar(jags_output$samples)
+  mcmc.chains <- jags_output$mcmc.info$n.chains
+
+  # Gelman diagnostic
+  gelman <- coda::gelman.diag(jags_output$samples, multivariate = FALSE)$psrf
+  gelman.all <- gelman[which(!is.nan(gelman[,1])),] # Remove dummy variables (show up as NA)
+  gelman_short <- gelman[order(gelman[,1],decreasing=T),]
+  if(n.var>10) gelman_short <- gelman_short[1:10,]
+  gelman_fail <- c(length(which(gelman[,1]>1.01)),
+                   length(which(gelman[,1]>1.05)),
+                   length(which(gelman[,1]>1.1)))
+  
+  diags <- list()
+  cat("
+################################################################################
+# Gelman-Rubin Diagnostic
+################################################################################
+In EcoDiet, we recommend a that Gelman diagnostic is < 1.1
+",paste("Out of ",n.var," variables: ",sep=""),"
+                      ",paste(gelman_fail[1]," > 1.01",sep=""),"
+                      ",paste(gelman_fail[2]," > 1.05",sep=""),"
+                      ",paste(gelman_fail[3]," > 1.1",sep=""),"
+The worst variables are:
+",sep="")
+  
+  print(gelman_short)
+  
+  diags$gelman <- gelman.all
+  
+  
+  if(save==T){
+    filename <- ifelse(missing(save_path),"diagnostic.pdf", paste0(save_path,"/","diagnostic.pdf"))
+    if(var.to.diag == "all"){
+      ggmcmc::ggmcmc(ggmcmc::ggs(jags_output$samples), file=filename, plot=c("Rhat","density","traceplot","running","autocorrelation","crosscorrelation"))
+    }else{
+      ggmcmc::ggmcmc(subset(ggmcmc::ggs(jags_output$samples), Parameter %in% var.to.diag), file=filename, plot=c("Rhat","density","traceplot","running","autocorrelation","crosscorrelation"))
+      }
+  }
+  
+  invisible(diags)
+}
