@@ -4,7 +4,9 @@
 \name{mcmc_output_example}
 \alias{mcmc_output_example}
 \title{The MCMC output for running the example dataset}
-\format{An object of class \code{matrix} with 3000 rows and 12 columns.}
+\format{
+An object of class \code{jagsUI} of length 24.
+}
 \usage{
 mcmc_output_example
 }
