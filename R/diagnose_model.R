@@ -40,7 +40,7 @@
 #'                         
 #' write_model(literature_configuration = FALSE)
 #' 
-#' mcmc_output <- run_model("EcoDiet_model.txt", data, run_param="short", parallelize = TRUE)
+#' mcmc_output <- run_model("EcoDiet_model.txt", data, run_param="test")
 #' 
 #' Gelman_test <- diagnose_model(mcmc_output)
 #' Gelman_test
@@ -90,7 +90,7 @@ The worst variables are:
     if(var.to.diag == "all"){
       ggmcmc::ggmcmc(ggmcmc::ggs(jags_output$samples), file=filename, plot=c("Rhat","density","traceplot","running","autocorrelation","crosscorrelation"))
     }else{
-      ggmcmc::ggmcmc(subset(ggmcmc::ggs(jags_output$samples), Parameter %in% var.to.diag), file=filename, plot=c("Rhat","density","traceplot","running","autocorrelation","crosscorrelation"))
+      ggmcmc::ggmcmc(subset(ggmcmc::ggs(jags_output$samples), ggmcmc::ggs(jags_output$samples)$Parameter %in% var.to.diag), file=filename, plot=c("Rhat","density","traceplot","running","autocorrelation","crosscorrelation"))
       }
   }
   
