@@ -4,11 +4,21 @@
 \alias{write_model}
 \title{Write the EcoDiet model in BUGS}
 \usage{
-write_model(literature_configuration = FALSE)
+write_model(
+  file.name = "EcoDiet_model.txt",
+  literature_configuration = FALSE,
+  print.model = FALSE
+)
 }
 \arguments{
+\item{file.name}{The name and location under which the '.txt' BUGS definition
+of the model will be saved. If not provided, the file will be saved in the
+current repository under the "EcoDiet_model.txt" name.}
+
 \item{literature_configuration}{A boolean (TRUE or FALSE) indicating whether the model will have
 prior distributions informed by a literature study}
+
+\item{print.model}{Indicates whether the user wants to print the written model in the console.}
 }
 \value{
 A string containing the model definition in BUGS
@@ -22,11 +32,9 @@ hence the parameter \code{literature_configuration}.
 To know more about what is inside the model, please read the reference article.
 }
 \examples{
-model_string_1 <- write_model(literature_configuration = TRUE)
-cat(model_string_1)
+write_model(file.name="my_model_with_priors.txt", literature_configuration = TRUE)
 
-model_string_2 <- write_model(literature_configuration = FALSE)
-cat(model_string_2)
+write_model(literature_configuration = FALSE, print.model = TRUE)
 
 }
 \seealso{
