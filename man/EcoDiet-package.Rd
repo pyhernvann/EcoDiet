@@ -6,13 +6,9 @@
 \alias{EcoDiet-package}
 \title{EcoDiet: Estimating a Diet Matrix from Biotracer and Stomach Content Data}
 \description{
-\if{html}{\figure{logo.png}{options:alt='logo' width='120'}}
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Biotracers and stomach content analyses are combined in a Bayesian hierarchical model
-    to estimate a probabilistic topology matrix (all trophic link probabilities) and a diet matrix 
-    (all diet proportions).
-    The package relies on the JAGS software and the 'rjags' package to run a Markov chain Monte Carlo 
-    approximation of the different variables.
+Biotracers and stomach content analyses are combined in a Bayesian hierarchical model to estimate a probabilistic topology matrix (all trophic link probabilities) and a diet matrix (all diet proportions). The package relies on the JAGS software and the 'jagsUI' package to run a Markov chain Monte Carlo approximation of the different variables.
 }
 \seealso{
 Useful links:
@@ -27,12 +23,12 @@ Useful links:
 
 Authors:
 \itemize{
-  \item Heloise Thero
   \item Didier Gascuel
   \item Dorothee Kopp
   \item Marianne Robert
   \item Jerome Guitton
   \item Etienne Rivot
+  \item Heloise Thero
 }
 
 }
