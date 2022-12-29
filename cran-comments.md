@@ -1,3 +1,6 @@
+# New submission to the CRAN: version 2.0.0
+
+
 # Second submission to the CRAN (version 1.0.0)
 
 This is our second submission and we thank you for your reviews regarding our package. We have fixed the package according to your recommendations:
