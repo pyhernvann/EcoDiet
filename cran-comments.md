@@ -1,5 +1,25 @@
 # New submission to the CRAN: version 2.0.0
 
+This is a new update of the EcoDiet package.
+
+* List of imported packages has been modified
+
+* New function has been created and documented
+
+* The class of objects output by some functions have been modified
+
+* Previous remarks of the CRAN team have been integrated: example length reduction 
+deprecated hyperlink update
+
+* The documentation of the package and functions has been updated accordingly.
+
+* All modifications are now summarized in a NEWS document.
+
+### R CMD check results
+There were 0 ERRORS 0 WARNINGS 0 NOTES
+
+Maintainer: ‘Pierre-Yves Hernvann <pierre.yves.hernvann@gmail.com>’
+
 
 # Second submission to the CRAN (version 1.0.0)
 
