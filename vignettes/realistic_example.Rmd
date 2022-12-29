@@ -75,14 +75,14 @@ plot_prior(data, literature_configuration, pred = "Pout")
 We define the model, and test if it compiles well with a few iterations and adaptation steps:
 
 ```{r}
-model_string <- write_model(literature_configuration = literature_configuration)
-
-mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e1, nb_iter = 1e2)
+filename <- "mymodel.txt"
+write_model(file.name = filename, literature_configuration = literature_configuration, print.model = F)
+mcmc_output <- run_model(filename, data, run_param="test")
 ```
 
 You should now try to run the model until it converges (it should take around **half an hour** to run, so we won't do it in this vignette):
 ```{r, eval = FALSE}
-mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e3, nb_iter = 1e5)
+mcmc_output <- run_model(filename, data, run_param="normal", parallelize = T)
 ```
 
 Here are the figures corresponding to the results that have converged:
@@ -154,14 +154,14 @@ plot_prior(data, literature_configuration, pred = "Pout")
 Again, we verify that the model compiles well:
 
 ```{r}
-model_string <- write_model(literature_configuration = literature_configuration)
-
-mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e1, nb_iter = 1e2)
+filename <- "mymodel_literature.txt"
+write_model(file.name = filename, literature_configuration = literature_configuration, print.model = F)
+mcmc_output <- run_model(filename, data, run_param="test")
 ```
 
 You should now try to run the model until it converges (it should take around **half an hour** to run, so we won't do it in this vignette):
 ```{r, eval = FALSE}
-mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e3, nb_iter = 1e5)
+mcmc_output <- run_model(filename, data, run_param=list(nb_iter=100000, nb_burnin=50000, nb_thin=50, nb_adapt=50000), parallelize = T)
 ```
 
 Here are the figures corresponding to the results that have converged:
