@@ -11,13 +11,9 @@ vignette: >
 
 This vignette help you deal with troubling messages from the `run_model` function.
 
-* The 'adaptation incomplete' warning or 'Stopping adaptation' note mean that the samplers aren't optimised for your model after the adaptation phase. JAGS doesn't estimate that the model will run with the optimal state. This tends to happen in complex models for a too small number of adaptation steps (`nb_adapt`).
+Example of model (NB: the `preprocess_data`, `write_model` and `run_model` functions must have been run without errors before trying to solve the convergence problems):
 
-* The 'convergence problem' warning means that the Gelman-Rubin diagnostic stayed above 1.1 for at least one variable. The Gelman-Rubin statistic measures the convergence for each variable. Convergence problems can occur in complex models with too small number of iterations (`nb_iter`).
-
-As a prerequisite, the `preprocess_data`, `write_model` and `run_model` functions must have been run without errors before trying to solve the convergence problems:
-
-```{r, results = 'hide', message = FALSE, warning = FALSE}
+```{r, eval=FALSE}
 library(EcoDiet)
 
 example_stomach_data_path <- system.file("extdata", "example_stomach_data.csv",
@@ -30,20 +26,95 @@ data <- preprocess_data(biotracer_data = read.csv(example_biotracer_data_path),
                         literature_configuration = FALSE,
                         stomach_data = read.csv(example_stomach_data_path))
 
-model_string <- write_model(literature_configuration = FALSE)
-
-mcmc_output <- run_model(textConnection(model_string), data)
+filename <- "mymodel.txt"
+write_model(file.name = filename, literature_configuration = literature_configuration, print.model = F)
+mcmc_output <- run_model(filename, data, run_param="test")
 ```
 
-## Increase the number of iterations and/or adaptation steps
+## Issues you can face
 
-The first thing that you should try is setting a higher number of iterations and/or adaptation steps to run the model. Depending on your data (e.g., food-web complexity, data informativeness), this can take **hours or days** to run:
+Several issues can be encountered when running Bayesian models that use Markov Chain Monte Carlo (MCMC) simulation. These issues are linked to the MCMC samplers, i.e. the objects that will be used to update the parameters of the model at each iteration, first drawing values from prior distributions, to then progressively moving over a posterior distribution and converge on a target distribution.
+
+### Adaptation issues
+
+In some (infrequent) cases, you may encounter issues during the adaptation phase. The adaptation phase is a period during which, once a model has been initialized, the samplers modify their behavior (hence, *adapting* to the model structure) for an increased efficiency of the forthcoming sampling process. Adaptation phase issues will occur within JAGS and will then be communicated to the R package exchanging with it (here, `jagsUI`), which should then print a warning message and potentially stop the model run. 
+
+In this situation, you should see in the console a *Adaptation incomplete* warning or a *Stopping adaptation* note. Such messages indicate that the samplers are not optimized for your model after the Adaptation phase. This tends to happen in complex models for a too small number of adaptation steps (`nb_adapt`). In the v 2.0.0, `EcoDiet` is run with the `jagsUI` package, which does not require to specify an number of adaptation steps. By default , `jagsUI` will run groups of 100 adaptation iterations, up to a maximum of 10,000 iterations, until JAGS identifies the adaptation as sufficient. If such adaptation warnings/notes appear, it means that the default number of adaptation steps in jagsUI is still too low and that you should manually specify a higher number of adaptation steps using `nb_adapt` in the `run_param` argument of the `model_run` function as follows:
+
+```{r, eval=FALSE}
+
+mcmc_output <- run_model(filename, data, run_param=list(nb_iter=100000, nb_burnin=50000, nb_thin=50, nb_adapt=50000), parallelize = T)
+
+```
+
+Because of the number of iterations used for the default adaptation phase by jagsUI, we recommend to start with nb_adapt > 10,000.
+
+### Convergence issues
+
+In theory, an MCMC sampler should converge to the target distribution as the number of iterations tends to infinite. However, MCMC simulation are (luckily) less-than-infinite. For several reasons, one or several variables may have difficulties to converged over that target distribution.
+
+In this situation, you should be notified in by:
+
+-   The `jagsUI` package, that will flag any convergence failures (Rhat > 1.1) by the following message *WARNING Rhat values indicate convergence failure*. This message will be displayed in the summary paragraph provided at the end of the `run_model` run.
+
+-   The `EcoDiet` model, which will print a *Convergence warning* (red text). The number of variables not converging displayed in the warning, relatively to the total number of variables monitored, will give you an idea of the convergence issues extent. It will also indicate a potential convergence failure based on the same criteria and indicate the number of variables for which convergence diagnostic is not satisfying
+
+As previously mentioned, convergence issues could be related to one or several variables and may be of variable importance. The first thing to do in case of convergence issues will be to investigate this further. 
+
+The `EcoDiet` package provides you with several ways of checking/exploring convergence.
+
+-   The `jagsUI` package on which is based `EcoDiet` (version >= 2.0.0) prints at the end of each model run a short summary of the model configuration, statistics on the MCMC samples and information on the convergence of the variables. Convergence is assessed via the Gelman-Rubin diagnostic that you will be able to check in the summary table printed in the console, also accessible within the jagsUI object returned by the `run_model` function .
+
+-   A `EcoDiet` built-in *Convergence warning* message is systematically returned by the `run_model` function (red text).
+
+-   The new `diagnose_model` function allows you to perform the more complete Gelman-Rubin diagnostic on the MCMC outputs and compile all these coefficients in a matrix object. It can also produce a `.pdf` document with complete diagnostic plots if interested.
+
+[Note that, in the present version of the `EcoDiet` package, all convergence diagnostics are based on Gelman-Rubin test. In the future, other diagnostics could be integrated. If you are used to work with models employing GIBS or other MCMC techniques, you could also directly use the jasgUI outputs to test other flavors of convergence diagnostic.]
+
+To summary, in terms of code, you can investigate the convergence of the model by alternatively running the following:
+
+```{r, eval=FALSE}
+
+# Option 1: use the jagsUI object
+mcmc_output_example$summary[,c("Rhat", "n.eff")]
+
+# Option 2: diagnose function
+Gelman_diag <- diagnose_model(mcmc_output_example) # just display the Gelman-Rubin diagnostic
+Gelman_diag
+
+# Option 3: diagnose function
+Gelman_diag <- diagnose_model(mcmc_output_example, var.to.diag = "all", save = TRUE) # Display the Gelman-Rubin diagnostic and produce the plots
+Gelman_diag
+
+```
+
+You should use this information to elaborate some strategies for tackling convergence issues.
+
+## How to tackle convergence issues
+
+
+### Increase the number of iterations
+
+The first and easy thing that you should try is setting a higher number of iterations steps to run the model. Be aware that, depending on your data (e.g., food-web complexity, data informativeness), this can take **hours or days** to run. Using the model shortcuts provided in version 2.0.0, you could for example successively try to run youyr model in the "normal", "long" then "very long" configurations.
+
+Increasing the number of iterations is a good solution in many cases and you should start from this. It would definitly look especially pertinent when convergence diagnoses show that, additionally to a substantial number of variables with  numerous variables have a Rhat > 1.1, a lot of them are between 1.05 and 1.01.
 
 ```{r, eval = FALSE}
-mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e4, nb_iter = 1e7)
+mcmc_output <- run_model(filename, data, run_param="normal")
+mcmc_output <- run_model(filename, data, run_param="long")
+mcmc_output <- run_model(filename, data, run_param="very long")
 ```
 
-## Specify initial values for the model
+### Increase the number of adaptation steps
+
+For very complex models, you may see also consider to increase the adaptation phase as specified in the dedicated paragraph above. Even if the adaptation is considered "sufficient" by JAGS, it doesn't mean that the samplers can't be still better designed to fit the model structure. Manually setting an nb_adapt and progressively increase its value may still enhance the efficiency of your samplers and allow the model to reach better convergence for the same number of iterations. By keeping the number of iterations constant, you can progressively increase the `nb_adapt` as long as it seems to have an impact on convergence.
+
+Using this lever would look relevant if you reach low Rhat for many variables but still have a small set of variables that exceed 1.1, and if these variables are not systematically the same.
+
+Please note that the model configurations associated with the `run_param` shortcuts always specify nb_adapt.
+
+
+### Specify initial values for the model
 
 The next step might be to define starting values from which to run the MCMC chains. By default JAGS will use the prior distributions to randomly fix the starting values of the chains, which can cause problems.
 
@@ -51,8 +122,9 @@ A large inconsistency between the literature priors and the data can eventually 
 
 Or you can try to manually set a good set of fixed values for initializing MCMC chains, i.e., fixed values that you know are close to the values you want the model to converge to. This way the model is given a good start and it should be faster to converge.
 
+
 ## Conclusions
 
 If you still have an 'adaptation incomplete' warning or 'Stopping adaptation' note, you can just live with the sub-optimal sampler efficiency and run the model for a higher number of iterations.
 
-If you still have a 'convergence problem' message, you cannot use the obtained results as they are clearly incorrect.
+If you still have a 'convergence problem' message, you cannot use the obtained results as they are clearly incorrect. However, note that for highly complex case studies, the dimension of the model may be considerable hence the time required by the runs may be dramatically long. In that context, while analyzing your results carefully, you might be willing to use your model outputs if a only a very limited number of variables don't reach convergence after especially long runs but are really close from convergence. This should only done after exploration of all existing means to reach full convergence of the model.
