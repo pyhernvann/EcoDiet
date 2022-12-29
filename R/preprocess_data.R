@@ -54,13 +54,13 @@ check_stomach_data <- function(stomach_data){
          "  Please rename them to be consistent.")
   }
 
-  # Check the content of the stomachal data
-  if (!is.integer(stomach_data)){
-    stop("The stomachal data should only contain integer values, and not decimal values or text.\n",
+  # Check the content of the stomach data
+  if (sum(stomach_data-round(stomach_data))!=0){
+    stop("The stomach data shouldn't contain decimal values or text.\n",
          "  Please remove the values that do not correspond to a number of stomachs.")
   }
   if (sum(is.na(stomach_data)) > 0){
-    stop("The stomachal data should not contain NA or NaN.\n",
+    stop("The stomach data should not contain NA or NaN.\n",
          "  But the number of stomachs from the predator \"",
          colnames(stomach_data)[which(is.na(stomach_data), arr.ind = T)[, 2][1]],
          "\" contain abnormal values.\n",
