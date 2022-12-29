@@ -22,10 +22,10 @@ plot_biotracer_data <- function(biotracer_data, save=FALSE, save_path){
   if(nb_biotracers==1){
     
     figure <- ggplot(biotracer_data,
-                     aes(x = group, y=get(names(biotracer_data)[2]),
-                         colour = group)) +
+                     aes(x = biotracer_data$group, y=get(names(biotracer_data)[2]),
+                         colour = biotracer_data$group)) +
       ggtitle("Isotopic measurements") +
-      geom_point(aes(x = group, y=get(names(biotracer_data)[2]), colour = group), position=position_jitter(width=.2,height=.1), show.legend=T) +
+      geom_point(data=biotracer_data, aes(x = biotracer_data$group, y=get(names(biotracer_data)[2]), colour = biotracer_data$group), position=position_jitter(width=.2,height=.1), show.legend=T) +
       guides(colour = guide_legend()) +
       theme_bw() +
       #xlab(names(biotracer_data)[element1 + 1]) +
@@ -55,10 +55,10 @@ plot_biotracer_data <- function(biotracer_data, save=FALSE, save_path){
           
           if (element2 > element1){
             
-            figure <- ggplot(biotracer_data,
+            figure <- ggplot(data=biotracer_data,
                          aes(x = biotracer_data[, element1 + 1],
                              y = biotracer_data[, element2 + 1],
-                             colour = group)) +
+                             colour = biotracer_data$group)) +
               ggtitle("Isotopic measurements") +
               xlab(names(biotracer_data)[element1 + 1]) +
               ylab(names(biotracer_data)[element2 + 1]) +
@@ -268,11 +268,19 @@ plot_prior_distribution <- function(data, literature_configuration, pred, prey,
   df_to_plot_cond <- data.frame(Prey = c(), x = c(), Density = c(), type=c())
 
   if (variable == "PI"){
-    scalar <- ((length(which(!is.na(data$list_prey[pred_index, ]))) - 1) / (data$CV[pred_index]^2))-1
-    scalar <- ifelse(length(which(!is.na(data$list_prey[pred_index, ]))) == 1, 1, scalar)
-    df_cond_allprey <- sapply(data$alpha_lit[, pred_index], function(x){rgamma(1000000,x*scalar)})
-    df_cond_allprey <- apply(df_cond_allprey, 2, function(X) X/rowSums(df_cond_allprey))
-    df_cond_allprey <- apply(df_cond_allprey, 2, function(X) density(X, from=0, to=1)$y)
+    if (literature_configuration) {
+      scalar <- ((length(which(!is.na(data$list_prey[pred_index, ]))) - 1) / (data$CV[pred_index]^2))-1
+      scalar <- ifelse(length(which(!is.na(data$list_prey[pred_index, ]))) == 1, 1, scalar)
+      df_cond_allprey <- sapply(data$alpha_lit[, pred_index], function(x){stats::rgamma(1000000,x*scalar)})
+      df_cond_allprey <- apply(df_cond_allprey, 2, function(X) X/rowSums(df_cond_allprey))
+      df_cond_allprey <- apply(df_cond_allprey, 2, function(X) stats::density(X, from=0, to=1)$y)
+    }else{
+      vecprey <- rep(0,ncol(data$list_prey))
+      vecprey[prey_index] <- 1
+      df_cond_allprey <- sapply(vecprey, function(x){stats::rgamma(1000000,x)})
+      df_cond_allprey <- apply(df_cond_allprey, 2, function(X) X/rowSums(df_cond_allprey))
+      df_cond_allprey <- apply(df_cond_allprey, 2, function(X) stats::density(X, from=0, to=1)$y)
+    }
   }
   
   for (each_prey in prey){
@@ -619,9 +627,9 @@ plot_posterior_distribution <- function(mcmc_output, data, pred, prey,
 #'                         literature_configuration = FALSE,
 #'                         stomach_data = realistic_stomach_data)
 #'                         
-#' model_string <- write_model(literature_configuration = FALSE)
+#' write_model(literature_configuration = FALSE)
 #' 
-#' mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e1, nb_iter = 1e2)
+#' mcmc_output <- run_model("EcoDiet_model.txt", data, run_param="test")
 #'                         
 #' plot_results(mcmc_output, data)
 #' plot_results(mcmc_output, data, pred = "Crabs")
