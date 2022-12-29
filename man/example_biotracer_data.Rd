@@ -3,13 +3,15 @@
 \name{example_biotracer_data}
 \alias{example_biotracer_data}
 \title{Example biotracer data}
-\format{A table with 15 rows and 3 columns. Each row is an isotopic sample from one individual.
+\format{
+A table with 15 rows and 3 columns. Each row is an isotopic sample from one individual.
 The columns are:
 \describe{
   \item{group}{the trophic group the individual belonged to}
   \item{d13C}{the d13C measurement made on that individual}
   \item{d15N}{the d15N measurement made on that individual}
-}}
+}
+}
 \description{
 This is an artificial and simple biotracer dataset, more specifically stable isotope analyses,
  made to illustrate the package on a simple case. All tables whose name start by "example" are describing
