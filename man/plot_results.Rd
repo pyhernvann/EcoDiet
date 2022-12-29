@@ -5,7 +5,7 @@
 \title{Plot the posterior means or probability distribution(s)}
 \usage{
 plot_results(
-  mcmc_output,
+  jags_output,
   data,
   pred = NULL,
   prey = NULL,
@@ -15,7 +15,7 @@ plot_results(
 )
 }
 \arguments{
-\item{mcmc_output}{the mcmc.list object output by the run_model() function}
+\item{jags_output}{the mcmc.list object output by the run_model() function}
 
 \item{data}{the preprocessed data list output by the preprocess_data() function}
 
@@ -64,9 +64,9 @@ data <- preprocess_data(biotracer_data = realistic_biotracer_data,
                         literature_configuration = FALSE,
                         stomach_data = realistic_stomach_data)
                         
-model_string <- write_model(literature_configuration = FALSE)
+write_model(literature_configuration = FALSE)
 
-mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e1, nb_iter = 1e2)
+mcmc_output <- run_model("EcoDiet_model.txt", data, run_param="test")
                         
 plot_results(mcmc_output, data)
 plot_results(mcmc_output, data, pred = "Crabs")
