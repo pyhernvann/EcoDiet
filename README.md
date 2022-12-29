@@ -1,12 +1,14 @@
 # EcoDiet <img src="man/figures/logo.PNG" style="float: right;" width="220" />
 
 [![cran version](http://www.r-pkg.org/badges/version/EcoDiet)](https://cran.r-project.org/package=EcoDiet)
-[![downloads](http://cranlogs.r-pkg.org/badges/grand-total/EcoDiet?)](https://github.com/metacran/cranlogs.app)
+[![downloads](http://cranlogs.r-pkg.org/badges/grand-total/EcoDiet?)](https://github.com/r-hub/cranlogs.app)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4081537.svg)](https://doi.org/10.5281/zenodo.4081537)
 
-The EcoDiet package estimates a probabilistic topology matrix (all trophic link probabilities) and a diet matrix (all diet proportions) for food webs by combining biotracer and stomach content analyses in a Bayesian hierarchical model.
+## Description
 
-The full model and its application to a real dataset are described in *Hernvann et al.* (in press). When using EcoDiet, please cite both Hernvann et al. and the package (`citation("EcoDiet")` will be updated soon):
+The `EcoDiet` package estimates a probabilistic topology matrix (all trophic link probabilities) and a diet matrix (all diet proportions) for food webs by combining biotracer and stomach content analyses in a Bayesian hierarchical model.
+
+The full model and its application to a real dataset are described in *Hernvann et al.* (in press). When using `EcoDiet`, please cite both Hernvann et al. and the package (`citation("EcoDiet")`):
 
 <blockquote><p>Hernvann, P. Y., Gascuel, D., Kopp, D., Robert, M., & Rivot, E. (2022). EcoDiet: A hierarchical Bayesian model to combine stomach, biotracer, and literature data into diet matrix estimation. Ecological Applications, 32(2), e2521. </p></blockquote>
 
@@ -14,13 +16,19 @@ The full model and its application to a real dataset are described in *Hernvann 
 
 To access the citation and DOI of the latest development version, check the [Zenodo repository](https://doi.org/10.5281/zenodo.4081537)
 
-## R installation
+<div class="alert alert-info">
+  <strong>Recent updates:</strong> The latest updates of the `EcoDiet` package (> v 2.0.0) include major differences with the original version (v 1.*...*). Please read the **NEWS** file for more details.
+</div>
 
-EcoDiet is a R package so, first and foremost, you should download and install/update R.
+## Using EcoDiet
 
-## JAGS installation
+### R installation
 
-EcoDiet relies on the JAGS software, so you also need to download and install/update JAGS. You should install the last version of JAGS so that your model will run at maximal speed.
+`EcoDiet` is a R package so, first and foremost, you should download and install/update R.
+
+### JAGS installation
+
+`EcoDiet` relies on the JAGS software, so you also need to download and install/update JAGS. You should install the last version of JAGS so that your model will run at maximal speed.
 
 #### For Windows users
 
@@ -42,9 +50,9 @@ sudo apt-get install jags
 
 If you get an error message during installation, check [this post from Yu-Sung Su's blog](http://yusung.blogspot.com/2009/01/install-jags-and-rjags-in-fedora.html).
 
-## EcoDiet installation
+### EcoDiet installation
 
-To download the EcoDiet package from GitHub, you need to use the `install_github` function from the `devtools` package to load it. First, install the `devtools` package:
+To download the `EcoDiet` package from GitHub, you need to use the `install_github` function from the `devtools` package to load it. First, install the `devtools` package:
 
 ```{r, eval = FALSE}
 install.packages("devtools")
@@ -56,7 +64,7 @@ Once `devtools` has been installed, you can load the EcoDiet package:
 devtools::install_github("pyhernvann/EcoDiet", build_vignettes = TRUE, dependencies = TRUE)
 ```
 
-Since the 6th of May 2020 EcoDiet is also available on the CRAN. You can directly install it from R and load it:
+Since the 6th of May 2020 `EcoDiet` is also available on the CRAN. You can directly install it from R and load it:
 
 ```{r, eval = FALSE}
 install.packages("EcoDiet")
@@ -64,7 +72,7 @@ install.packages("EcoDiet")
 library("EcoDiet")
 ```
 
-## Learn how to use EcoDiet
+### Learn how to use EcoDiet
 
 Several vignettes explain how to use the package. Run the following in R and click on the HTML button next to "1. Introduction - How to use EcoDiet":
 ```
