@@ -16,17 +16,19 @@ knitr::opts_chunk$set(
 )
 ```
 
-EcoDiet is a new tool for assimilating data in food-web studies. The goal of the package is to simultaneously estimate a probabilistic topology matrix and a diet matrix by combining biotracers and stomach content analyses in a Bayesian hierarchical model. The topology matrix contains all trophic link probabilities $\eta$, hence it gives for any prey the probability to be eaten by a given predator. The diet matrix contains all diet proportions $\Pi$, hence it gives for any prey the percentage of its contribution to a given predator's diet. The full model and its application on a real dataset are described in *Hernvann et al.* (under review). Use `citation("EcoDiet")` to get the full reference.
+EcoDiet is a new tool for assimilating data in food-web studies. The goal of the package is to quantify trophic interactions between food-web components by combining stomach content analyses and biotracers in a Bayesian hierarchical model. To do so, the model simultaneously estimates a probabilistic topology matrix of the trophic network and the diet matrix. The topology matrix is a probabilistic description of "who eats whom" in the food web nad is composed of the probabilities that trophic links exist between food-web components, i.e. the probabilities $\eta$ that any prey is eaten by a given predator. The diet matrix is estimated conditionally to this topology and contains all diet proportions $\Pi$, hence it expresses the contribution (in %) of any prey to a given predator's diet.
 
-There are different ways of using this package:
+The full EcoDiet model and its application to real and simulated datasets are described in [*Hernvann et al. 2022*](https://esajournals.onlinelibrary.wiley.com/doi/abs/10.1002/eap.2521). Use `citation("EcoDiet")` to get the full reference.
 
-* *Default option* - you have only stomach content and biotracers data, so non informative priors will be used;
+Several options are available within the present package:
 
-* *Literature option* - you have stomach content and biotracers data, and results from a literature search that will be used to formulate informative priors.
+* *Default option* - only stomach content and biotracer data are integrated into EcoDiet.
 
-The following example is an artificial dataset, created to be simple to visualize and understand. Note that the biotracers data used here are stable isotopes, but EcoDiet could be used to treat other analyses such as fatty acids or specific-compounds stable isotopes.
+* *Literature option* - stomach content and biotracer data are integrated and results from expert knowledge or the literature are used to formulate informative priors on the topology and diet matrices.
 
-First follow the [README](https://github.com/pyhernvann/EcoDiet/blob/master/README.md)'s instructions, and load the EcoDiet package:
+The example showcased here is an artificial dataset, created to be simple to visualize and understand. In this example as in [*Hernvann et al. 2022*](https://esajournals.onlinelibrary.wiley.com/doi/abs/10.1002/eap.2521) the biotracers used are stable isotopes but EcoDiet could be used to treat other analyses (e.g., fatty acids, specific-compounds stable isotopes).
+
+Before running the following code, please ensure that EcoDiet and the required tools are correctly installed and set up on your computer. Instructions can be found in the [README](https://github.com/pyhernvann/EcoDiet/blob/master/README.md)'s instructions. If you're all set, let's load the EcoDiet package:
 
 ```{r}
 library(EcoDiet)
@@ -34,44 +36,43 @@ library(EcoDiet)
 
 ## 1. Load and check your data
 
-Your data should be in a specific format, similar to those of following example. You can load your data by importing it from `.csv` files or directly as R data.frames.
-
-If you have the CSV files in a `data` folder and in a specific `.csv` format (semicolon separated, and not coma separated), you can try something like this:
+To apply EcoDiet to your own data, your stomach content, biotracer and literature data should be in a specific format, similar to those of following example. This data can for instance be imported into R using `.csv` files:
 
 ```{r, eval = FALSE}
-example_stomach_data <- read.csv("./data/my_stomach_data.csv", sep = ";")
-example_biotracer_data <- read.csv("./data/my_biotracer_data.csv", sep = ";")
+example_stomach_data <- read.csv("./data/my_stomach_data.csv")
+example_biotracer_data <- read.csv("./data/my_biotracer_data.csv")
 ```
+
+Here we will demonstrate how EcoDiet works on a simulated dataset stored within the EcoDiet package. 
 
 ### Stomach content data
 
-The stomach content table gathers the sum of occurrences of each prey species (or trophic group) in the stomachs of each trophic group. The first column of the table contains the names of the prey trophic group and the headers of the following columns contain the names of all the predator trophic groups. The last row of the table should be named "full", and indicates how many (non-empty) stomachs have been analyzed for each trophic group.
+The stomach content table gathers the sum of occurrences of each prey trophic group in the analyzed stomachs of each consumer trophic group. The first column of the table contains the names of the prey trophic groups and the headers of the following columns contain the names of all the predator trophic groups. The last row of the table should be named "full", and indicates how many (non-empty) stomachs have been analyzed for each trophic group.
 
 ```{r}
-example_stomach_data_path <- system.file("extdata", "example_stomach_data.csv",
-                                    package = "EcoDiet")
-example_stomach_data <- read.csv(example_stomach_data_path)
+example_stomach_data <- read.csv(system.file("extdata", "example_stomach_data.csv",
+                                    package = "EcoDiet"))
 knitr::kable(example_stomach_data)
 ```
 
 In this example, for the "huge" animals, 19 stomachs were analyzed and contained remainings. Among these stomachs, 17 contained "large" animal remainings and 12 contained "medium" animal remainings.
 
-If you have trophic groups for which no stomach content analyses were done, you should fill the column with zeros (it is the case here for "small" animals that are at the base of the trophic network).
+If some trophic groups of the studied food web don't have associated stomach content analyses, you should add a line in this table indicating the name of this group and *0* in the other columns (it is the case here for "small" animals that are at the base of the trophic network).
 
 ### Biotracer data
 
-Each line of the table represents one individual on which were conducted biotracer analyses for various elements (here stable isotope analyses for carbon and nitrogen). The first column of the table should be called "group" and indicates to which species or trophic group the individual belongs. The other columns contain the measures.
+The Biotracer table contains the analyses of different tracer concentrations. Each line of the table represents one individual on which were conducted biotracer analyses for various elements (here, stable isotope analyses for carbon and nitrogen). The first column of the table should be called "group" and contain name of the trophic group the individual belongs. The rest of the table contains the measures, one column corresponding to one biotracer.
 
 ```{r}
-example_biotracer_data_path <- system.file("extdata", "example_biotracer_data.csv",
-                                    package = "EcoDiet")
-example_biotracer_data <- read.csv(example_biotracer_data_path)
+example_biotracer_data <- read.csv(system.file("extdata", "example_biotracer_data.csv",
+                                    package = "EcoDiet"))
 knitr::kable(example_biotracer_data)
 ```
 
-You should have the same list of trophic groups in your stomach content and biotracer data. Thus, if you have a group with stomach content analyses but without biotracer data, you should still enter it as one line in the biotracer data with "NA" values (as it is the case for the "huge" group).
 
-You also need to define the trophic discrimination factors corresponding to your biotracer data. In this example, we use the following trophic discrimination factors:
+All the trophic groups of the studied food web should be present in this biotracer table. Thus, if biotracer analyses are missing for one given trophic group you still have to enter one line indicating the name of the trophic group and *NA* in the following columnds (as it is the case for the "huge" group).
+
+The biotracers like stable isotope analyses are integrated in the model based on the trophic enrichment concept. Thus, for each biotracer informed, you also need to define the corresponding trophic discrimination factors corresponding to your the biotracers. In this example, we use common trophic discrimination factors for carbon and nitrogen:
 
 ```{r, eval = FALSE}
 trophic_discrimination_factor = c(0.8, 3.4)
@@ -81,7 +82,8 @@ trophic_discrimination_factor = c(0.8, 3.4)
 
 **If you have data extracted from the literature, skip this and go to section 3.**
 
-If you don't have literature data, read this section.
+Read this section if you **don't** want to integrate information from the literature / expert knowledge.
+This is specified using the `literature_configuration` argument.
 
 ```{r}
 literature_configuration <- FALSE
@@ -89,18 +91,20 @@ literature_configuration <- FALSE
 
 ### Preprocess the data
 
-The `preprocess_data` function checks and rearranges the data in a specific format so that the EcoDiet model can be run:
+The `preprocess_data` function checks and rearranges the input data into a specific format that is read when running the EcoDiet model:
 
 ```{r}
-data <- preprocess_data(biotracer_data = example_biotracer_data,
+data <- preprocess_data(stomach_data = example_stomach_data,
+                        biotracer_data = example_biotracer_data,
                         trophic_discrimination_factor = c(0.8, 3.4),
-                        literature_configuration = literature_configuration,
-                        stomach_data = example_stomach_data)
+                        literature_configuration = literature_configuration
+                        )
 ```
 
-If any error appears, it means your data is not in the correct format. Please read the error message and rearrange your data in the correct format.
+Error messages will appear if the input data hasn't been provided in the expected shape. Please read carefully the error message and rearrange your data in the correct format.
 
-If you have a lot of small values in the stomach occurences, you can choose to upscale the stomach content data:
+Stomach content dataset dominated by numerous small values of occurrence might be problematical as to few groups could be identified as potential prey. To avoid such situations, you can choose to upscale the stomach content data so that occurrences are artificially increased but their relative importance are conserved. This is performed by specifying `rescale_stomach = TRUE` when preprocessing the data.
+
 ```{r}
 data <- preprocess_data(biotracer_data = example_biotracer_data,
                         trophic_discrimination_factor = c(0.8, 3.4),
@@ -111,21 +115,22 @@ data <- preprocess_data(biotracer_data = example_biotracer_data,
 
 ### Check the trophic links
 
-These are the links that will be investigated by the model. It is not wise to assume that all the trophic links are possible. You therefore need to consider only the reasonnable and important trophic links (e.g., a shrimp cannot eat a whale), as adding weak trophic links may introduce too much uncertainty in EcoDiet estimates. The matrix displayed by the `preprocess_data` function is based by default on the stomach content data (`data$o`):
+By default, the links that will be investigated by the model will be those derived from at least one observation in the stomach content analyses. This is a conservative assumption to avoid investigating all the possible trophic links in the food web, since it would make the model too complex and require too long runs, while also reduce the discrimination power of the model (see Hernvann et al. 2022). The trophic links that will be investigated can be summarized by a fixed topology computed by the `preprocess_data` based on stomach contents (i.e., `data$o`):
 
 ```{r}
 topology <- 1 * (data$o > 0)
 print(topology)
 ```
 
-If you want to add another trophic link, you can modify directly the binary topology matrix. It can be useful if your stomach sampling size is too low and you missed a prey you are definitely sure that the predator feeds on, or if the prey is little identifiable in stomachs (e.g., really small and highly digestible prey). To specify that the "huge" animal can also eat "small" animals, you can do:
+If you want to add other important link that may not be observed in scat contents (or, on the contrary, remove false positive trophic links identified in the stomach contents), you can modify directly this binary topology matrix. This operation can be useful, for instance, if your stomach sampling size is too low and you missed a prey you are definitely sure that the predator feeds on, or if you know that the identification of a prey will be reduced due to very small size or high digestibility. To specify that the "huge" animal can also eat "small" animals, you can do:
 
 ```{r}
 topology["small", "huge"] <- 1
 print(topology)
 ```
 
-The new topology matrix can now be entered as an argument of the `preprocess_data` function:
+To run EcoDiet on this updated binary topology, you will have to append the previous one by re-running the `preprocess_data` as follows:
+
 ```{r}
 data <- preprocess_data(biotracer_data = example_biotracer_data,
                         trophic_discrimination_factor = c(0.8, 3.4),
@@ -139,7 +144,8 @@ data <- preprocess_data(biotracer_data = example_biotracer_data,
 
 **If you don't have data extracted from the literature, skip this and go to section 4.**
 
-If you have literature data, read this section.
+Read this section if you **do** want to integrate information from the literature / expert knowledge.
+This is specified using the `literature_configuration` argument.
 
 ```{r}
 literature_configuration <- TRUE
@@ -281,53 +287,82 @@ plot_prior(data, literature_configuration, pred = "huge", variable = "eta")
 
 ## 5. Run the model
 
-The `write_model` function writes the model in the BUGS syntax. You need to specify the option non informative priors / informative priors:
+The `write_model` function writes the model in the BUGS syntax. Here You need to specify whether you want to use or not priors form the literature since the model structure will be affected by this choice.
+The model is written as a *.txt* for which you should specify a path and name through the  `file.name` argument.
+
+To see the written model, you can turn on visualization using `print.model=TRUE` or opening the saved *.txt* file
 
 ```{r}
-model_string <- write_model(literature_configuration = literature_configuration)
+filename <- "mymodel.txt"
+write_model(file.name = filename, literature_configuration = literature_configuration, print.model = F)
 ```
 
-You can see the model with this command:
-```{r, eval = FALSE}
-cat(model_string)
+First, run the model as a test (i.e., low adaption phase and low number of iterations) to check that the model is compiling properly. Specifying `run_param="test"` will by default run the model with nb_iter=1000 and nb_burnin=500.
+
+```{r, eval = TRUE}
+mcmc_output <- run_model(filename, data, run_param = "test")
 ```
 
-First run the model with low adaption and iteration numbers to test if it is compiling properly:
+The low numbers won't be enough to achieve a satisfactory model convergence. You should progressively increase the number of adaptation steps `nb_adapt` and of iterations `nb_iter` while checking the "Convergence warnings" message. You can specify these model run parameters by specifying `run_param=list(nb_iter=iter, nb_burnin=burnin, nb_thin=thin)`. There are also a couple of default run parameters (*"very short"*,*"short"*,*"normal"*,*"long"*,*"very long"*) that you can use in the with `run_param` and learn about by calling `?run_param`
 
-```{r}
-mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e1, nb_iter = 1e2)
-```
+Be aware that, depending on your data and especially the number of trophic groups and investigate trophic interactions, the model can take **hours or days** to run.
 
-The low numbers will surely not be enough to achieve a satisfactory model convergence. You should progressively increase the number of adaptation steps `nb_adapt` and of iterations `nb_iter` until you no longer see an "adaptation incomplete" warning, or a "convergence problem" message.
-
-Depending on your data, the model can take **hours or days** to run:
 
 ```{r, eval = FALSE}
-mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e2, nb_iter = 1e3)
-mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e3, nb_iter = 1e4)
-mcmc_output <- run_model(textConnection(model_string), data, nb_adapt = 1e3, nb_iter = 1e5)
-mcmc_output_example <- run_model(textConnection(model_string), data, 
-                                 nb_adapt = 1e3, nb_iter = 1e6)
+mcmc_output <- run_model(filename, data, run_param=list(nb_iter=10000, nb_burnin=5000, nb_thin=5))
+mcmc_output <- run_model(filename, data, run_param=list(nb_iter=50000, nb_burnin=25000, nb_thin=25))
+mcmc_output <- run_model(filename, data, run_param=list(nb_iter=100000, nb_burnin=50000, nb_thin=50))
 
+mcmc_output_example <- run_model(filename, data, run_param=list(nb_iter=50000, nb_burnin=25000, nb_thin=25))
+```
+
+Note that for much complex case studies, the dimension of the model may be considerable hence the time required by the runs may be dramatically long. In that context, while analyzing your results carefully, you might be willing to use your model outputs if a only a very limited number of variables don't reach convergence after especially long runs. 
+
+Once a model reaches convergence objectives, don't forget to save it on your machine.
+
+```{r, eval = FALSE}
 save(mcmc_output_example, file = "./data/mcmc_output_example.rda")
 ```
 
-Don't forget to save the results before quitting R to not lose them.
+### Diagnoses
+
+Here we provide the `diagnose_model` function to perform simple diagnoses on the EcoDiet run. It displays the number of variables for which the Gelman-Rubin test remains higher than different thresholds, highlighting also the 10 worst variables in terms of convergence. The object created contains these values for all the model variables.
+
+```{r}
+Gelman_model <- diagnose_model(mcmc_output_example)
+print(Gelman_model)
+```
+
+The function can also be used to produce diagnostic plots and save them as a *.pdf* file. Complex models will have so many variables that the process can be very long so the  user can also specify the variable for which graphs should be produced and stored.
+
+```{r, eval = FALSE}
+diagnose_model(mcmc_output_example, var.to.diag = "all", save = TRUE)
+```
 
 ## 6. Plot and save the results
 
+The object output by the `run_model` function contains all MCMC samples, summary statistics and the configuration of the run:
+
+```{r}
+str(mcmc_output_example)
+```
+
+Please read the documentation of the [jagsUI package](https://cran.r-project.org/web/packages/jagsUI/index.html) for more information.
+
+Below we provide some functions to for a simple exploration of the results.
+
 ### The mean results
 
-The model's outputs are the approximated a posteriori distributions for the trophic links probabilities $\eta$ and the diet proportions $\Pi$. You can visualize the mean of these distribitions with the `plot_results` function:
+The model's outputs are the approximated *a posteriori* distributions for the trophic links probabilities $\eta$ and the diet proportions $\Pi$. You can visualize the mean of these distribitions with the `plot_results` function:
 
 ```{r, fig.height = 4, fig.width = 6}
 plot_results(mcmc_output_example, data)
 ```
 
-You can access the mean value for each variable with the following:
+You can access the main statistics by variable directly from the `jagsUI` object returned by the r`run_model` function, including the mean value of the variables:
 
 ```{r}
-print(colMeans(mcmc_output_example))
+print(mcmc_output_example$summary[,"mean"])
 ```
 
 ### The probability distributions
@@ -342,43 +377,19 @@ plot_results(mcmc_output_example, data, pred = "huge")
 plot_results(mcmc_output_example, data, pred = "large")
 ```
 
-As you can see, the shape of the posterior distributions of the $\Pi$ are unusual (with spikes at 0 and 1), and must be **carefully interpreted** in the model context. Indeed, $\Pi$ is conditionned by the trophic link existence $\Lambda$, a random Bernoulli variable taking the value 1 (the trophic link exists) or 0 (the trophic link does not exist):
-
-* When $\Lambda$ = 0, $\Pi$ is drawn from a prior distribution with a spike at zero, with very low updating by the data. 
-* When $\Lambda$ = 1, $\Pi$ is updated by the data through the isotope mixture model. 
-
-The marginal distributions of $\Pi$ thus have a spike at zero combined with a more habitual dome shape centered on the value estimated through the mixture model. You can see the conditional distribution of $\Pi$ when the trophic link exist this way:
-
-```{r, fig.height = 4, fig.width = 6}
-len <- dim(mcmc_output_example)[2]
-mcmc_output2 <- mcmc_output_example
-mcmc_output2[, 1:(len/2)] <- ifelse(mcmc_output_example[, 1:(len/2)] < 0.03 |
-                                      mcmc_output_example[, 1:(len/2)] > 0.97,
-                                    NA, mcmc_output_example[, 1:(len/2)])
-
-plot_results(mcmc_output2, data, variable = "PI", pred = "large", prey = c("medium", "small"))
-```
-
-You can also compute any summary statistics that you need. If you want the median (thus the 50% quantile), and the 5% and the 95% quantiles of your distribution, you can use:
-
-```{r}
-quantiles <- apply(mcmc_output_example, 2, function(X) quantile(X, probs = c(0.05, 0.5, 0.95)))
-quantiles <- signif(quantiles, digits = 2)
-knitr::kable(quantiles)
-```
 
 ## 7. Save another variable than $\Pi$ and $\eta$
 
-You have the possibility to access all the model parameters. For example you may be interested by the variable $\delta$ that represents the trophic discrimination factor. In the EcoDiet model, a different trophic discrimination factor is used for each trophic group and for each element, allowing some differences between species. We can get these parameters using the `variables_to_save` argument:
+You actually have the possibility to monitor and output the statistics of all the model parameters. For example you may be interested by the variable $\delta$ that represents the trophic discrimination factor. In the EcoDiet model, a different trophic discrimination factor is used for each trophic group and for each element, allowing some differences between species. We can chose to monitor these parameters when running the model by using the `variables_to_save` argument:
 
-```{r}
-mcmc_output <- run_model(textConnection(model_string), data, 
-                         variables_to_save = c("delta"),
-                         nb_adapt = 1e1, nb_iter = 1e2)
+```{r, eval=FALSE}
+mcmc_output_delta <- run_model(filename, data, 
+          variables_to_save = c("delta"),
+          run_param = "test")
 ```
 
 And now you can access the mean value using:
 
-```{r}
-print(colMeans(mcmc_output))
+```{r, eval=FALSE}
+print(mcmc_output_delta$summary[,"mean"])
 ```
