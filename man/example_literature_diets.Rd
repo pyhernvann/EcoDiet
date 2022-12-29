@@ -3,10 +3,12 @@
 \name{example_literature_diets}
 \alias{example_literature_diets}
 \title{Example literature diets}
-\format{A table with 5 rows and 5 columns.
+\format{
+A table with 5 rows and 5 columns.
 The headers contain the predators' names, the first column contains the preys' names.
 Each cell contains the average diet proportions fond in the literature for the corresponding predator.
-The last row contains the average pedigree score for the literature on each predator.}
+The last row contains the average pedigree score for the literature on each predator.
+}
 \description{
 This is an artificial and simple literature diets dataset, made to illustrate the package on a simple case.
 All tables whose name start by "example" are describing different data from the same trophic groups.
