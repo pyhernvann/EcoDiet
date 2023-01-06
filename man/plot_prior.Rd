@@ -68,8 +68,6 @@ plot_prior(data, literature_configuration = FALSE, pred = "Cod")
 plot_prior(data, literature_configuration = FALSE, pred = "Cod", 
            prey = c("Crabs", "Shrimps"), variable = "eta")
            
-plot_prior(data, literature_configuration = FALSE, save = TRUE, save_path = tempdir())
-           
 }
 \seealso{
 \code{\link{plot_results}} to plot the posterior means or probability distribution(s),
