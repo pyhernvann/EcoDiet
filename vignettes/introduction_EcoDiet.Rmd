@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 EcoDiet is a new tool for assimilating data in food-web studies. The goal of the package is to quantify trophic interactions between food-web components by combining stomach content analyses and biotracers in a Bayesian hierarchical model. To do so, the model simultaneously estimates a probabilistic topology matrix of the trophic network and the diet matrix. The topology matrix is a probabilistic description of "who eats whom" in the food web nad is composed of the probabilities that trophic links exist between food-web components, i.e. the probabilities $\eta$ that any prey is eaten by a given predator. The diet matrix is estimated conditionally to this topology and contains all diet proportions $\Pi$, hence it expresses the contribution (in %) of any prey to a given predator's diet.
 
-The full EcoDiet model and its application to real and simulated datasets are described in [*Hernvann et al. 2022*](https://esajournals.onlinelibrary.wiley.com/doi/abs/10.1002/eap.2521). Use `citation("EcoDiet")` to get the full reference.
+The full EcoDiet model and its application to real and simulated datasets are described in *Hernvann et al. 2022, Ecol Appl*. Use `citation("EcoDiet")` to get the full reference.
 
 Several options are available within the present package:
 
@@ -26,7 +26,7 @@ Several options are available within the present package:
 
 * *Literature option* - stomach content and biotracer data are integrated and results from expert knowledge or the literature are used to formulate informative priors on the topology and diet matrices.
 
-The example showcased here is an artificial dataset, created to be simple to visualize and understand. In this example as in [*Hernvann et al. 2022*](https://esajournals.onlinelibrary.wiley.com/doi/abs/10.1002/eap.2521) the biotracers used are stable isotopes but EcoDiet could be used to treat other analyses (e.g., fatty acids, specific-compounds stable isotopes).
+The example showcased here is an artificial dataset, created to be simple to visualize and understand. In this example as in *Hernvann et al. 2022, Ecol Appl* the biotracers used are stable isotopes but EcoDiet could be used to treat other analyses (e.g., fatty acids, specific-compounds stable isotopes).
 
 Before running the following code, please ensure that EcoDiet and the required tools are correctly installed and set up on your computer. Instructions can be found in the [README](https://github.com/pyhernvann/EcoDiet/blob/master/README.md)'s instructions. If you're all set, let's load the EcoDiet package:
 
@@ -347,7 +347,7 @@ The object output by the `run_model` function contains all MCMC samples, summary
 str(mcmc_output_example)
 ```
 
-Please read the documentation of the [jagsUI package](https://cran.r-project.org/web/packages/jagsUI/index.html) for more information.
+Please read the documentation of the [jagsUI package](https://CRAN.R-project.org/package=jagsUI) for more information.
 
 Below we provide some functions to for a simple exploration of the results.
 
