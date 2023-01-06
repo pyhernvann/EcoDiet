@@ -18,9 +18,14 @@
 #' @return A string containing the model definition in BUGS
 #'
 #' @examples
+#' \donttest{
 #' write_model(file.name="my_model_with_priors.txt", literature_configuration = TRUE)
 #' 
 #' write_model(literature_configuration = FALSE, print.model = TRUE)
+#' 
+#' unlink('my_model_with_priors.txt')
+#' unlink('EcoDiet_model.txt')
+#' }
 #' 
 #' @seealso \code{\link{run_model}} to run the model after it has been defined
 #'
