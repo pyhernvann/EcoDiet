@@ -32,9 +32,14 @@ hence the parameter \code{literature_configuration}.
 To know more about what is inside the model, please read the reference article.
 }
 \examples{
+\donttest{
 write_model(file.name="my_model_with_priors.txt", literature_configuration = TRUE)
 
 write_model(literature_configuration = FALSE, print.model = TRUE)
+
+unlink('my_model_with_priors.txt')
+unlink('EcoDiet_model.txt')
+}
 
 }
 \seealso{
