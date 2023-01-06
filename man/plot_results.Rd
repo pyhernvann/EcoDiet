@@ -73,7 +73,6 @@ plot_results(mcmc_output, data, pred = "Crabs")
 plot_results(mcmc_output, data, pred = "Crabs",
              variable = "PI", prey = c("Bivalves", "Shrimps"))
              
-plot_results(mcmc_output, data, save = TRUE, save_path = tempdir())
 }
 
 }
