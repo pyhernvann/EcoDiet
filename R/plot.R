@@ -98,7 +98,7 @@ plot_biotracer_data <- function(biotracer_data, save=FALSE, save_path){
 #' @keywords internal
 #' @noRd
 
-plot_matrix <- function(matrix, title, save=FALSE, save_path){
+plot_matrix <- function(matrix, title, save = FALSE, save_path){
 
   matrix <- as.data.frame(matrix)
 
@@ -168,14 +168,10 @@ plot_matrix <- function(matrix, title, save=FALSE, save_path){
 #' 
 #' example_stomach_data <- read.csv(system.file("extdata", "example_stomach_data.csv",
 #'                                              package = "EcoDiet"))
-#' plot_data(stomach_data = example_stomach_data)
 #' 
 #' plot_data(biotracer_data = example_biotracer_data,
 #'           stomach_data = example_stomach_data)
 #'           
-#' plot_data(biotracer_data = example_biotracer_data,
-#'           stomach_data = example_stomach_data,
-#'           save = TRUE, save_path = tempdir())
 #'      
 #' @seealso \code{\link{plot_prior}} to plot the prior means or probability distribution(s), 
 #'   \code{\link{plot_results}} to plot the posterior means or probability distribution(s)
@@ -389,8 +385,6 @@ plot_prior_distribution <- function(data, literature_configuration, pred, prey,
 #' plot_prior(data, literature_configuration = FALSE, pred = "Cod", 
 #'            prey = c("Crabs", "Shrimps"), variable = "eta")
 #'            
-#' plot_prior(data, literature_configuration = FALSE, save = TRUE, save_path = tempdir())
-#'            
 #' @seealso \code{\link{plot_results}} to plot the posterior means or probability distribution(s),
 #'   \code{\link{plot_data}} to plot the input data
 #'
@@ -495,7 +489,7 @@ extract_mean <- function(mcmc_output, data, variable = "PI"){
 #' @noRd
 
 plot_posterior_distribution <- function(mcmc_output, data, pred, prey,
-                                        variable, title, save, save_path){
+                                        variable, title, save = FALSE, save_path){
 
   # Check that the entered predator is correct
   pred_index <- which(colnames(data$o) == pred)
@@ -636,7 +630,6 @@ plot_posterior_distribution <- function(mcmc_output, data, pred, prey,
 #' plot_results(mcmc_output, data, pred = "Crabs",
 #'              variable = "PI", prey = c("Bivalves", "Shrimps"))
 #'              
-#' plot_results(mcmc_output, data, save = TRUE, save_path = tempdir())
 #' }
 #' 
 #' @seealso \code{\link{plot_prior}} to plot the prior means or probability distribution(s),
