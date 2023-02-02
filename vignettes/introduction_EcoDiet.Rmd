@@ -55,9 +55,9 @@ example_stomach_data <- read.csv(system.file("extdata", "example_stomach_data.cs
 knitr::kable(example_stomach_data)
 ```
 
-In this example, for the "huge" animals, 19 stomachs were analyzed and contained remainings. Among these stomachs, 17 contained "large" animal remainings and 12 contained "medium" animal remainings.
+In this example, for the "huge" animals, `r example_stomach_data$huge[5]` stomachs were analyzed and contained remainings. Among these stomachs, `r example_stomach_data$huge[2]` contained "large" animal remainings and `r example_stomach_data$huge[3]` contained "medium" animal remainings.
 
-If some trophic groups of the studied food web don't have associated stomach content analyses, you should add a line in this table indicating the name of this group and *0* in the other columns (it is the case here for "small" animals that are at the base of the trophic network).
+If some trophic groups of the studied food web don't have associated stomach content analyses, you should add a line in this table indicating the name of this group and *0* in the other rows (it is the case here for "small" animals that are at the base of the trophic network).
 
 ### Biotracer data
 
