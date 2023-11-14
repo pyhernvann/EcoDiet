@@ -1,3 +1,7 @@
+# Changes from Version 2.0.0 to 2.0.1 [13 Nov 2023] #
+
+Fix plotting error when representing matrices.
+
 # Changes from Version 1.0.1 to 2.0.0 [31 Dec 2022] #
 
 Major changes brought to the whole package:
