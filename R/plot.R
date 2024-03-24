@@ -568,7 +568,7 @@ plot_posterior_distribution <- function(mcmc_output, data, pred, prey,
     ggtitle(paste(title, "\nfor the", colnames(data$o)[pred_index], "predator")) +
     ylab("Density") +
     scale_shape_manual(values = c(seq(1:10))) +
-    guides(colour = guide_legend(byrow = 1, ncol = 1), shape = guide_legend(byrow = 1, ncol = 1)) +
+    guides(colour = guide_legend(byrow = TRUE, ncol = 1), shape = guide_legend(byrow = TRUE, ncol = 1)) +
     xlim(0, 1) +
     theme_bw() +
     theme(axis.title.x = element_blank(),
