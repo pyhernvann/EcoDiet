@@ -2,7 +2,7 @@ citHeader("To cite EcoDiet in publications use:")
 
 bibentry(bibtype = "Article",
   title        = "EcoDiet: A hierarchical Bayesian model to combine stomach, biotracer, and literature data into diet matrix estimation",
-  author       = c(person(given = "Pierre", middle="Yves", family = "Hernvann", email = "pierre.yves.hernvann@gmail.com"),
+  author       = c(person(given = "Pierre Yves", family = "Hernvann", email = "pierre.yves.hernvann@gmail.com"),
                    person(given = "Didier", family = "Gascuel"),
                    person(given = "Dorothee", family = "Kopp"),
                    person(given = "Marianne", family = "Robert"),
