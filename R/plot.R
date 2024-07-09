@@ -556,14 +556,13 @@ plot_posterior_distribution <- function(mcmc_output, data, pred, prey,
   
   # Trick to scale the plot and not have a warning from the CRAN check:
   variable_to_plot <- NULL
-  ..scaled.. <- NULL
   Prey <- NULL
 
   # Plot these values to represent the approximated probability densities
   figure <- ggplot(df_to_plot) +
-    geom_density(aes(x = variable_to_plot, y = ..scaled.., fill = Prey),
+    geom_density(aes(x = variable_to_plot, y = after_stat(scaled), fill = Prey),
                  alpha = .3, adjust = 1/2, na.rm = TRUE) +
-    geom_density(aes(x = variable_to_plot, y = ..scaled.., color = Prey),
+    geom_density(aes(x = variable_to_plot, y = after_stat(scaled), color = Prey),
                  size = 1.25, adjust = 1/2, na.rm = TRUE) +
     ggtitle(paste(title, "\nfor the", colnames(data$o)[pred_index], "predator")) +
     ylab("Density") +
