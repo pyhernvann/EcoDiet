@@ -18,3 +18,7 @@ This is an artificial and realistic biotracer dataset, more specifically stable 
  made to illustrate the package on a complex dataset. All tables whose name start by "realistic" are
  describing different data from the same trophic groups.
 }
+\examples{
+realistic_biotracer_data <- read.csv(system.file("extdata", "realistic_biotracer_data",
+                                                 package = "EcoDiet"))
+}

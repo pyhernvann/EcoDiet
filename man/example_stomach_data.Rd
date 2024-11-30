@@ -13,3 +13,7 @@ The last row contains the total number of non-empty stomachs for each predator.
 This is an artificial and simple stomachal dataset, made to illustrate the package on a simple case.
 All tables whose name start by "example" are describing different data from the same trophic groups.
 }
+\examples{
+example_stomach_data <- read.csv(system.file("extdata", "example_stomach_data.csv",
+                                             package = "EcoDiet"))
+}

@@ -1,5 +1,5 @@
 ---
-title: "EcoDiet explored on a realistic example"
+title: "2. EcoDiet explored on a realistic example"
 author: "Heloise Thero, Pierre-Yves Hernvann"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-The introduction employed a simplistic expemple of food web to familiarize the user with the basic commands and options of the EcoDiet package. Here we will use a more realistic example (although still artificial!) to run the different EcoDiet configurations, compare their results and hence higlight the complementarity in the different data used. 
+The introduction employed a simplistic example of food web to familiarize the user with the basic commands and options of the EcoDiet package. Here we will use a more realistic example (although still artificial!) to run the different EcoDiet configurations, compare their results and hence highlight the complementarity in the different data used. 
 
 The data corresponds to 10 trophic groups with stomach content data, and very distinct isotopic measures.
 

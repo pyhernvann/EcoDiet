@@ -1,0 +1,24 @@
+navbar:
+  structure:
+    left: [articles, reference, news]
+    right: [search, github, lightswitch]
+  components:
+    news:
+      text: News
+      href: news/index.html
+    reference:
+      text: Reference
+      href: reference/index.html
+    github:
+      icon: fab fa-github fa-lg
+      href: https://github.com/pyhernvann/EcoDiet/
+      aria-label: github
+    articles:
+      text: Articles
+      menu:
+      - text: 1. Introduction - How to use EcoDiet
+        href: articles/introduction_EcoDiet.html
+      - text: 2. EcoDiet explored on a realistic example
+        href: articles/realistic_example.html
+      - text: 3. How to deal with convergence problems
+        href: articles/convergence_problems.html

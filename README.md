@@ -54,19 +54,19 @@ If you get an error message during installation, check [this post from Yu-Sung S
 
 To download the `EcoDiet` package from GitHub, you need to use the `install_github` function from the `devtools` package to load it. First, install the `devtools` package:
 
-```{r, eval = FALSE}
+```
 install.packages("devtools")
 ```
 
 Once `devtools` has been installed, you can load the EcoDiet package:
 
-```{r, eval = FALSE}
+```
 devtools::install_github("pyhernvann/EcoDiet", build_vignettes = TRUE, dependencies = TRUE)
 ```
 
 Since the 6th of May 2020 `EcoDiet` is also available on the CRAN. You can directly install it from R and load it:
 
-```{r, eval = FALSE}
+```
 install.packages("EcoDiet")
 
 library("EcoDiet")

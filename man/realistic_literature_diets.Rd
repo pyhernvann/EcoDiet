@@ -13,3 +13,7 @@ The last row contains the average pedigree score for the literature on each pred
 This is an artificial and realistic literature diets dataset, made to illustrate the package on a complex dataset.
 All tables whose name start by "realistic" are describing different data from the same trophic groups.
 }
+\examples{
+realistic_literature_diets <- read.csv(system.file("extdata", "realistic_literature_diets",
+                                                   package = "EcoDiet"))
+}

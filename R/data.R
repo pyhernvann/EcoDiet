@@ -9,6 +9,9 @@
 #' The last row contains the total number of non-empty stomachs for each predator.
 #'
 #' @name example_stomach_data
+#' @examples
+#' example_stomach_data <- read.csv(system.file("extdata", "example_stomach_data.csv",
+#'                                              package = "EcoDiet"))
 NULL
 
 
@@ -27,6 +30,9 @@ NULL
 #'}
 #'
 #'@name example_biotracer_data
+#'@examples
+#' example_biotracer_data <- read.csv(system.file("extdata", "example_biotracer_data.csv",
+#'                                                package = "EcoDiet"))
 NULL
 
 
@@ -41,6 +47,9 @@ NULL
 #' The last row contains the average pedigree score for the literature on each predator.
 #'
 #'@name example_literature_diets
+#'@examples
+#' example_literature_diets <- read.csv(system.file("extdata", "example_literature_diets",
+#'                                                  package = "EcoDiet"))
 NULL
 
 #' The MCMC output for running the example dataset
@@ -66,6 +75,9 @@ NULL
 #' The last row contains the total number of non-empty stomachs for each predator.
 #'
 #' @name realistic_stomach_data
+#'@examples
+#' realistic_stomach_data <- read.csv(system.file("extdata", "realistic_stomach_data",
+#'                                                package = "EcoDiet"))
 NULL
 
 
@@ -85,6 +97,9 @@ NULL
 #'}
 #'
 #'@name realistic_biotracer_data
+#'@examples
+#' realistic_biotracer_data <- read.csv(system.file("extdata", "realistic_biotracer_data",
+#'                                                  package = "EcoDiet"))
 NULL
 
 
@@ -99,4 +114,7 @@ NULL
 #' The last row contains the average pedigree score for the literature on each predator.
 #'
 #'@name realistic_literature_diets
+#'@examples
+#' realistic_literature_diets <- read.csv(system.file("extdata", "realistic_literature_diets",
+#'                                                    package = "EcoDiet"))
 NULL

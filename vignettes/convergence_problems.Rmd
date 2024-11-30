@@ -1,5 +1,5 @@
 ---
-title: "How to deal with convergence problems"
+title: "3. How to deal with convergence problems"
 author: "Heloise Thero, Pierre-Yves Hernvann"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -77,7 +77,7 @@ The `EcoDiet` package provides you with several ways of checking/exploring conve
 
 -   The new `diagnose_model` function allows you to perform the more complete Gelman-Rubin diagnostic on the MCMC outputs and compile all these coefficients in a matrix object. It can also produce a `.pdf` document with complete diagnostic plots if interested.
 
-[Note that, in the present version of the `EcoDiet` package, all convergence diagnostics are based on Gelman-Rubin test. In the future, other diagnostics could be integrated. If you are used to work with models employing GIBS or other MCMC techniques, you could also directly use the jasgUI outputs to test other flavors of convergence diagnostic.]
+[Note that, in the present version of the `EcoDiet` package, all convergence diagnostics are based on Gelman-Rubin test. In the future, other diagnostics could be integrated. If you are used to work with models employing GIBS or other MCMC techniques, you could also directly use the jagsUI outputs to test other flavors of convergence diagnostic.]
 
 To summary, in terms of code, you can investigate the convergence of the model by alternatively running the following:
 
@@ -103,9 +103,9 @@ You should use this information to elaborate some strategies for tackling conver
 
 ### Increase the number of iterations
 
-The first and easy thing that you should try is setting a higher number of iterations steps to run the model. Be aware that, depending on your data (e.g., food-web complexity, data informativeness), this can take **hours or days** to run. Using the model shortcuts provided in version 2.0.0, you could for example successively try to run youyr model in the "normal", "long" then "very long" configurations.
+The first and easy thing that you should try is setting a higher number of iterations steps to run the model. Be aware that, depending on your data (e.g., food-web complexity, data informativeness), this can take **hours or days** to run. Using the model shortcuts provided in version 2.0.0, you could for example successively try to run your model in the "normal", "long" then "very long" configurations.
 
-Increasing the number of iterations is a good solution in many cases and you should start from this. It would definitly look especially pertinent when convergence diagnoses show that, additionally to a substantial number of variables with  numerous variables have a Rhat > 1.1, a lot of them are between 1.05 and 1.01.
+Increasing the number of iterations is a good solution in many cases and you should start from this. It would definitely look especially pertinent when convergence diagnoses show that, additionally to a substantial number of variables with  numerous variables have a Rhat > 1.1, a lot of them are between 1.05 and 1.01.
 
 ```{r, eval = FALSE}
 mcmc_output <- run_model(filename, data, run_param="normal")

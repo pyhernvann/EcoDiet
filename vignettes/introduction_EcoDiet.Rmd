@@ -1,5 +1,5 @@
 ---
-title: "Introduction - How to use EcoDiet"
+title: "1. Introduction - How to use EcoDiet"
 author: "Heloise Thero, Pierre-Yves Hernvann"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-EcoDiet is a new tool for assimilating data in food-web studies. The goal of the package is to quantify trophic interactions between food-web components by combining stomach content analyses and biotracers in a Bayesian hierarchical model. To do so, the model simultaneously estimates a probabilistic topology matrix of the trophic network and the diet matrix. The topology matrix is a probabilistic description of "who eats whom" in the food web nad is composed of the probabilities that trophic links exist between food-web components, i.e. the probabilities $\eta$ that any prey is eaten by a given predator. The diet matrix is estimated conditionally to this topology and contains all diet proportions $\Pi$, hence it expresses the contribution (in %) of any prey to a given predator's diet.
+EcoDiet is a new tool for assimilating data in food-web studies. The goal of the package is to quantify trophic interactions between food-web components by combining stomach content analyses and biotracers in a Bayesian hierarchical model. To do so, the model simultaneously estimates a probabilistic topology matrix of the trophic network and the diet matrix. The topology matrix is a probabilistic description of "who eats whom" in the food web and is composed of the probabilities that trophic links exist between food-web components, i.e. the probabilities $\eta$ that any prey is eaten by a given predator. The diet matrix is estimated conditionally to this topology and contains all diet proportions $\Pi$, hence it expresses the contribution (in %) of any prey to a given predator's diet.
 
 The full EcoDiet model and its application to real and simulated datasets are described in *Hernvann et al. 2022, Ecol Appl*. Use `citation("EcoDiet")` to get the full reference.
 
@@ -70,7 +70,7 @@ knitr::kable(example_biotracer_data)
 ```
 
 
-All the trophic groups of the studied food web should be present in this biotracer table. Thus, if biotracer analyses are missing for one given trophic group you still have to enter one line indicating the name of the trophic group and *NA* in the following columnds (as it is the case for the "huge" group).
+All the trophic groups of the studied food web should be present in this biotracer table. Thus, if biotracer analyses are missing for one given trophic group you still have to enter one line indicating the name of the trophic group and *NA* in the following columns (as it is the case for the "huge" group).
 
 The biotracers like stable isotope analyses are integrated in the model based on the trophic enrichment concept. Thus, for each biotracer informed, you also need to define the corresponding trophic discrimination factors corresponding to your the biotracers. In this example, we use common trophic discrimination factors for carbon and nitrogen:
 
@@ -200,7 +200,7 @@ data <- preprocess_data(biotracer_data = example_biotracer_data,
 
 If any error appears, it means your data is not in the correct format. Please read the error message and try to rearrange the data in the correct format.
 
-If you have a lot of small values in the stomach occurences, you can choose to upscale the stomach content data:
+If you have a lot of small values in the stomach occurrences, you can choose to upscale the stomach content data:
 ```{r}
 data <- preprocess_data(biotracer_data = example_biotracer_data,
                         trophic_discrimination_factor = c(0.8, 3.4),
@@ -214,7 +214,7 @@ data <- preprocess_data(biotracer_data = example_biotracer_data,
 
 ### Check the trophic links to investigate
 
-These are the links that will be investigated by the model. It is not wise to assume that all the trophic links are possible. You therefore need to keep only the reasonnable trophic links (e.g., a shrimp cannot eat a whale). The matrix displayed by the `preprocess_data` function is based by default on the stomach content data (`data$o`) and on the literature diet matrix (`data$alpha_lit`):
+These are the links that will be investigated by the model. It is not wise to assume that all the trophic links are possible. You therefore need to keep only the reasonable trophic links (e.g., a shrimp cannot eat a whale). The matrix displayed by the `preprocess_data` function is based by default on the stomach content data (`data$o`) and on the literature diet matrix (`data$alpha_lit`):
 
 ```{r}
 topology <- 1 * ((data$o > 0) | (data$alpha_lit > 0))
@@ -353,7 +353,7 @@ Below we provide some functions to for a simple exploration of the results.
 
 ### The mean results
 
-The model's outputs are the approximated *a posteriori* distributions for the trophic links probabilities $\eta$ and the diet proportions $\Pi$. You can visualize the mean of these distribitions with the `plot_results` function:
+The model's outputs are the approximated *a posteriori* distributions for the trophic links probabilities $\eta$ and the diet proportions $\Pi$. You can visualize the mean of these distributions with the `plot_results` function:
 
 ```{r, fig.height = 4, fig.width = 6}
 plot_results(mcmc_output_example, data)
